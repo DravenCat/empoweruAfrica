@@ -8,7 +8,7 @@
 |
 |Siyang Chen|chens258|1005734902|syang.chen@mail.utoronto.ca|+86 18519226069|void *#6162
 |
-|Jiazheng Li|lijiaz11|1006075630|ljz.li@mail.utoronto.ca|No Phone|ljz3#3048
+|Jiazheng Li|lijiaz11|1006075630|ljz.li@mail.utoronto.ca|Discord|ljz3#3048
 |
 |           |        |            |       |                     |
 |
