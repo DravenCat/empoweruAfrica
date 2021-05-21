@@ -1,6 +1,6 @@
 | Full Name    | UTORID | Student ID | Email | Best Way to Contact | Discord Username
 |
-|--------------|--------|------------|-------|---------------------|------------------
+|Dezhi Ren|rendezhi|1005736795|dezhi.ren@mail.utoronto.ca|+86 13564566365|古来のLeshy#3764
 |
 |Yuanqian Fang|fangyu29|1006619919|yuanqian.fang@mail.utoronto.ca|4379708366|Fo_Jming#0028
 |
