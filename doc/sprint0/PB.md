@@ -99,6 +99,16 @@ As a user, I want to be able to delete my post / reply, so that I can manage my 
  - CoS: All users will not be able to see the deleted post / reply. 
  + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo, Helen Okoye
 ---
+## Admin
+---
+As an admin, I want to remove a post from the community, so I can keep the community clean from malicious posts. 
+ - CoS: Users will no longer see the removed post.
+ + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo, Helen Okoye
+---
+As an admin, I want to ban a user from the community, so I can keep the community away from malicious users. 
+ - CoS: The banned account can no longer log in.
+ - CoS: The banned user's email can no longer be used to sign up for a new account.
+ + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo, Helen Okoye
 
 # E Learning
 ## Videos & Readings 
@@ -177,14 +187,3 @@ As an entrepreneur, I want to view my course material organized in modules, so t
  - CoS: All entrepreneurs can view modules that are present in the backend. 
  + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo, 
 ---
-# Admin
-
-As an admin, I want to remove a post from the community, so I can keep the community clean from malicious posts. 
- - CoS: Users will no longer see the removed post.
- + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo, Helen Okoye
----
-As an admin, I want to ban a user from the community, so I can keep the community away from malicious users. 
- - CoS: The banned account can no longer log in.
- - CoS: The banned user's email can no longer be used to sign up for a new account.
- + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo, Helen Okoye
-
