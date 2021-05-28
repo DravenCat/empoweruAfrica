@@ -4,9 +4,6 @@ Our project objective is to build a platform to teach aspiring entrepreneurs in 
 As well as connecting them to potential investors in order to enable them to build market-creating innovations which tackle their country's biggest challenges with technology.
 
 ## The Key Personas
-
-> Chibuogu, a 35 year old ambitious farmer who has a large farm. He grows tropical fruits and sells them in the villages nearby. He lives a modest life, earning slightly more than his peers, but hopes to make more money since he has a large family. 
-
 > Adaora, age 28, lives in South Africa and is a freelance music producer. She performs in a local bar every night and is well-known in the community where she lives. Besides singing some pop music, she often performs her self-composed songs. She has participated in music festivals held by several entertainment companies and met many people who love music as much as she does.
 
 > Bosco is a 32 year old software programmer. He is a member of the development team of video software “TikTok” at ByteDance. He hopes to create his own software company to introduce a greater social media platform to the African world.
@@ -14,8 +11,6 @@ As well as connecting them to potential investors in order to enable them to bui
 > Helen, age 40, is a senior instructor at Franklin A.Trevor college. She has been teaching courses related to management for ten years. She thinks online teaching can provide as good of a learning experience to students as in-person teaching.
 
 ## The Key Scenarios
-> Chibuogu is planning to expand his business to the global world. He wants to acquire manpower and modern equipment to expand agricultural production. However, he does not have enough money and entrepreneurial experience. To achieve his plan, he needs to receive financial support and professional guidance.
-
 > Adaora wants to work with people that share her passion for music to create a joint venture music company to promote their art to the entire world. She hopes to learn about company operations to help her start a business.
 
 > Bosco believes he understands his home country well enough to start a successful social media platform. He is familiar with software development but knows little about how to run a company. He wants to acquire some professional knowledge on the business administration side of a company.
