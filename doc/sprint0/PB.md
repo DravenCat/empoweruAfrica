@@ -99,86 +99,8 @@ As a user, I want to be able to delete my post / reply, so that I can manage my 
  - CoS: All users will not be able to see the deleted post / reply. 
  + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo, Helen Okoye
 ---
-
-# E Learning
-## Videos & Readings 
+## Admin
 ---
-As a teacher, I want to upload a video onto my course on the platform, so I can teach my students about the course topics. 
- - CoS: The video information is added onto the backend. (titles, uploaded date, description, link to video etc. )
- - CoS: The video file is stored in the backend. (The actual video)
- * Related Persona: Helen Okoye
----
-As a student, I want to watch pre-recorded videos of courses I’m enrolled in, so that I can learn about course topics.
- - CoS: All students can view the video information. 
- - CoS: All students can watch the video without distortion. 
- + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo
----
-As a teacher, I want to upload reading materials(texts) onto my course on the platform, so that my students can read them and learn from them.
- - CoS: The text file information is added onto the backend.
- - CoS: The text file is stored in the backend. 
- + Related Persona: Helen Okoye
----
-As a student, I want to read the reading materials of the course, so that I can read more about the contents of the course. 
- - CoS: All students can view the text file information.
- - CoS: All students can view the actual text file. 
- + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo
----
-Deliverables, setup, submission & grading
-As a teacher, I want to set deliverables so that my students can submit their work for me to grade.
- - CoS: A new deliverable is created in the backend. 
- - CoS: All students can see the deliverable on their end. 
- + Related Persona: Helen Okoye
----
-As a student, I want to upload my work onto the platform as assignments / quizzes, so that I can show my works to my teachers. 
- - CoS: A new submission is created under the corresponding deliverables in the backend. 
- - CoS: The student can see their uploaded work.
- + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo
----
-As a teacher, I want to view and grade works from my students, so that I can know how they are doing in my course. 
- - CoS: All teachers can view their students’ submissions that are present in the backend. 
- - CoS: After a teacher gives a grade and comment, the grade and comment fields of the submission gets updated in the backend. 
- + Related Persona: Helen Okoye
----
-As a student, I want to view the feedback of my submitted works from my teachers, so that I can know how well I do in the course. 
- - CoS: A student can view grades and comments of his submissions that are present in the backend. 
- + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo
----
-## Calendar
----
-As a teacher, I want to set deadlines for deliverables, so that I can force my students to upload their work before a certain date. 
- - CoS: Students will not be able to submit after the deadline.
- - CoS: Students are able to see the deadline.
- - CoS: Students will not be able to upload a submission to the deliverable after the deadline. 
- + Related Persona: Helen Okoye
----
-As a teacher, I want to set key dates and times, so I can inform my students what works are coming ahead. 
- - CoS: The time can be modified by the teacher.
- - CoS: The time can be displayed in different timezones.
- + Related Persona: Helen Okoye
----
-As a student, I want to have a calendar to show all key dates and times of my course, so that I can plan things ahead. 
- - CoS: The students are able to view their due dates in a calendar format.
- - CoS: The due date is in the correct date slot in the calendar.
- + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo
----
-As a teacher, I want to have a calendar to show all key dates and times of my course, so that I can plan things ahead. 
- - CoS: The teachers are able to view the due dates set for submissions in a calendar format.
- - CoS: The due date is in the correct date slot in the calendar.
- + Related Persona: Helen Okoye
----
-## Modular Learning
----
-As a teacher, I want to set modules in my courses, so that I can organize my course materials in modules. 
- - CoS: A new module is created in the backend. 
- - CoS: The created module contains links to all the contents listed by the teacher. 
- + Related Persona: Helen Okoye
----
-As a student, I want to view my course material organized in modules, so that the course contents won’t get all stuffed together. 
- - CoS: All students can view modules that are present in the backend. 
- + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo, 
----
-# Admin
-
 As an admin, I want to remove a post from the community, so I can keep the community clean from malicious posts. 
  - CoS: Users will no longer see the removed post.
  + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo, Helen Okoye
@@ -188,3 +110,80 @@ As an admin, I want to ban a user from the community, so I can keep the communit
  - CoS: The banned user's email can no longer be used to sign up for a new account.
  + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo, Helen Okoye
 
+# E Learning
+## Videos & Readings 
+---
+As an instructor, I want to upload a video onto my course on the platform, so I can teach my entrepreneurs about the course topics. 
+ - CoS: The video information is added onto the backend. (titles, uploaded date, description, link to video etc. )
+ - CoS: The video file is stored in the backend. (The actual video)
+ * Related Persona: Helen Okoye
+---
+As an entrepreneur, I want to watch pre-recorded videos of courses I’m enrolled in, so that I can learn about course topics.
+ - CoS: All entrepreneurs can view the video information. 
+ - CoS: All entrepreneurs can watch the video without distortion. 
+ + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo
+---
+As an instructor, I want to upload reading materials(texts) onto my course on the platform, so that my entrepreneurs can read them and learn from them.
+ - CoS: The text file information is added onto the backend.
+ - CoS: The text file is stored in the backend. 
+ + Related Persona: Helen Okoye
+---
+As an entrepreneur, I want to read the reading materials of the course, so that I can read more about the contents of the course. 
+ - CoS: All entrepreneurs can view the text file information.
+ - CoS: All entrepreneurs can view the actual text file. 
+ + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo
+---
+Deliverables, setup, submission & grading
+As an instructor, I want to set deliverables so that my entrepreneurs can submit their work for me to grade.
+ - CoS: A new deliverable is created in the backend. 
+ - CoS: All entrepreneurs can see the deliverable on their end. 
+ + Related Persona: Helen Okoye
+---
+As an entrepreneur, I want to upload my work onto the platform as assignments / quizzes, so that I can show my works to my instructors. 
+ - CoS: A new submission is created under the corresponding deliverables in the backend. 
+ - CoS: The entrepreneur can see their uploaded work.
+ + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo
+---
+As an instructor, I want to view and grade works from my entrepreneurs, so that I can know how they are doing in my course. 
+ - CoS: All instructors can view their entrepreneurs’ submissions that are present in the backend. 
+ - CoS: After an instructor gives a grade and comment, the grade and comment fields of the submission gets updated in the backend. 
+ + Related Persona: Helen Okoye
+---
+As an entrepreneur, I want to view the feedback of my submitted works from my instructors, so that I can know how well I do in the course. 
+ - CoS: an entrepreneur can view grades and comments of his submissions that are present in the backend. 
+ + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo
+---
+## Calendar
+---
+As an instructor, I want to set deadlines for deliverables, so that I can force my entrepreneurs to upload their work before a certain date. 
+ - CoS: entrepreneurs will not be able to submit after the deadline.
+ - CoS: entrepreneurs are able to see the deadline.
+ - CoS: entrepreneurs will not be able to upload a submission to the deliverable after the deadline. 
+ + Related Persona: Helen Okoye
+---
+As an instructor, I want to set key dates and times, so I can inform my entrepreneurs what works are coming ahead. 
+ - CoS: The time can be modified by the instructor.
+ - CoS: The time can be displayed in different timezones.
+ + Related Persona: Helen Okoye
+---
+As an entrepreneur, I want to have a calendar to show all key dates and times of my course, so that I can plan things ahead. 
+ - CoS: The entrepreneurs are able to view their due dates in a calendar format.
+ - CoS: The due date is in the correct date slot in the calendar.
+ + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo
+---
+As an instructor, I want to have a calendar to show all key dates and times of my course, so that I can plan things ahead. 
+ - CoS: The instructors are able to view the due dates set for submissions in a calendar format.
+ - CoS: The due date is in the correct date slot in the calendar.
+ + Related Persona: Helen Okoye
+---
+## Modular Learning
+---
+As an instructor, I want to set modules in my courses, so that I can organize my course materials in modules. 
+ - CoS: A new module is created in the backend. 
+ - CoS: The created module contains links to all the contents listed by the instructor. 
+ + Related Persona: Helen Okoye
+---
+As an entrepreneur, I want to view my course material organized in modules, so that the course contents won’t get all stuffed together. 
+ - CoS: All entrepreneurs can view modules that are present in the backend. 
+ + Related Persona: Bosco Njoku, Chibuogu Aboyeji, Adaora Din-Kariuki, Ashifi Gogo, 
+---
