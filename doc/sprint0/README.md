@@ -4,9 +4,19 @@ EmpowerU Africa is designed to teach aspiring entrepreneurs in Africa how to cre
 
    
 # Installation 
-_<Work in progress, link will be available once released>_
+prerequisites:
+    - Node.js ^12.12.0
 
-Clone the repository to your desktop. 
+Clone the repository to your machine. 
+
+cd into `EmpowerUAfrica` directory, run
+`npm install`
+and
+`npm run client-install`
+to install required packages. 
+
+To run the webapp, use
+`npm run dev`
 
 
 # Contribution
