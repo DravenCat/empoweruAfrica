@@ -66,6 +66,20 @@ const db = {
 
         let actualPasswd = (await connection.execute(sql, data))[0][0].password; 
         return actualPasswd === password; 
+    },
+
+    /*
+        params:
+            - email: String, the email to be searched for
+        returns:
+            - the username of user with email = email, if the user is found
+            - null o\w 
+    */
+    usernameForEmail: async (email) => {
+	    let sql = `SELECT username FROM Login WHERE email = ?`;
+        let data = [email];
+        let username = (await connection.execute(sql, data))[0][0].username;
+        return username;
     }
 
 }; 
