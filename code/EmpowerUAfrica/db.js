@@ -43,7 +43,7 @@ const db = {
         
         Creates a new account eneity in the account table.
     */
-    createNewAccount: (username, email, password, type, firstname, lastname) => {
+    createNewAccount: async (username, email, password, type, firstname, lastname) => {
         let sql = 'INSERT INTO Login(username, email, password, type, first_name, last_name)\
         VALUES(?, ?, ?, ?, ?, ?);'; 
         let data = [username, email, password, type, firstname, lastname]; 
@@ -60,7 +60,7 @@ const db = {
             - true, if the credentials match
             - false o\w
     */
-    signInCredentialsMatch: (idtype, id, password) => {
+    credentialsMatch: async (idtype, id, password) => {
         let sql = `SELECT password FROM Login WHERE ${idtype} = ?`; 
         let data = [id]; 
 
