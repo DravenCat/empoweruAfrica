@@ -29,7 +29,9 @@ let Utils = {
    }, 
 
    hash: (str) => {
-        const sha256 = crypto.createHash()
+        const sha256 = crypto.createHash('sha256');
+        const hash = sha256.update(str).digest('base64');
+        return hash;
    }
 
 
