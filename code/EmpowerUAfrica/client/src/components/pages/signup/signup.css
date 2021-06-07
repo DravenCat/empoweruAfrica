@@ -1,0 +1,18 @@
+.signup-field {
+    background-color: gray;
+    width: 500px;
+    height: 400px;
+    padding: 40px;
+    margin: 50px auto;
+    border: black solid 3px;
+}
+
+.signup-title {
+    font-size: 50px;
+    margin:10px auto;
+}
+
+.form-field {
+    font-size: 20px;
+    padding: 40px;
+}
