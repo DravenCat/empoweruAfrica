@@ -79,7 +79,11 @@ const db = {
 	    let sql = `SELECT username FROM Login WHERE email = ?`;
         let data = [email];
         let username = (await connection.execute(sql, data))[0][0].username;
-        return username;
+        if(username){
+            return username;
+        }else{
+            return null;
+        }
     }
 
 }; 
