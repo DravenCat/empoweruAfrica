@@ -82,4 +82,27 @@ app.post("/api/signup", async (req, res) => {
     
 });
 
+
+app.post("/api/signin", async (req, res) => {
+    let id = req.body.id; 
+    let password = req.body.password; 
+
+    let credentialsValid ; 
+
+    try {
+        credentialsValid = await db.credentialsMatch('email', id, password);
+    }
+    catch (err) {
+        console.warn(err);
+    }
+
+    if (!credentialsValid) {
+        res.status(403).json(
+            {"message": "Email and password does not match. "}
+        );
+        return; 
+    }
+    res.status(200).end();
+})
+
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`)); 
