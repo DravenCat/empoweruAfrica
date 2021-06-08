@@ -1,32 +1,13 @@
 const mysql = require('mysql2/promise'); 
 const fs = require('fs');
 
+const init = require('./db-init'); 
 
-const port = '3306';
-const host = 'localhost';
-const database = 'EmpowerUAfricaDB';
 let connection;
-
-// Read MySQL cridentials
-fs.readFile("./MySQLCredentials.json", async (err, data) => {
-    if (err) {
-        throw err;
-    }
-    let obj = JSON.parse(data); 
-    user = obj.user; 
-    password = obj.password; 
-
-    // Establish connection to MySQL
-    connection = await mysql.createConnection({
-        host, 
-        user,
-        password, 
-        port,
-        database
-    });
-    console.log(`Connected to MySQL ${user}@${host}, database ${database}`);
-});
-
+(async () => {
+    connection = await init();
+    console.log('connected to MySQL server');
+})();
 
 const db = {
 
@@ -76,7 +57,7 @@ const db = {
             - null o\w 
     */
     usernameForEmail: async (email) => {
-	    let sql = `SELECT username FROM Login WHERE email = ?`;
+	    let sql = 'SELECT username FROM Login WHERE email = ?';
         let data = [email];
         let username = (await connection.execute(sql, data))[0][0].username;
         if(username){
