@@ -4,21 +4,28 @@ EmpowerU Africa is designed to teach aspiring entrepreneurs in Africa how to cre
 
    
 # Installation 
-prerequisites:
+__Prerequisites__:
 
- - Node.js ^12.12.0
+- Node.js ^12.12.0
+- MySQL ^8.0.25
 
-Clone the repository to your machine. 
+__Before you run__:
+1. Clone the repository to your machine. 
+2. Install node.js packages
 
-To install required packages, 
-cd into `EmpowerUAfrica` directory, run
+    cd into `EmpowerUAfrica` directory, run `npm run install-all`
 
-`npm install` 
+3. Prepare MySQL database
 
-and 
+    Before you run the webapp, you have to make sure your MySQL server is running, and enter your MySQL credentials into `EmpowerUAfrica/MySQLCredentials.json`, in the following form: 
 
-`npm run client-install`
-
+    ```
+    {
+        "host": "<host name>",
+        "user": "<username>", 
+        "password": "<user password>"
+    }
+    ```
 
 To run the webapp, use
 
