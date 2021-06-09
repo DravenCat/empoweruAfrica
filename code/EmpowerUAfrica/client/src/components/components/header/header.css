@@ -1,5 +1,55 @@
-.header {
-    background-color: black;
-    color:white;
+.navbar {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    background-color: #EED2AA;
+    border-bottom: #D85541 solid 3px;
+}
+
+#home {
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif ;
+    font-size: 40px;
+    text-decoration: none;
+    color: #D85541;
+}
+
+#community, #assignment, #learn, #calendar {
+    text-decoration: none;
+    color: #D85541;
+    transition: 0.5s;
+    padding: 10px;
+}
+
+#community:hover, #assignment:hover, #learn:hover, #calendar:hover {
+    text-decoration: none;
+    color: #7a2e22;
+    box-shadow: 0 0 2px 1px rgba(67, 70, 54, 0.5);
+    border-radius: 30px;
+}
+
+#navbar-notification {
+    text-decoration: none;
+    color: #D85541;
+    transition: 0.5s;
     padding: 20px;
 }
+
+#navbar-chat {
+    text-decoration: none;
+    color: #D85541;
+    transition: 0.5s;
+    padding: 20px;
+}
+
+#navbar-profile {
+    text-decoration: none;
+    color: #D85541;
+    transition: 0.5s;
+    padding: 20px;
+}
+  
+#navbar-notification:hover, #navbar-chat:hover, #navbar-profile:hover {
+    text-decoration: none;
+    color: #7a2e22;
+    box-shadow: 0 0 2px 1px rgba(67, 70, 54, 0.5);
+    border-radius: 30px;
+}
+  

@@ -1,9 +1,9 @@
-.signup-page {
+.signin-page {
     background-color: rgb(252, 252, 252);
     height: 1000px;
 }
 
-.signup-field {
+.signin-field {
     background-color: white;
     width: 500px;
     height: 450px;
@@ -12,45 +12,45 @@
     box-shadow: 0px 1px 10px #888888;
 }
 
-.signup-title {
+.signin-title {
     padding-top: 50px;
     font-size: 50px;
     text-align: center;
 }
 
-.signup-form-field {
+.signin-form-field {
     font-family: Georgia, 'Times New Roman', Times, serif;
     text-align: center;
     font-size: 20px;
     padding-top: 30px;
 }
 
-.signup-navbar {
+.signin-navbar {
     background-color: white;
     box-shadow: 0px 1px 4px #888888;
 }
 
-#signup-home {
-    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+#signin-home {
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif ;
     font-size: 40px;
     text-decoration: none;
     color: black;
 }
 
-.signup-title {
+.signin-title {
     text-align: center;
 }
 
-.direct-signin {
+.direct-signup {
     text-align: center;
 }
 
-.signup-button {
+.signin-button {
     padding-top: 40px;
 }
 
-#signup-button {
-    font-family: Georgia, 'Times New Roman', Times, serif;
+#signin-button {
+    font-family:Georgia, 'Times New Roman', Times, serif;
     -webkit-transition-duration: 0.4s;
     transition-duration: 0.4s;
     background-color: rgb(34, 100, 243);
@@ -60,7 +60,7 @@
     border-radius: 12px;
 }
 
-#signup-button:hover {
+#signin-button:hover {
     background-color: #2689da; 
     color: white;
 }
