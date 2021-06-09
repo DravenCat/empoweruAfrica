@@ -7,7 +7,7 @@ const objHasFields = require('./utils').objHasFields;
 const credentialFilePath = './MySQLCredentials.json';
 
 const port = '3306'; 
-const database = 'EmpowerUAfricaDBDNE'; 
+const database = 'EmpowerUAfricaDB'; 
 const tableStructures = {
     Login: `
     CREATE TABLE Login (

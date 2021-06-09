@@ -59,11 +59,13 @@ const db = {
     usernameForEmail: async (email) => {
 	    let sql = 'SELECT username FROM Login WHERE email = ?';
         let data = [email];
-        let username = (await connection.execute(sql, data))[0][0].username;
-        if(username){
-            return username;
-        }else{
+        let response = await connection.execute(sql, data);
+
+        if (response[0].length === 0) {
             return null;
+        }
+        else {
+            return response[0][0].username; 
         }
     }
 
