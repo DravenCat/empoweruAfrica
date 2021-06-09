@@ -1,5 +1,10 @@
 import React, { Component } from 'react'; 
 import './header.css'
+import chat from '../../../resource/icons/chat.png'
+import bell from '../../../resource/icons/bell.png'
+import profile from '../../../resource/icons/profile.png'
+
+
 
 export default class header extends Component {
   componentDidMount() {
@@ -28,20 +33,20 @@ export default class header extends Component {
                 Calendar
             </a>
 
-            {/* This is temporary, replace with bell icon */}
-            <a id="notifications" href="/notifications">
-                Notifications
+            <a href="/notifications">
+                <img src={bell} height='40px' width='40px'/>
             </a>
 
-            {/* This is temporary, replace with chat icon */}
-            <a id="chat" href="/chat">
-                Chat
+            
+            <a href="/chat">
+                <img src={chat} height='40px' width='40px'/>
+            </a>
+            
+
+            <a href="/profile">
+                <img src={profile} height='40px' width='40px'/>
             </a>
 
-            {/* This is temporary, replace with bell icon */}
-            <a id="profile" href="/profile">
-                Profile
-            </a>
 
         </div>
     )
