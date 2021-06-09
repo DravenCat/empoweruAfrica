@@ -1,6 +1,4 @@
-const util = require('util'); 
 const readFile = require('fs').promises.readFile; 
-const exec = util.promisify(require('child_process').exec); 
 const mysql = require('mysql2/promise'); 
 const objHasFields = require('./utils').objHasFields; 
 

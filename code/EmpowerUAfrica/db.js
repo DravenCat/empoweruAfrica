@@ -1,5 +1,4 @@
 const mysql = require('mysql2/promise'); 
-const fs = require('fs');
 
 const init = require('./db-init'); 
 
@@ -40,12 +39,18 @@ const db = {
         returns:
             - true, if the credentials match
             - false o\w
+            - null, if the username does not exist
     */
     credentialsMatch: async (idtype, id, password) => {
         let sql = `SELECT password FROM Login WHERE ${idtype} = ?`; 
         let data = [id]; 
 
-        let actualPasswd = (await connection.execute(sql, data))[0][0].password; 
+        let response = await connection.execute(sql, data);
+
+        if (response[0].length === 0) {
+            return null;
+        }
+        let actualPasswd = response[0][0].password; 
         return actualPasswd === password; 
     },
 
