@@ -1,5 +1,3 @@
-const mysql = require('mysql2/promise'); 
-
 const init = require('./db-init'); 
 
 let connection;
