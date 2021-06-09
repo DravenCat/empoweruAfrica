@@ -32,6 +32,10 @@ let Utils = {
         const sha256 = crypto.createHash('sha256');
         const hash = sha256.update(str).digest('base64');
         return hash;
+   },
+
+   getToken: () => {
+       return crypto.randomBytes(30).toString('hex');
    }
 
 

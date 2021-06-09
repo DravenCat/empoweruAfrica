@@ -1,13 +1,10 @@
 const express = require('express'); 
-const crypto = require('crypto'); 
 const db = require('./db'); 
 const utils = require('./utils')
 
 const router = express.Router(); 
 
-let tokenToUsrname = {
-
-}
+let tokenToUsrname = {}
 
 router.post('/signup', async (req, res) => {
     
@@ -40,27 +37,42 @@ router.post('/signup', async (req, res) => {
         }
     }
 
-    let token = crypto.randomBytes(30).toString('hex');
+    let token = utils.getToken();
     res.cookie('token', token, 
     {
         httpOnly: true
     });
-    res.status(200).end();
     tokenToUsrname[token] = username;
-    
+    res.status(200).end();
 });
 
 router.post('/signin', async (req, res) => {
     let id = req.body.id; 
     let password = utils.hash( req.body.password ); 
 
-    let credentialsValid ; 
+    let idtype; 
+    if (id.indexOf('@') !== -1) {
+        // id is an email
+        idtype = 'email'; 
+    }
+    else {
+        idtype = 'username';
+    }
 
+    let credentialsValid ; 
     try {
-        credentialsValid = await db.credentialsMatch('email', id, password);
+        credentialsValid = await db.credentialsMatch(idtype, id, password);
+        if (credentialsValid === null) {
+            res.status(404).json({
+                "message": "Username or email not found."
+            });
+            return; 
+        }
     }
     catch (err) {
         console.warn(err);
+        res.status(500).end();
+        return; 
     }
 
     if (!credentialsValid) {
@@ -70,11 +82,16 @@ router.post('/signin', async (req, res) => {
         return; 
     }
 
-    res.cookie('token', crypto.randomBytes(30).toString('hex'), 
+    let username = idtype === 'email' ? await db.usernameForEmail(id): id; 
+
+    let token = utils.getToken();
+    res.cookie('token', token, 
     {
         httpOnly: true
     })
+    tokenToUsrname[token] = username; 
     res.status(200).end();
+    console.log(tokenToUsrname);
     
 });
 
