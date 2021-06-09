@@ -62,7 +62,17 @@ export default class header extends Component {
 
                 <div className="navbar-profile">
                     <a id ="navbar-profile" href="/signup">
-                        <img src={profile} alt="profile" height='40px' width='40px'/>
+                        <div class="profile-dropdown">
+                            <img src={profile} alt="profile" height='40px' width='40px' className="dropbtn"/>
+                            <div class="profile-dropdown-content">
+                                <a href="/profile" id="account-profile">Profile</a>
+                                <a href="/chat" id="account-chat">Chat</a>
+                                <a href="/notification" id="account-notification">Notification</a>
+                                <a href="/viewallmyposts" id="account-viewallmyposts">View All My Posts</a>
+                                <a href="/setting" id="account-setting">Setting</a>
+                                <a href="/logout" id="account-logout">Logout</a>
+                            </div>
+                        </div>
                     </a>
                 </div>
             </nav>
