@@ -61,9 +61,11 @@ export default class signin extends Component {
                 </div>
         
                 <div className="signup-button">
+                    <a href="/sutype">
                     <button id="signup-button">
                         Create Account
                     </button>
+                    </a>
                 </div>
             </div>
         </div>

@@ -5,6 +5,8 @@ import Footer from './components/components/footer/footer';
 import Header from './components/components/header/header'; 
 import Signup from './components/pages/signup/signup';
 import Signin from './components/pages/signin/signin'; 
+import Sutype from './components/pages/signup/sutype'; 
+
 
 
 export default function App() {
@@ -23,6 +25,10 @@ export default function App() {
 
         <Route exact path="/signin">
           <Signin />
+        </Route>
+
+        <Route exact path="/sutype">
+          <Sutype />
         </Route>
         
       </Switch>
