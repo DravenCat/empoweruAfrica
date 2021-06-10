@@ -21,10 +21,10 @@ const db = {
         
         Creates a new account eneity in the account table.
     */
-    createNewAccount: async (username, email, password, type, firstname, lastname) => {
-        let sql = 'INSERT INTO Login(username, email, password, type, first_name, last_name)\
-        VALUES(?, ?, ?, ?, ?, ?);'; 
-        let data = [username, email, password, type, firstname, lastname]; 
+    createNewAccount: async (username, email, password, type) => {
+        let sql = 'INSERT INTO Login(username, email, password, type)\
+        VALUES(?, ?, ?, ?);'; 
+        let data = [username, email, password, type]; 
         await connection.execute(sql, data); 
     }, 
 

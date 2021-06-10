@@ -11,36 +11,28 @@ router.post('/signup', async (req, res) => {
     let username = req.body.username; 
     let email = req.body.email; 
     let password = utils.hash( req.body.password );
-    let type = req.body.type;
-    let firstname = req.body.firstname; 
-    let lastname = req.body.lastname;
-    
+    let type = req.body.type; 
+
     if (type !== 0 && type !== 1 && type !== 2) {
         res.status(400).json({
-            "message": "Type should be a integer in the range [0, 2]"
-        });
-        return; 
-    }
-
-    if (lastname === undefined) {
-        lastname = null; 
+            "message": "type should be an integer in the range [0, 2]"
+        }); 
+        return;
     }
 
     try {
         await db.createNewAccount(
             username,
             email,
-            password, 
-            type,
-            firstname, 
-            lastname
+            password
         ); 
     }
     catch (err) {
         if (err.code === 'ER_DUP_ENTRY') {
             res.status(409).json({
                 "message": "Duplicated email or username"
-            })
+            });
+            return;
         }
     }
 

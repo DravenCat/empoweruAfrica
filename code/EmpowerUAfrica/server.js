@@ -17,7 +17,7 @@ const app = Express();
     which fields are expected. 
 */
 const expectedFields = {
-    '/api/account/signup': ['username', 'email', 'password', 'type', 'firstname'], 
+    '/api/account/signup': ['username', 'email', 'password', 'type'], 
     "/api/account/signin": ['id', 'password']
 };
 
