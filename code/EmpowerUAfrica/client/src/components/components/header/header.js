@@ -4,51 +4,84 @@ import chat from '../../../resource/icons/chat.png'
 import bell from '../../../resource/icons/bell.png'
 import profile from '../../../resource/icons/profile.png'
 
-
-
 export default class header extends Component {
-  componentDidMount() {
-    document.title = "EmpowerU Africa";
-  }
-  render() {
-    return(
-        <div>
-            <a id="home" href="/">
-                EmpowerU Africa
-            </a>
 
-            <a id="community" href="/community">
-                Community
-            </a>
+    componentDidMount() {
+        document.title = "EmpowerU Africa";
+    }
 
-            <a id="assignment" href="/assignment">
-                Assignment
-            </a>
+    render() {
+        return(
+            <nav className="navbar">
 
-            <a id="learn" href="/learn">
-                Start to Learn
-            </a>
+                <div className="navbar-brand">
+                    <a id="home" href="/">
+                        EmpowerU Africa
+                    </a>
+                </div>
 
-            <a id="calendar" href="/calendar">
-                Calendar
-            </a>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-            <a href="/notifications">
-                <img src={bell} height='40px' width='40px'/>
-            </a>
+                <div className="navbar-community">
+                    <a id="community" href="/community">
+                        Community
+                    </a>
+                </div>
 
-            
-            <a href="/chat">
-                <img src={chat} height='40px' width='40px'/>
-            </a>
-            
+                <div className="navbar-assignment">
+                    <a id="assignment" href="/assignment">
+                        Assignment
+                    </a>
+                </div>
 
-            <a href="/profile">
-                <img src={profile} height='40px' width='40px'/>
-            </a>
+                <div className="navbar-learn">
+                    <a id="learn" href="/learn">
+                        Start to Learn
+                    </a>
+                </div>
+                
+                <div className="navbar-calendar">
+                    <a id="calendar" href="/calendar">
+                        Calendar
+                    </a>
+                </div>
+
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                <div className="navbar-notifications">
+                    <a id="navbar-notification" href="/notifications">
+                        <img src={bell} alt="bell" height='40px' width='40px'/>
+                    </a>
+                </div>
+        
+                <div className="navbar-chat">
+                    <a id = "navbar-chat" href="/chat">
+                        <img src={chat} alt="chat" height='40px' width='40px'/>
+                    </a>
+                </div>
+
+                <div className="navbar-profile">
+                    <a id ="navbar-profile" href="/signup">
+                        <div class="profile-dropdown">
+                            <img src={profile} alt="profile" height='40px' width='40px' className="dropbtn"/>
+                            <div class="profile-dropdown-content">
+                                <a href="/profile" id="account-profile">Profile</a>
+                                <a href="/chat" id="account-chat">Chat</a>
+                                <a href="/notification" id="account-notification">Notification</a>
+                                <a href="/viewallmyposts" id="account-viewallmyposts">View All My Posts</a>
+                                <a href="/setting" id="account-setting">Setting</a>
+                                <a href="/logout" id="account-logout">Logout</a>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </nav>
+        )
+    }
+} 
 
 
-        </div>
-    )
-  }
-}
+
+
+
+

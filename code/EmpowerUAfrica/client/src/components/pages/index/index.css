@@ -11,3 +11,22 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+
+#main-image {
+  width: 100%;
+  height: 500px;
+  
+}
+
+#main-text {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 100px;
+  color:white;
+  position: relative;
+  width: 100%;
+  top: -130px;
+  text-align: center;
+}
+
