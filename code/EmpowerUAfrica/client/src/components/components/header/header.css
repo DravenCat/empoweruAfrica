@@ -4,6 +4,19 @@
     border-bottom: #D85541 solid 3px;
 }
 
+.navbar-brand {
+    padding-right: 160px;
+}
+
+.navbar-community {
+    padding-left: 160px;
+}
+
+.navbar-calendar {
+    padding-right: 160px;
+}
+
+
 #home {
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif ;
     font-size: 40px;

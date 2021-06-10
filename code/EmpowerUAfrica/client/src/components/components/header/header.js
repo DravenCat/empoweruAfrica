@@ -12,55 +12,53 @@ export default class header extends Component {
 
     render() {
         return(
-            <nav className="navbar">
+            <div className="navbar">
 
-                <div className="navbar-brand">
+
+                <span className="navbar-brand">
                     <a id="home" href="/">
                         EmpowerU Africa
                     </a>
-                </div>
+                </span>
 
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-                <div className="navbar-community">
+                <span className="navbar-community">
                     <a id="community" href="/community">
                         Community
                     </a>
-                </div>
+                </span>
 
-                <div className="navbar-assignment">
+                <span className="navbar-assignment">
                     <a id="assignment" href="/assignment">
                         Assignment
                     </a>
-                </div>
+                </span>
 
-                <div className="navbar-learn">
+                <span className="navbar-learn">
                     <a id="learn" href="/learn">
                         Start to Learn
                     </a>
-                </div>
+                </span>
                 
-                <div className="navbar-calendar">
+                <span className="navbar-calendar">
                     <a id="calendar" href="/calendar">
                         Calendar
                     </a>
-                </div>
+                </span>
 
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-                <div className="navbar-notifications">
+                <span className="navbar-notifications">
                     <a id="navbar-notification" href="/notifications">
                         <img src={bell} alt="bell" height='40px' width='40px'/>
                     </a>
-                </div>
+                </span>
         
-                <div className="navbar-chat">
+                <span className="navbar-chat">
                     <a id = "navbar-chat" href="/chat">
                         <img src={chat} alt="chat" height='40px' width='40px'/>
                     </a>
-                </div>
+                </span>
 
-                <div className="navbar-profile">
+                <span className="navbar-profile">
                     <a id ="navbar-profile" href="/signup">
                         <div class="profile-dropdown">
                             <img src={profile} alt="profile" height='40px' width='40px' className="dropbtn"/>
@@ -74,8 +72,8 @@ export default class header extends Component {
                             </div>
                         </div>
                     </a>
-                </div>
-            </nav>
+                </span>
+            </div>
         )
     }
 } 
