@@ -67,7 +67,7 @@ export default class header extends Component {
                                 <a href="/chat" id="account-chat">Chat</a>
                                 <a href="/notification" id="account-notification">Notification</a>
                                 <a href="/viewallmyposts" id="account-viewallmyposts">View All My Posts</a>
-                                <a href="/setting" id="account-setting">Setting</a>
+                                <a href="/setting_password" id="account-setting">Setting</a>
                                 <a href="/logout" id="account-logout">Logout</a>
                             </div>
                         </div>
