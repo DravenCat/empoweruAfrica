@@ -4,6 +4,7 @@ import './signin.css';
 
 
 export default class signin extends Component {
+
   render() {
     return(
         <div className="signin-page">
@@ -28,19 +29,21 @@ export default class signin extends Component {
                     </a>
                 </div>
                 <div className="signin-form-field">
+
+                <div>
                     <div>
-                        <div>
-                            Username/Email
-                        </div>
-                            <input type="text" id="signin-username-input"/>
-                        </div>
-                    <div>
-                        <div>
-                            Password
-                        </div>
-                            <input type="text" id="signin-password-input"/>
-                        </div>
+                        Username/Email
                     </div>
+                        <input type="text" id="signup-username-input"/>
+                </div>
+                <div>
+                    <div>
+                        Password
+                    </div>
+                        <input type="text" id="signup-password-input"/>
+                    </div>
+                </div>
+                    
                 <div className="signin-button">
                     <button id="signin-button">
                         Login

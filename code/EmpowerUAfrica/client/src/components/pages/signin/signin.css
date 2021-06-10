@@ -50,7 +50,7 @@
 }
 
 #signin-button {
-    font-family:Georgia, 'Times New Roman', Times, serif;
+    font-family: Georgia, 'Times New Roman', Times, serif;
     -webkit-transition-duration: 0.4s;
     transition-duration: 0.4s;
     background-color: rgb(34, 100, 243);

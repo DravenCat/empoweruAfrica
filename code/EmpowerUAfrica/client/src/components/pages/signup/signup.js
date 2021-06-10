@@ -30,17 +30,36 @@ export default class signin extends Component {
                 <div className="signup-form-field">
                     <div>
                         <div>
-                            Username/Email
+                            Username
                         </div>
-                            <input type="text" id="signup-username-input"/>
+                            <input type="text" id="signin-username-input"/>
+                    </div>
+                    <div>
+                        <div>
+                            Email
                         </div>
+                            <input type="text" id="signin-email-input"/>
+                    </div>
+                    <div>
+                        <div>
+                            Confirm Email
+                        </div>
+                            <input type="text" id="signin-cemail-input"/>
+                    </div>
                     <div>
                         <div>
                             Password
                         </div>
-                            <input type="text" id="signup-password-input"/>
-                        </div>
+                            <input type="password" id="signin-password-input"/>
                     </div>
+                    <div>
+                        <div>
+                            Confirm password
+                        </div>
+                            <input type="password" id="signin-cpassword-input"/>
+                    </div>
+                </div>
+        
                 <div className="signup-button">
                     <button id="signup-button">
                         Create Account
