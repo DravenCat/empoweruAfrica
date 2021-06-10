@@ -59,10 +59,10 @@ export default class header extends Component {
                 </span>
 
                 <span className="navbar-profile">
-                    <a id ="navbar-profile" href="/signup">
-                        <div class="profile-dropdown">
+                    <div id ="navbar-profile" href="/signup">
+                        <div className="profile-dropdown">
                             <img src={profile} alt="profile" height='40px' width='40px' className="dropbtn"/>
-                            <div class="profile-dropdown-content">
+                            <div className="profile-dropdown-content">
                                 <a href="/profile" id="account-profile">Profile</a>
                                 <a href="/chat" id="account-chat">Chat</a>
                                 <a href="/notification" id="account-notification">Notification</a>
@@ -71,7 +71,7 @@ export default class header extends Component {
                                 <a href="/logout" id="account-logout">Logout</a>
                             </div>
                         </div>
-                    </a>
+                    </div>
                 </span>
             </div>
         )
