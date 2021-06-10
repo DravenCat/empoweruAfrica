@@ -1,5 +1,6 @@
 const init = require('./db-init'); 
 
+
 let connection;
 (async () => {
     connection = await init();
@@ -42,7 +43,6 @@ const db = {
     credentialsMatch: async (idtype, id, password) => {
         let sql = `SELECT password FROM Login WHERE ${idtype} = ?`; 
         let data = [id]; 
-
         let response = await connection.execute(sql, data);
 
         if (response[0].length === 0) {

@@ -2,3 +2,4 @@
 .DS_Store
 node_modules/
 code/EmpowerUAfrica/MySQLCredentials.json
+code/EmpowerUAfrica/package-lock.json
