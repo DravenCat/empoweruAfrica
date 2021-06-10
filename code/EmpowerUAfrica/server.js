@@ -47,4 +47,4 @@ app.get("/", (req, res) => {
 
 app.use('/api/account', accountRouter); 
 
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`)); 
+app.listen(PORT, () => console.log(`[server]: Server started on port ${PORT}`)); 
