@@ -17,7 +17,7 @@ __Before you run__:
 
 3. Prepare MySQL database
 
-    Before you run the webapp, you have to make sure your MySQL server is running, and enter your MySQL credentials into `EmpowerUAfrica/MySQLCredentials.json`, in the following form: 
+    Before you run the webapp, you have to make sure your MySQL server is running, and enter your MySQL credentials into `EmpowerUAfrica/db/credentials`, in the following form: 
 
     ```
     {

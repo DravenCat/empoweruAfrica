@@ -1,22 +1,12 @@
-const readFile = require('fs').promises.readFile; 
+const fs = require('fs').promises; 
 const mysql = require('mysql2/promise'); 
 const objHasFields = require('./utils').objHasFields; 
 
-const credentialFilePath = './MySQLCredentials.json';
+const credentialFilePath = './db/credentials.json';
+const tableStructDir = './db/';
 
 const port = '3306'; 
 const database = 'EmpowerUAfricaDB'; 
-const tableStructures = {
-    Login: `
-    CREATE TABLE Login (
-        username    VARCHAR(31) NOT NULL UNIQUE,
-        password    TEXT NOT NULL,
-        email    VARCHAR(255) NOT NULL UNIQUE,
-        PRIMARY KEY(username)
-    )
-    `
-}
-
 
 const getConnectionInfo = async () => {
 
@@ -31,12 +21,12 @@ const getConnectionInfo = async () => {
     // Read MySQLCredentials.json
     let fileContent; 
     try {
-        fileContent = await readFile(credentialFilePath);
+        fileContent = await fs.readFile(credentialFilePath);
     }
     catch (err) {
         // File does not exist.
         if (err.code === 'ENOENT') {
-            console.error(`${credentialFilePath} not found. Please create it as said in README.md. `);
+            console.error(`[db-init]: ${credentialFilePath} not found. Please create it as said in README.md. `);
             process.exit();
         }
     }
@@ -49,13 +39,13 @@ const getConnectionInfo = async () => {
     catch (err) {
         // File content cannot be parsed by JSON
         if (err instanceof SyntaxError) {
-            console.error(`${credentialFilePath} is not in correct JSON form. Please edit it as said in README.md`);
+            console.error(`[db-init]: ${credentialFilePath} is not in correct JSON form. Please edit it as said in README.md`);
             process.exit();
         }
     }
 
     if (!objHasFields(credentialObj, ['host', 'user', 'password'])) {
-        console.error(`${credentialFilePath} does not contain required infoemation. Please fill it in as said in README.md`); 
+        console.error(`[db-init]: ${credentialFilePath} does not contain required infoemation. Please fill it in as said in README.md`); 
         process.exit();
     }
 
@@ -71,7 +61,7 @@ const getConnection = async (connectionInfo) => {
     catch (err) {
         // MySQL server unavalible
         if (err.code === 'ECONNREFUSED') {
-            console.error(`Failed to connect to MySQL database. Please make sure you have installed MySQL and your MySQL server is running properly. `); 
+            console.error(`[db-init]: Failed to connect to MySQL database. Please make sure you have installed MySQL and your MySQL server is running properly. `); 
             process.exit(); 
         }
         // No database named ${database}
@@ -79,7 +69,7 @@ const getConnection = async (connectionInfo) => {
             connection = createDatabase(connectionInfo, database);
         }
         else {
-            throw error;
+            throw err;
         }
     }
     return connection; 
@@ -91,13 +81,13 @@ const createDatabase = async (connectionInfo, newDatabase ) => {
     delete connectionInfo.database; 
 
     // Create new database
-    console.log(`Creating database ${newDatabase}`);
+    console.log(`[db-init]: Creating database ${newDatabase}`);
     let connection = await mysql.createConnection(connectionInfo); 
     await connection.execute(`CREATE DATABASE ${newDatabase}`); 
 
     // Switch to new database
     await connection.changeUser({database: newDatabase}); 
-    console.log(`Switched to database ${newDatabase}`); 
+    console.log(`[db-init]: Switched to database ${newDatabase}`); 
 
     return connection; 
 }
@@ -105,11 +95,24 @@ const createDatabase = async (connectionInfo, newDatabase ) => {
 const checkTables = async (connection) => {
     let result = await connection.execute(`SHOW TABLES FROM ${database}`); 
     let tables = result[0].map((row) => {return Object.values(row)[0]});
-    
-    for (table in tableStructures) {
-        if (tables.indexOf(table) === -1) {
-            console.log(`Creating Table ${table}`);
-            await connection.execute(tableStructures[table]);
+
+    // Search for all .sql files under tableStructDir
+    let allFiles = await fs.readdir(tableStructDir);
+    let tableStructs = {}; 
+    for (let file of allFiles) {
+        let len = file.length; 
+        if (len > 4 && file.slice(len - 4, len) === '.sql') {
+            tableStructs[file.slice(0, len - 4)] = null;
+        }
+    }
+
+    // Traverse through all .sql files, if the table does not exist, create it.
+    for (let tableName in tableStructs) {
+        // If the table is not present
+        if (tables.indexOf(tableName) === -1) {
+            let tableStruct = await fs.readFile(tableStructDir + tableName + '.sql');
+            await connection.execute(tableStruct.toString()); 
+            console.log(`[db-init]: Table ${tableName} created. `);
         }
     }
 }

@@ -4,7 +4,7 @@ const init = require('./db-init');
 let connection;
 (async () => {
     connection = await init();
-    console.log('connected to MySQL server');
+    console.log('[db]: connected to MySQL server');
 })();
 
 const db = {
@@ -23,7 +23,7 @@ const db = {
         Creates a new account eneity in the account table.
     */
     createNewAccount: async (username, email, password, type) => {
-        let sql = 'INSERT INTO Login(username, email, password, type)\
+        let sql = 'INSERT INTO Accounts(username, email, password, type)\
         VALUES(?, ?, ?, ?);'; 
         let data = [username, email, password, type]; 
         await connection.execute(sql, data); 
@@ -41,7 +41,7 @@ const db = {
             - null, if the username does not exist
     */
     credentialsMatch: async (idtype, id, password) => {
-        let sql = `SELECT password FROM Login WHERE ${idtype} = ?`; 
+        let sql = `SELECT password FROM Accounts WHERE ${idtype} = ?`; 
         let data = [id]; 
         let response = await connection.execute(sql, data);
 
@@ -60,7 +60,7 @@ const db = {
             - null o\w 
     */
     usernameForEmail: async (email) => {
-	    let sql = 'SELECT username FROM Login WHERE email = ?';
+	    let sql = 'SELECT username FROM Accounts WHERE email = ?';
         let data = [email];
         let response = await connection.execute(sql, data);
 
