@@ -12,8 +12,6 @@ const tableStructures = {
         username    VARCHAR(31) NOT NULL UNIQUE,
         password    TEXT NOT NULL,
         email    VARCHAR(255) NOT NULL UNIQUE,
-        first_name    TEXT NOT NULL,
-        last_name    TEXT,
         type    INTEGER NOT NULL,
         PRIMARY KEY(username)
     )
