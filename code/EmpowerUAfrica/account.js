@@ -15,6 +15,13 @@ router.post('/signup', async (req, res) => {
     let firstname = req.body.firstname; 
     let lastname = req.body.lastname;
     
+    if (type !== 0 && type !== 1 && type !== 2) {
+        res.status(400).json({
+            "message": "Type should be a integer in the range [0, 2]"
+        });
+        return; 
+    }
+
     if (lastname === undefined) {
         lastname = null; 
     }
