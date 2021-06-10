@@ -1,32 +1,11 @@
-const mysql = require('mysql2/promise'); 
-const fs = require('fs');
+const init = require('./db-init'); 
 
 
-const port = '3306';
-const host = 'localhost';
-const database = 'EmpowerUAfricaDB';
 let connection;
-
-// Read MySQL cridentials
-fs.readFile("./MySQLCredentials.json", async (err, data) => {
-    if (err) {
-        throw err;
-    }
-    let obj = JSON.parse(data); 
-    user = obj.user; 
-    password = obj.password; 
-
-    // Establish connection to MySQL
-    connection = await mysql.createConnection({
-        host, 
-        user,
-        password, 
-        port,
-        database
-    });
-    console.log(`Connected to MySQL ${user}@${host}, database ${database}`);
-});
-
+(async () => {
+    connection = await init();
+    console.log('connected to MySQL server');
+})();
 
 const db = {
 
@@ -43,10 +22,10 @@ const db = {
         
         Creates a new account eneity in the account table.
     */
-    createNewAccount: async (username, email, password, type, firstname, lastname) => {
-        let sql = 'INSERT INTO Login(username, email, password, type, first_name, last_name)\
-        VALUES(?, ?, ?, ?, ?, ?);'; 
-        let data = [username, email, password, type, firstname, lastname]; 
+    createNewAccount: async (username, email, password, type) => {
+        let sql = 'INSERT INTO Login(username, email, password, type)\
+        VALUES(?, ?, ?, ?);'; 
+        let data = [username, email, password, type]; 
         await connection.execute(sql, data); 
     }, 
 
@@ -59,13 +38,38 @@ const db = {
         returns:
             - true, if the credentials match
             - false o\w
+            - null, if the username does not exist
     */
     credentialsMatch: async (idtype, id, password) => {
         let sql = `SELECT password FROM Login WHERE ${idtype} = ?`; 
         let data = [id]; 
+        let response = await connection.execute(sql, data);
 
-        let actualPasswd = (await connection.execute(sql, data))[0][0].password; 
+        if (response[0].length === 0) {
+            return null;
+        }
+        let actualPasswd = response[0][0].password; 
         return actualPasswd === password; 
+    },
+
+    /*
+        params:
+            - email: String, the email to be searched for
+        returns:
+            - the username of user with email = email, if the user is found
+            - null o\w 
+    */
+    usernameForEmail: async (email) => {
+	    let sql = 'SELECT username FROM Login WHERE email = ?';
+        let data = [email];
+        let response = await connection.execute(sql, data);
+
+        if (response[0].length === 0) {
+            return null;
+        }
+        else {
+            return response[0][0].username; 
+        }
     }
 
 }; 
