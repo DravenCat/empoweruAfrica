@@ -6,15 +6,15 @@ import Header from './components/components/header/header';
 import Signup from './components/pages/signup/signup';
 import Signin from './components/pages/signin/signin'; 
 
+
 export default function App() {
   return (
     <Router>
+      <Header />
       <Switch>
 
         <Route exact path="/">
-          <Header />
           <Index />
-          <Footer />
         </Route>
 
         <Route exact path="/signup">
@@ -26,6 +26,7 @@ export default function App() {
         </Route>
         
       </Switch>
+      <Footer />
     </Router>
     
   );

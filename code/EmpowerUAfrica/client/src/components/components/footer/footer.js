@@ -1,6 +1,7 @@
 import React from 'react';
 import './footer.css'
 
+
 const Footer = (props) => {
 
     return (
@@ -11,6 +12,7 @@ const Footer = (props) => {
                     EmpowerU Africa
                 </a>
             </div>
+
         </div>
 
     );
