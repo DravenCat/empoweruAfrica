@@ -29,18 +29,18 @@ export default class signin extends Component {
                     </a>
                 </div>
                 <div className="signin-form-field">
-
                 <div>
                     <div>
                         Username/Email
                     </div>
-                        <input type="text" id="signup-username-input"/>
+                        <input type="text" id="signin-username-input"/>
                 </div>
+                <br/>
                 <div>
                     <div>
                         Password
                     </div>
-                        <input type="text" id="signup-password-input"/>
+                        <input type="password" id="signin-password-input"/>
                     </div>
                 </div>
                     
