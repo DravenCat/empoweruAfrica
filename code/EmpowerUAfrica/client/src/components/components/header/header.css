@@ -2,20 +2,49 @@
     font-family: Georgia, 'Times New Roman', Times, serif;
     background-color: #EED2AA;
     border-bottom: #D85541 solid 3px;
+    height: 70px;
 }
 
 .navbar-brand {
-    padding-right: 160px;
+    padding-right: 220px;
+    position: relative;
+    top: 15px;
+    left: 10px;
 }
 
 .navbar-community {
-    padding-left: 160px;
+    padding-left: 10px;
+    padding-right: 20px;
+    position: relative;
+    top: 5px;
 }
 
 .navbar-calendar {
-    padding-right: 160px;
+    padding-right: 240px;
+    padding-left: 20px;
+    position: relative;
+    top: 5px;
 }
 
+.navbar-assignment, .navbar-learn {
+    padding-left: 20px;
+    padding-right: 20px;
+    position: relative;
+    top: 5px;
+}
+
+.navbar-notification, .navbar-chat, .navbar-profile {
+
+    text-decoration: none;
+    color: #D85541;
+    transition: 0.5s;
+    padding: 20px;
+}
+
+#navbar-notification, #navbar-chat, #navbar-profile {
+    position: relative;
+    top: 15px;
+}
 
 #home {
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif ;
@@ -42,28 +71,8 @@
     padding-bottom: 20px;
 }
 
-#navbar-notification {
-    text-decoration: none;
-    color: #D85541;
-    transition: 0.5s;
-    padding: 20px;
-}
-
-#navbar-chat {
-    text-decoration: none;
-    color: #D85541;
-    transition: 0.5s;
-    padding: 20px;
-}
-
-#navbar-profile {
-    text-decoration: none;
-    color: #D85541;
-    transition: 0.5s;
-    padding: 20px;
-}
   
-#navbar-notification:hover, #navbar-chat:hover, #navbar-profile:hover {
+.navbar-notification:hover, .navbar-chat:hover, .navbar-profile:hover {
     text-decoration: none;
     color: #7a2e22;
     box-shadow: 0 0 2px 1px rgba(67, 70, 54, 0.5);

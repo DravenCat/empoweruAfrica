@@ -46,7 +46,7 @@ export default class header extends Component {
                     </a>
                 </span>
 
-                <span className="navbar-notifications">
+                <span className="navbar-notification">
                     <a id="navbar-notification" href="/notifications">
                         <img src={bell} alt="bell" height='40px' width='40px'/>
                     </a>
