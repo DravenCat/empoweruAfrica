@@ -26,6 +26,9 @@ app.use(Express.json());
 
 // checks whether the expected fields are present in the request body
 app.use((req, res, next) => {
+    console.log(`[server]: Request recieved. `);
+    console.log(req.body);
+    console.log(req.headers.cookie);
     // If the required field is not specified
     if (!(req.path in expectedFields)) {
         next();
