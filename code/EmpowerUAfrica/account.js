@@ -70,7 +70,9 @@ router.post('/signin', async (req, res) => {
     }
     catch (err) {
         console.warn(err);
-        res.status(500).end();
+        res.status(500).end({
+            "message": "Unknown Error"
+        });
         return; 
     }
 
@@ -89,7 +91,10 @@ router.post('/signin', async (req, res) => {
         httpOnly: true
     })
     tokenToUsrname[token] = username; 
-    res.status(200).end();
+    res.status(200).json({
+        "message": "Sign in success.", 
+        "username": username
+    });
     console.log(tokenToUsrname);
     
 });

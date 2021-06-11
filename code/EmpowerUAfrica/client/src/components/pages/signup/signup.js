@@ -131,8 +131,6 @@ export default class signin extends Component {
                 window.location.replace('/');
                 return; 
             }
-            console.log(res);
-            console.log(res.json());
         })
     }
 
