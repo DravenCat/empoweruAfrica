@@ -7,11 +7,11 @@ const router = express.Router();
 let tokenToUsrname = {}
 
 router.post('/signup', async (req, res) => {
-    
+    console.log('[account]: signup request recieved. ');
     let username = req.body.username; 
     let email = req.body.email; 
     let password = utils.hash( req.body.password );
-    let type = req.body.type; 
+    let type = parseInt( req.body.type ); 
 
     if (type !== 0 && type !== 1 && type !== 2) {
         res.status(400).json({
@@ -24,7 +24,8 @@ router.post('/signup', async (req, res) => {
         await db.createNewAccount(
             username,
             email,
-            password
+            password, 
+            type
         ); 
     }
     catch (err) {
@@ -37,12 +38,11 @@ router.post('/signup', async (req, res) => {
     }
 
     let token = utils.getToken();
+    tokenToUsrname[token] = username;
     res.cookie('token', token, 
     {
         httpOnly: true
-    });
-    tokenToUsrname[token] = username;
-    res.status(200).end();
+    }).status(200).end();
 });
 
 router.post('/signin', async (req, res) => {

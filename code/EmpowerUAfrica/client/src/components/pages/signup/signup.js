@@ -1,9 +1,26 @@
 import React, { Component } from 'react'; 
+import { Redirect } from 'react-router-dom';
 import './signup.css';
 
 
 
 export default class signin extends Component {
+
+    // Consts
+    emailMinLen = 0; // But it has to pass the RE validation
+    emailMaxLen = 255; 
+    passwordMinLen = 6; 
+    passwordMaxLen = 255;
+    userNameMinLen = 3; 
+    userNameMaxLen = 31;
+    emailValidationRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    signupURL = '/account/signup';
+
+    // State
+    state = {
+        accountType: 0
+    }
+
 
     entrepreneurClick = ()=> {
         document.getElementById("entrepreneur").style.background="rgb(34, 100, 243)";
@@ -12,6 +29,7 @@ export default class signin extends Component {
         document.getElementById("company").style.color="black";
         document.getElementById("investor").style.background="white";
         document.getElementById("investor").style.color="black";
+        this.setState({accountType: 0}); 
     }
 
     companyClick = ()=> {
@@ -21,6 +39,7 @@ export default class signin extends Component {
         document.getElementById("entrepreneur").style.color="black";
         document.getElementById("investor").style.background="white";
         document.getElementById("investor").style.color="black";
+        this.setState({accountType: 1}); 
     }
 
     investorClick = ()=> {
@@ -118,16 +137,15 @@ export default class signin extends Component {
     }
 
     render() {
+        if (this.state.redirect !== undefined) {
+            
+            return (
+                <Redirect to={this.state.redirect}/>
+            )
+        }
         return(
             <div className="signup-page">
-                <nav className="signup-navbar">
-                    <div className="signup-navbar-brand">
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        <a id="signup-home" href="/">
-                            EmpowerU Africa
-                        </a>
-                    </div>
-                </nav>
+
                 <div className="signup-field">
                     <h2 className="signup-title">
                         Sign up as
@@ -149,40 +167,62 @@ export default class signin extends Component {
                             <div>
                                 Username
                             </div>
-                                <input type="text" id="signup-username-input"/>
+                                <input 
+                                type="text" 
+                                id="signup-username-input" 
+                                maxLength={this.userNameMaxLen}
+                                />
                         </div>
                         <br/>
                         <div>
                             <div>
                                 Email
                             </div>
-                                <input type="text" id="signup-email-input"/>
+                                <input 
+                                type="email" 
+                                id="signup-email-input" 
+                                maxLength={this.emailMaxLen}
+                                pattern={this.emailValidationRegex}
+                                />
                         </div>
                         <br/>
                         <div>
                             <div>
                                 Confirm Email
                             </div>
-                                <input type="text" id="signup-cemail-input"/>
+                                <input 
+                                type="email" 
+                                id="signup-cemail-input" 
+                                maxLength={this.emailMaxLen}
+                                pattern={this.emailValidationRegex}
+                                />
                         </div>
                         <br/>
                         <div>
                             <div>
                                 Password
                             </div>
-                                <input type="password" id="signup-password-input"/>
+                                <input 
+                                type="password" 
+                                id="signup-password-input" 
+                                maxLength={this.passwordMaxLen}
+                                />
                         </div>
                         <br/>
                         <div>
                             <div>
                                 Confirm password
                             </div>
-                                <input type="password" id="signup-cpassword-input"/>
+                                <input 
+                                type="password" 
+                                id="signup-cpassword-input" 
+                                maxLength={this.passwordMaxLen}
+                                />
                         </div>
                     </div>
             
                     <div className="signup-button">
-                        <button id="signup-button">
+                        <button id="signup-button" onClick={this.sendSignupRequest}>
                             Create Account
                         </button>
                     </div>
