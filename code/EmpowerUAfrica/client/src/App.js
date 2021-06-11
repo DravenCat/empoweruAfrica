@@ -5,8 +5,8 @@ import Footer from './components/components/footer/footer';
 import Header from './components/components/header/header'; 
 import Signup from './components/pages/signup/signup';
 import Signin from './components/pages/signin/signin'; 
-import Setting_password from './components/pages/setting/setting_password'; 
-import Setting_email from './components/pages/setting/setting_email'; 
+import SetPassword from './components/pages/setting/setting_password'; 
+import SetEmail from './components/pages/setting/setting_email'; 
 
 
 export default function App() {
@@ -28,11 +28,11 @@ export default function App() {
         </Route>
 
         <Route exact path="/setting_password">
-          <Setting_password />
+          <SetPassword />
         </Route>
 
         <Route exact path="/setting_email">
-          <Setting_email />
+          <SetEmail/>
         </Route>
         
       </Switch>

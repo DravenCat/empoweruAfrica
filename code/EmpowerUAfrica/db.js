@@ -82,7 +82,7 @@ const db = {
     */
    updateCredentials: async (type, username, newCredential) => {
         let sql = `UPDATE Accounts SET ${type} = ? WHERE username = ?`; 
-        let data = [username, newCredential];
+        let data = [newCredential, username];
         await connection.execute(sql, data);
    }
 

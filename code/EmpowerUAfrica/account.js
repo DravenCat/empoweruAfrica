@@ -110,14 +110,14 @@ router.post('/signout', (req, res) => {
     res.clearCookie('token').json({"message": "success"});
 });
 
-router.post('/changeCredentials', async (req, res) => {
+router.post('/updateCredentials', async (req, res) => {
     let type = req.body.type;
     let newCredential = req.body.new;
     let token = req.cookies.token; 
     
     // The user is not signed in, or the token is not valid.
     if (token === undefined || !(token in tokenToUsrname)) {
-        res.state(403).clearCookie('token').json({
+        res.status(403).clearCookie('token').json({
             "message": "You have to sign in before updating your email or password."
         });
         return; 
@@ -126,7 +126,7 @@ router.post('/changeCredentials', async (req, res) => {
 
     // type field is invalid
     if (type !== 'email' && type !== 'password') {
-        res.state(400).json({
+        res.status(400).json({
             "message": "The 'type' field is expected to be either 'email' or 'password'. "
         }); 
         return; 
@@ -136,6 +136,6 @@ router.post('/changeCredentials', async (req, res) => {
     }
 
     await db.updateCredentials(type, username, newCredential);
-    res.state(200).json({"message": "success"});
+    res.status(200).json({"message": "success"});
 });
 module.exports = router; 
