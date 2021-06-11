@@ -10,6 +10,19 @@ export default class header extends Component {
         document.title = "EmpowerU Africa";
     }
 
+    signOut = () => {
+        fetch('/account/signout', 
+        {   
+            method: 'POST'
+        }).then((res) => {
+            if (res.status === 200) {
+                localStorage.setItem('signedIn', false); 
+                localStorage.setItem('username', null);
+                window.location.reload(); 
+            }
+        })
+    }
+
     render() {
         return(
             <div className="navbar">

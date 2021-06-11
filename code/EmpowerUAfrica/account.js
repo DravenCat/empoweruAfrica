@@ -94,5 +94,15 @@ router.post('/signin', async (req, res) => {
     
 });
 
+router.post('/signout', (req, res) => {
+    let token = req.cookies.token;
+
+    // Remove token from tokenToUsername
+    if (token !== undefined) {
+        delete tokenToUsrname[token]; 
+    }
+    
+    res.clearCookie('token').end();
+});
 
 module.exports = router; 

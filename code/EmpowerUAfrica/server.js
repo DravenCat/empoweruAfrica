@@ -1,7 +1,8 @@
 'use strict'; 
 const Express = require('express');
-const Utils = require('./utils');
+const cookieParser = require('cookie-parser');
 
+const Utils = require('./utils');
 const accountRouter = require('./account');
 
 const PORT = 5000; 
@@ -23,6 +24,8 @@ const expectedFields = {
 
 // parse the request body as json. 
 app.use(Express.json());
+
+app.use(cookieParser());
 
 // checks whether the expected fields are present in the request body
 app.use((req, res, next) => {

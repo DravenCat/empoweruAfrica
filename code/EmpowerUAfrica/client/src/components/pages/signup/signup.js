@@ -30,6 +30,91 @@ export default class signin extends Component {
         document.getElementById("company").style.color="black";
         document.getElementById("entrepreneur").style.background="white";
         document.getElementById("entrepreneur").style.color="black";
+        this.setState({accountType: 2});
+    }
+
+    /*
+        params: 
+            - email: String, the email to be validated
+            - cemail: String, the email user inputted in the 
+            'confirm email' input. 
+        returns:
+            - true, if email is a valid email address and cemail === email
+            - false, o\w
+    */
+    validateEmail = (email, cemail) => {
+        // Two emails do not match
+        if (email !== cemail) {
+            return false; 
+        }
+        // Email too long or too short
+        if (email.length > this.emailMaxLen || email.length < this.emailMinLen) {
+            return false; 
+        }
+        // Email not in correct form
+        if (!(this.emailValidationRegex.test(email))) {
+            return false; 
+        }
+
+        return true; 
+    }
+
+    // Similiar to validateEmail, but with password. 
+    validatePassword = (password, cpassword) => {
+        // Two passwords do not match.
+        if (password !== cpassword) {
+            return false; 
+        }
+        // Password too long or too short. 
+        if (password.length > this.passwordMaxLen || password.length < this.passwordMinLen) {
+            return false; 
+        }
+
+        return true; 
+    }
+
+    validateUsername = (username) => {
+        if (username.length > this.userNameMaxLen || username.length < this.userNameMinLen) {
+            return false; 
+        }
+        return true;
+    }
+
+    sendSignupRequest = () => {
+        let type = this.state.accountType;
+        let username = document.getElementById('signup-username-input').value;
+        let email = document.getElementById('signup-email-input').value;
+        let cemail = document.getElementById('signup-cemail-input').value;
+        let password = document.getElementById('signup-password-input').value;
+        let cpassword = document.getElementById('signup-cpassword-input').value;
+
+        // If any of the user entry is invalid. 
+        if (!this.validateEmail(email, cemail) || !this.validatePassword(password, cpassword) || !this.validateUsername(username)) {
+            return;
+        }
+
+        // ajax
+        fetch(this.signupURL, {
+            method: 'POST',
+            body: JSON.stringify({
+                username,
+                email,
+                password,
+                type
+            }),
+            headers: {
+                'content-type': 'application/json'
+            }
+        }).then((res) => {
+            if (res.status === 200) {
+                localStorage.setItem('signedIn', true);
+                localStorage.setItem('username', username);
+                window.location.replace('/');
+                return; 
+            }
+            console.log(res);
+            console.log(res.json());
+        })
     }
 
     render() {
