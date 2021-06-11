@@ -11,6 +11,11 @@ export default class header extends Component {
     }
 
     render() {
+        let username = localStorage.getItem('username');
+        let greeting = localStorage.getItem('loggedIn') === 'true' ? 
+            <p><a href="/signin">Sign in</a><br />No account? <a href="/signup">sign up</a></p> :
+            <p>Welcome back! {username} </p>; 
+
         return(
             <div className="navbar">
             <div className="nav-wrapper">
@@ -75,7 +80,7 @@ export default class header extends Component {
                             </div>
                         </div>
                     </div>
-                    <div>Welcome back! user</div>
+                    <div>{greeting}</div>
                     </div>
                 </div>
             </div>

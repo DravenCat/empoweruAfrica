@@ -34,7 +34,7 @@
     top: 5px;
 } */
 
-.navbar-notification, .navbar-chat, .navbar-profile {
+.navbar-notification, .navbar-chat, #navbar-profile {
 
     text-decoration: none;
     color: #D85541;
@@ -73,7 +73,7 @@
 }
 
   
-.navbar-notification:hover, .navbar-chat:hover, .navbar-profile:hover {
+.navbar-notification:hover, .navbar-chat:hover, #navbar-profile:hover {
     text-decoration: none;
     color: #7a2e22;
     box-shadow: 0 0 2px 1px rgba(67, 70, 54, 0.5);
