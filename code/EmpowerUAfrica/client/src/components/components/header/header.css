@@ -2,17 +2,18 @@
     font-family: Georgia, 'Times New Roman', Times, serif;
     background-color: #EED2AA;
     border-bottom: #D85541 solid 3px;
-    height: 70px;
+    /* height: 70px; */
+    width: 100%;
 }
 
 .navbar-brand {
-    padding-right: 220px;
+    padding-right: 160px;
     position: relative;
-    top: 15px;
+    /* top: 15px; */
     left: 10px;
 }
 
-.navbar-community {
+/* .navbar-community {
     padding-left: 10px;
     padding-right: 20px;
     position: relative;
@@ -20,31 +21,31 @@
 }
 
 .navbar-calendar {
-    padding-right: 240px;
+    padding-right: 160px;
     padding-left: 20px;
     position: relative;
     top: 5px;
-}
+} */
 
-.navbar-assignment, .navbar-learn {
+/* .navbar-assignment, .navbar-learn {
     padding-left: 20px;
     padding-right: 20px;
     position: relative;
     top: 5px;
-}
+} */
 
 .navbar-notification, .navbar-chat, .navbar-profile {
 
     text-decoration: none;
     color: #D85541;
     transition: 0.5s;
-    padding: 20px;
+    /* padding: 20px; */
 }
 
-#navbar-notification, #navbar-chat, #navbar-profile {
+/* #navbar-notification, #navbar-chat, #navbar-profile {
     position: relative;
     top: 15px;
-}
+} */
 
 #home {
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif ;
@@ -57,18 +58,18 @@
     text-decoration: none;
     color: #D85541;
     transition: 0.5s;
-    padding: 10px;
+    /* padding: 10px; */
 }
 
-#community:hover, #assignment:hover, #learn:hover, #calendar:hover {
+.navbar-community:hover, .navbar-assignment:hover, .navbar-learn:hover, .navbar-calendar:hover {
     text-decoration: none;
     color: #7a2e22;
     box-shadow: 0 0 2px 1px rgba(67, 70, 54, 0.5);
     border-radius: 30px;
     background-color: #547876;
-    padding-left: 15px;
+    /* padding-left: 15px;
     padding-top: 20px;
-    padding-bottom: 20px;
+    padding-bottom: 20px; */
 }
 
   
@@ -116,4 +117,20 @@
     text-decoration: none;
 }
 
-  
+.nav-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; 
+    grid-column-gap: 1em;
+    align-items: center;
+}
+.nav-wrapper > div{
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    margin-top: 1em;
+    margin-bottom: 1em;
+    align-items: center;
+    text-align: center;
+}
+.navbar-icons {
+    margin-left: 30%;
+}

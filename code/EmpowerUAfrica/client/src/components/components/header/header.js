@@ -13,66 +13,71 @@ export default class header extends Component {
     render() {
         return(
             <div className="navbar">
+            <div className="nav-wrapper">
 
-
-                <span className="navbar-brand">
+                <div className="navbar-brand">
                     <a id="home" href="/">
                         EmpowerU Africa
                     </a>
-                </span>
+                </div>
 
+                <div className="navbar-links">
+                    <div className="navbar-community">
+                        <a id="community" href="/community">
+                            Community
+                        </a>
+                    </div>
 
-                <span className="navbar-community">
-                    <a id="community" href="/community">
-                        Community
-                    </a>
-                </span>
+                    <div className="navbar-assignment">
+                        <a id="assignment" href="/assignment">
+                            Assignment
+                        </a>
+                    </div>
 
-                <span className="navbar-assignment">
-                    <a id="assignment" href="/assignment">
-                        Assignment
-                    </a>
-                </span>
-
-                <span className="navbar-learn">
-                    <a id="learn" href="/learn">
-                        Start to Learn
-                    </a>
-                </span>
+                    <div className="navbar-learn">
+                        <a id="learn" href="/learn">
+                            Start to Learn
+                        </a>
+                    </div>
+                    
+                    <div className="navbar-calendar">
+                        <a id="calendar" href="/calendar">
+                            Calendar
+                        </a>
+                    </div>
+                </div>
                 
-                <span className="navbar-calendar">
-                    <a id="calendar" href="/calendar">
-                        Calendar
-                    </a>
-                </span>
+                <div className="navbar-icons">
+                    <div className="navbar-notification">
+                        <a id="navbar-notification" href="/notifications">
+                            <img src={bell} alt="bell" height='40px' width='40px'/>
+                        </a>
+                    </div>
+            
+                    <div className="navbar-chat">
+                        <a id = "navbar-chat" href="/chat">
+                            <img src={chat} alt="chat" height='40px' width='40px'/>
+                        </a>
+                    </div>
 
-                <span className="navbar-notification">
-                    <a id="navbar-notification" href="/notifications">
-                        <img src={bell} alt="bell" height='40px' width='40px'/>
-                    </a>
-                </span>
-        
-                <span className="navbar-chat">
-                    <a id = "navbar-chat" href="/chat">
-                        <img src={chat} alt="chat" height='40px' width='40px'/>
-                    </a>
-                </span>
-
-                <span className="navbar-profile">
-                    <div id ="navbar-profile" href="/signup">
-                        <div className="profile-dropdown">
-                            <img src={profile} alt="profile" height='40px' width='40px' className="dropbtn"/>
-                            <div className="profile-dropdown-content">
-                                <a href="/profile" id="account-profile">Profile</a>
-                                <a href="/chat" id="account-chat">Chat</a>
-                                <a href="/notification" id="account-notification">Notification</a>
-                                <a href="/viewallmyposts" id="account-viewallmyposts">View All My Posts</a>
-                                <a href="/setting_password" id="account-setting">Setting</a>
-                                <a href="/logout" id="account-logout">Logout</a>
+                    <div className="navbar-profile">
+                        <div id ="navbar-profile" href="/signup">
+                            <div className="profile-dropdown">
+                                <img src={profile} alt="profile" height='40px' width='40px' className="dropbtn"/>
+                                <div className="profile-dropdown-content">
+                                    <a href="/profile" id="account-profile">Profile</a>
+                                    <a href="/chat" id="account-chat">Chat</a>
+                                    <a href="/notification" id="account-notification">Notification</a>
+                                    <a href="/viewallmyposts" id="account-viewallmyposts">View All My Posts</a>
+                                    <a href="/setting_password" id="account-setting">Setting</a>
+                                    <a href="/logout" id="account-logout">Logout</a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </span>
+                    <div>Welcome back! user</div>
+                    </div>
+                </div>
             </div>
         )
     }
