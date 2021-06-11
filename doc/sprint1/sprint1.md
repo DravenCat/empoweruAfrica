@@ -1,5 +1,5 @@
 Sprint 1 Planning Meeting: 
-This meeting is held on 30th May,2021 by using discord.The purpose of this meeting is to make a clear plan for the sprint1 and determine what tasks every team member should do during this sprint1. All of the team members attended Sprint 1 Planning Meeting. In the meeting, we first determined that we will show the project demo on 11th June.Then,we listed everyone’s confusions during reading the sprint1 handout and solved them one by one. At last, we selected the user stories that we want to achieve by the end of sprint1, break down into small tasks and assign tasks to every team member.
+This meeting is held on 30th May,2021 by using discord.The purpose of this meeting is to make a clear plan for the sprint1 and determine what tasks every team member should do during this sprint1. All of the team members attended Sprint 1 Planning Meeting. In the meeting, we first determined that we will show the project demo on 11th June.Then,we listed everyone’s confusions during reading the sprint1 handout and solved them one by one. At last, we selected the user stories that we want to achieve by the end of sprint1, broke down into small tasks and assigned tasks to every team member.
 
 Sprint goal:
 Finish user stories UOF-1,  UOF-2,  UOF-3,  UOF-4,  UOF-5,  UOF-6
