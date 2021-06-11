@@ -15,7 +15,7 @@ router.post('/signup', async (req, res) => {
 
     if (type !== 0 && type !== 1 && type !== 2) {
         res.status(400).json({
-            "message": "type should be an integer in the range [0, 2]"
+            "message": "Type should be an integer in the range [0, 2]"
         }); 
         return;
     }
@@ -31,7 +31,7 @@ router.post('/signup', async (req, res) => {
     catch (err) {
         if (err.code === 'ER_DUP_ENTRY') {
             res.status(409).json({
-                "message": "Duplicated email or username"
+                "message": "Username or email already exists."
             });
             return;
         }

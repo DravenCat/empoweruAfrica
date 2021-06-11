@@ -13,12 +13,14 @@ export default class signin extends Component {
     passwordMaxLen = 255;
     userNameMinLen = 3; 
     userNameMaxLen = 31;
+    userNameValidChars = ['-', '_'];
     emailValidationRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     signupURL = '/account/signup';
 
     // State
     state = {
-        accountType: 0
+        accountType: 0,
+        error: null
     }
 
 
@@ -64,14 +66,17 @@ export default class signin extends Component {
     validateEmail = (email, cemail) => {
         // Two emails do not match
         if (email !== cemail) {
+            this.setState({error: 'Two email entries does not match.'});
             return false; 
         }
         // Email too long or too short
         if (email.length > this.emailMaxLen || email.length < this.emailMinLen) {
+            this.setState({error: `Emails should be between ${this.emailMinLen} and ${this.emailMaxLen} characters.`});
             return false; 
         }
         // Email not in correct form
         if (!(this.emailValidationRegex.test(email))) {
+            this.setState({error: 'Email not in correct format. An \'@\' is expected. '})
             return false; 
         }
 
@@ -82,10 +87,12 @@ export default class signin extends Component {
     validatePassword = (password, cpassword) => {
         // Two passwords do not match.
         if (password !== cpassword) {
+            this.setState({error: 'Two password entries does not match.'});
             return false; 
         }
         // Password too long or too short. 
         if (password.length > this.passwordMaxLen || password.length < this.passwordMinLen) {
+            this.setState({error: `Passwords should be between ${this.passwordMinLen} and ${this.passwordMaxLen} characters.`})
             return false; 
         }
 
@@ -94,12 +101,20 @@ export default class signin extends Component {
 
     validateUsername = (username) => {
         if (username.length > this.userNameMaxLen || username.length < this.userNameMinLen) {
+            this.setState({error: `Username should be between ${this.userNameMinLen} and ${this.userNameMaxLen} characters.`}); 
             return false; 
         }
+        for (let char of username) {
+            if ( !(char >= 'a' && char <= 'z') && !(char >= 'A' && char <= 'Z') && !(char >= '0' && char <= '9') && !(char in this.userNameValidChars)) {
+                this.setState({'error': `Username can only contain upper and lower case letters, digits and special symbols ${this.userNameValidChars.join(', ')}`});
+                return false;
+            }
+        }
+        this.setState({error: null});
         return true;
     }
 
-    sendSignupRequest = () => {
+    sendSignupRequest = async () => {
         let type = this.state.accountType;
         let username = document.getElementById('signup-username-input').value;
         let email = document.getElementById('signup-email-input').value;
@@ -108,33 +123,52 @@ export default class signin extends Component {
         let cpassword = document.getElementById('signup-cpassword-input').value;
 
         // If any of the user entry is invalid. 
-        if (!this.validateEmail(email, cemail) || !this.validatePassword(password, cpassword) || !this.validateUsername(username)) {
+        if (!this.validateUsername(username)|| !this.validateEmail(email, cemail) || !this.validatePassword(password, cpassword)) {
+            return;
+        }
+        let res; 
+        // ajax
+        try{
+            res = await fetch(this.signupURL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    username,
+                    email,
+                    password,
+                    type
+                }),
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }); 
+        }
+        catch (err) {
+            alert('Internet Failure'); 
+            console.error(err);
             return;
         }
 
-        // ajax
-        fetch(this.signupURL, {
-            method: 'POST',
-            body: JSON.stringify({
-                username,
-                email,
-                password,
-                type
-            }),
-            headers: {
-                'content-type': 'application/json'
-            }
-        }).then((res) => {
-            if (res.status === 200) {
-                localStorage.setItem('signedIn', true);
-                localStorage.setItem('username', username);
-                window.location.replace('/');
-                return; 
-            }
-        })
+        let body; 
+        try {
+            body = await res.json();
+        }
+        catch (err) {
+            console.error(err);
+            return;
+        }
+        if (res.ok) {
+            localStorage.setItem('signedIn', true);
+            localStorage.setItem('username', username); 
+            window.location.replace('/');
+            return; 
+        }
+        this.setState({error: body.message});
     }
 
     render() {
+        let errMsg = this.state.error === null ?
+            "":
+            this.state.error; 
         if (this.state.redirect !== undefined) {
             
             return (
@@ -218,7 +252,9 @@ export default class signin extends Component {
                                 />
                         </div>
                     </div>
-            
+
+                    <p className="warningMsg">{errMsg}</p>
+
                     <div className="signup-button">
                         <button id="signup-button" onClick={this.sendSignupRequest}>
                             Create Account
