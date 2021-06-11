@@ -126,6 +126,8 @@ export default class signin extends Component {
             }
         }).then((res) => {
             if (res.status === 200) {
+                localStorage.setItem('signedIn', true);
+                localStorage.setItem('username', username);
                 this.setState({redirect: '/'});
                 return; 
             }
@@ -143,14 +145,7 @@ export default class signin extends Component {
         }
         return(
             <div className="signup-page">
-                <nav className="signup-navbar">
-                    <div className="signup-navbar-brand">
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        <a id="signup-home" href="/">
-                            EmpowerU Africa
-                        </a>
-                    </div>
-                </nav>
+
                 <div className="signup-field">
                     <h2 className="signup-title">
                         Sign up as

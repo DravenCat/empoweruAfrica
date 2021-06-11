@@ -10,11 +10,24 @@ export default class header extends Component {
         document.title = "EmpowerU Africa";
     }
 
+    signOut = () => {
+        fetch('/account/signout', 
+        {   
+            method: 'POST'
+        }).then((res) => {
+            if (res.status === 200) {
+                localStorage.setItem('signedIn', false); 
+                localStorage.setItem('username', null);
+                this.render();
+            }
+        })
+    }
+
     render() {
         let username = localStorage.getItem('username');
-        let greeting = localStorage.getItem('loggedIn') === 'true' ? 
-            <p><a href="/signin">Sign in</a><br />No account? <a href="/signup">sign up</a></p> :
-            <p>Welcome back! {username} </p>; 
+        let greeting = localStorage.getItem('signedIn') === 'true' ? 
+            <p>Welcome back! {username} </p>: 
+            <p><a href="/signin">Sign in</a><br />No account? <a href="/signup">sign up</a></p>; 
 
         return(
             <div className="navbar">
@@ -73,9 +86,9 @@ export default class header extends Component {
                                     <a href="/profile" id="account-profile">Profile</a>
                                     <a href="/chat" id="account-chat">Chat</a>
                                     <a href="/notification" id="account-notification">Notification</a>
-                                    <a href="/viewallmyposts" id="account-viewallmyposts">View All My Posts</a>
+                                    <a href="/viewallmyposts" id="account-viewallmyposts">View My Posts</a>
                                     <a href="/setting_password" id="account-setting">Setting</a>
-                                    <a href="/logout" id="account-logout">Logout</a>
+                                    <button onClick={this.signOut} id="account-logout">Logout</button>
                                 </div>
                             </div>
                         </div>
