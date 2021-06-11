@@ -15,7 +15,7 @@ router.post('/signup', async (req, res) => {
 
     if (type !== 0 && type !== 1 && type !== 2) {
         res.status(400).json({
-            "message": "type should be an integer in the range [0, 2]"
+            "message": "Type should be an integer in the range [0, 2]"
         }); 
         return;
     }
@@ -31,7 +31,7 @@ router.post('/signup', async (req, res) => {
     catch (err) {
         if (err.code === 'ER_DUP_ENTRY') {
             res.status(409).json({
-                "message": "Duplicated email or username"
+                "message": "Username or email already exists."
             });
             return;
         }
@@ -70,7 +70,9 @@ router.post('/signin', async (req, res) => {
     }
     catch (err) {
         console.warn(err);
-        res.status(500).end();
+        res.status(500).end({
+            "message": "Unknown Error"
+        });
         return; 
     }
 
@@ -89,7 +91,10 @@ router.post('/signin', async (req, res) => {
         httpOnly: true
     })
     tokenToUsrname[token] = username; 
-    res.status(200).end();
+    res.status(200).json({
+        "message": "Sign in success.", 
+        "username": username
+    });
     console.log(tokenToUsrname);
     
 });

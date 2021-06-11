@@ -5,17 +5,60 @@ import './signin.css';
 
 export default class signin extends Component {
 
+    signinURL = '/account/signin';
+
+    state = {
+        error: null
+    }
+
+    sendSigninRequest = async () => {
+        let id = document.getElementById('signin-username-input').value; 
+        let password = document.getElementById('signin-password-input').value; 
+        let res;
+
+        try {
+            res = await fetch(this.signinURL, {
+                method: 'POST', 
+                body: JSON.stringify({
+                    id, 
+                    password
+                }), 
+                headers: {
+                    'content-type': 'application/json'
+                }
+            });
+        }
+        catch (err) {
+            alert('Internet Failure');
+            console.error(err);
+            return; 
+        }
+        let body
+        try{
+            body = await res.json();
+        }
+        catch (err) {
+            console.error(err);
+            return;
+        }
+
+        // Sign in success
+        if (res.ok) {
+            localStorage.setItem('signedIn', true);
+            localStorage.setItem('username', body.username); 
+            window.location.replace('/');
+            return; 
+        }
+        this.setState({error: body.message});
+    }
+
   render() {
+
+    let errMsg = this.state.error === null ? 
+        "": 
+        this.state.error; 
     return(
         <div className="signin-page">
-            <nav className="signin-navbar">
-                <div className="signin-navbar-brand">
-                    &nbsp;&nbsp;&nbsp;&nbsp;
-                    <a id="signin-home" href="/">
-                        EmpowerU Africa
-                    </a>
-                </div>
-            </nav>
             <div className="signin-field">
                 <h2 className="signin-title">
                     Sign in
@@ -43,9 +86,11 @@ export default class signin extends Component {
                         <input type="password" id="signin-password-input"/>
                     </div>
                 </div>
-                    
+                
+                <p className="warningMsg">{errMsg}</p>
+
                 <div className="signin-button">
-                    <button id="signin-button">
+                    <button id="signin-button" onClick={this.sendSigninRequest}>
                         Login
                     </button>
                 </div>

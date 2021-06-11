@@ -77,3 +77,7 @@
     background-color: rgb(34, 100, 243);
 }
 
+p.warningMsg {
+    color: red; 
+    margin: 0; 
+}
