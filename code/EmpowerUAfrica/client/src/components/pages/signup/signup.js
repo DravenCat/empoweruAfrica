@@ -1,4 +1,5 @@
 import React, { Component } from 'react'; 
+import { Redirect } from 'react-router-dom';
 import './signup.css';
 
 
@@ -125,6 +126,7 @@ export default class signin extends Component {
             }
         }).then((res) => {
             if (res.status === 200) {
+                this.setState({redirect: '/'});
                 return; 
             }
             console.log(res);
@@ -132,12 +134,13 @@ export default class signin extends Component {
         })
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return false;
-    }
-
-
     render() {
+        if (this.state.redirect !== undefined) {
+            
+            return (
+                <Redirect to={this.state.redirect}/>
+            )
+        }
         return(
             <div className="signup-page">
                 <nav className="signup-navbar">
