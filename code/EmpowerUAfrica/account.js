@@ -42,7 +42,7 @@ router.post('/signup', async (req, res) => {
     res.cookie('token', token, 
     {
         httpOnly: true
-    }).status(200).end();
+    }).status(200).json({"message": "success"});
 });
 
 router.post('/signin', async (req, res) => {
@@ -70,7 +70,7 @@ router.post('/signin', async (req, res) => {
     }
     catch (err) {
         console.warn(err);
-        res.status(500).end({
+        res.status(500).json({
             "message": "Unknown Error"
         });
         return; 
@@ -107,7 +107,35 @@ router.post('/signout', (req, res) => {
         delete tokenToUsrname[token]; 
     }
     
-    res.clearCookie('token').end();
+    res.clearCookie('token').json({"message": "success"});
 });
 
+router.post('/changeCredentials', async (req, res) => {
+    let type = req.body.type;
+    let newCredential = req.body.new;
+    let token = req.cookies.token; 
+    
+    // The user is not signed in, or the token is not valid.
+    if (token === undefined || !(token in tokenToUsrname)) {
+        res.state(403).clearCookie('token').json({
+            "message": "You have to sign in before updating your email or password."
+        });
+        return; 
+    }
+    let username = tokenToUsrname[token];
+
+    // type field is invalid
+    if (type !== 'email' && type !== 'password') {
+        res.state(400).json({
+            "message": "The 'type' field is expected to be either 'email' or 'password'. "
+        }); 
+        return; 
+    }
+    if (type === 'password') {
+        newCredential = utils.hash(newCredential); 
+    }
+
+    await db.updateCredentials(type, username, newCredential);
+    res.state(200).json({"message": "success"});
+});
 module.exports = router; 

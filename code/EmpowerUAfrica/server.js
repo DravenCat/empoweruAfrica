@@ -19,7 +19,8 @@ const app = Express();
 */
 const expectedFields = {
     '/api/account/signup': ['username', 'email', 'password', 'type'], 
-    "/api/account/signin": ['id', 'password']
+    '/api/account/signin': ['id', 'password'],
+    '/api/account/changeCredentials': ['type', 'new']
 };
 
 // parse the request body as json. 

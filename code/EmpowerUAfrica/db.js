@@ -70,7 +70,21 @@ const db = {
         else {
             return response[0][0].username; 
         }
-    }
+    }, 
+
+    /*
+        params:
+            - type: String, either 'email' or 'password'
+            - username: String, the user who requested the update
+            - newCredential: String, the new email or password, depending on type
+        returns:
+            nothing
+    */
+   updateCredentials: async (type, username, newCredential) => {
+        let sql = `UPDATE Accounts SET ${type} = ? WHERE username = ?`; 
+        let data = [username, newCredential];
+        await connection.execute(sql, data);
+   }
 
 }; 
 
