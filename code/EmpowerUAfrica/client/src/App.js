@@ -5,6 +5,7 @@ import Footer from './components/components/footer/footer';
 import Header from './components/components/header/header'; 
 import Signup from './components/pages/signup/signup';
 import Signin from './components/pages/signin/signin'; 
+
 import SetPassword from './components/pages/setting/setting_password'; 
 import SetEmail from './components/pages/setting/setting_email'; 
 

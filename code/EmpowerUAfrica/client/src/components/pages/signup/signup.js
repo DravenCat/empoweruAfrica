@@ -18,39 +18,71 @@ export default class signin extends Component {
     signupURL = '/account/signup';
 
     // State
-    state = {
-        accountType: 0,
-        error: null
-    }
 
+
+    constructor() {
+        super();
+        
+        this.state = {
+            showMenu: false,
+            accountType: 0,
+            error: null
+        }
+        
+        this.showMenu = this.showMenu.bind(this);
+        this.closeMenu = this.closeMenu.bind(this);
+      }
+
+    showMenu(event) {
+        event.preventDefault();
+        
+        this.setState({ showMenu: true }, () => {
+          document.addEventListener('click', this.closeMenu);
+        });
+      }
+      
+    closeMenu(event) {
+        
+        if (!this.dropdownMenu.contains(event.target)) {
+          
+          this.setState({ showMenu: false }, () => {
+            document.removeEventListener('click', this.closeMenu);
+          });  
+          
+        }
+      }
+    
 
     entrepreneurClick = ()=> {
-        document.getElementById("entrepreneur").style.background="rgb(34, 100, 243)";
-        document.getElementById("entrepreneur").style.color="white";
-        document.getElementById("company").style.background="white";
-        document.getElementById("company").style.color="black";
-        document.getElementById("investor").style.background="white";
-        document.getElementById("investor").style.color="black";
+        // document.getElementById("entrepreneur").style.background="rgb(34, 100, 243)";
+        // document.getElementById("entrepreneur").style.color="white";
+        // document.getElementById("company").style.background="white";
+        // document.getElementById("company").style.color="black";
+        // document.getElementById("investor").style.background="white";
+        // document.getElementById("investor").style.color="black";
+
         this.setState({accountType: 0}); 
     }
 
     companyClick = ()=> {
-        document.getElementById("company").style.background="rgb(34, 100, 243)";
-        document.getElementById("company").style.color="white";
-        document.getElementById("entrepreneur").style.background="white";
-        document.getElementById("entrepreneur").style.color="black";
-        document.getElementById("investor").style.background="white";
-        document.getElementById("investor").style.color="black";
+        // document.getElementById("company").style.background="rgb(34, 100, 243)";
+        // document.getElementById("company").style.color="white";
+        // document.getElementById("entrepreneur").style.background="white";
+        // document.getElementById("entrepreneur").style.color="black";
+        // document.getElementById("investor").style.background="white";
+        // document.getElementById("investor").style.color="black";
+
         this.setState({accountType: 1}); 
     }
 
     investorClick = ()=> {
-        document.getElementById("investor").style.background="rgb(34, 100, 243)";
-        document.getElementById("investor").style.color="white";
-        document.getElementById("company").style.background="white";
-        document.getElementById("company").style.color="black";
-        document.getElementById("entrepreneur").style.background="white";
-        document.getElementById("entrepreneur").style.color="black";
+        // document.getElementById("investor").style.background="rgb(34, 100, 243)";
+        // document.getElementById("investor").style.color="white";
+        // document.getElementById("company").style.background="white";
+        // document.getElementById("company").style.color="black";
+        // document.getElementById("entrepreneur").style.background="white";
+        // document.getElementById("entrepreneur").style.color="black";
+
         this.setState({accountType: 2});
     }
 
@@ -171,9 +203,10 @@ export default class signin extends Component {
             this.state.error; 
         if (this.state.redirect !== undefined) {
             
-            return (
-                <Redirect to={this.state.redirect}/>
-            )
+            // return (
+            //     // <Redirect to={this.state.redirect}/>
+            // )
+
         }
         return(
             <div className="signup-page">
@@ -182,9 +215,37 @@ export default class signin extends Component {
                     <h2 className="signup-title">
                         Sign up as
                     </h2> 
-                    <button id="entrepreneur" onClick={this.entrepreneurClick}>Entrepreneur</button>
+                    {/* <button id="entrepreneur" onClick={this.entrepreneurClick}>Entrepreneur</button>
                     <button id="company" onClick={this.companyClick}>Company</button>
-                    <button id="investor" onClick={this.investorClick}>Investor</button>
+                    <button id="investor" onClick={this.investorClick}>Investor</button> */}
+                    <div>
+                        <button onClick={this.showMenu}>
+                        Show menu
+                        </button>
+                        
+                        {
+                        this.state.showMenu
+                            ? (
+                            <div
+                                className="menu"
+                                ref={(element) => {
+                                this.dropdownMenu = element;
+                                }}
+                            >
+                                <button onClick={this.entrepreneurClick}>Entrepreneur</button>
+                                <button onClick={this.companyClick}>Company</button>
+                                <button onClick={this.investorClick}>Investor</button>
+                            </div>
+                            )
+                            : (
+                            null
+                            )
+                        }
+                    </div>
+
+                    
+
+
                     <span>Account<br/><br/></span>
                     <div className="direct-signin">
                         <span>
@@ -252,6 +313,7 @@ export default class signin extends Component {
                                 />
                         </div>
                     </div>
+
 
                     <p className="warningMsg">{errMsg}</p>
 
