@@ -39,6 +39,11 @@ Tasks:
 
 ---
 
+## Spikes:
+ - When building the navbar react component, our original implementation using `display: flexblox` causes the icons to wrap to the next line if the user's screen is not large enough. We realized that flexbox might not do the work so we researched other ways to build the navbar. We finally decided to user `display: grid`  and css grid features of css to solve the problem. 
+
+---
+
 ## Team capacity:
 | Name | Estimated hours of work per day |
 | --- | --- |
