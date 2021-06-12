@@ -279,7 +279,7 @@ export default class signin extends Component {
                         </div>
                             <input type="password" id="signin-cpassword-input"/>
                     </div>
-                </div>
+                
         
                 <div className="signup-button">
                     <a href="/sutype">
@@ -289,6 +289,7 @@ export default class signin extends Component {
                     </a>
                 </div>
             </div>
+        </div>
     )
   }
 }
