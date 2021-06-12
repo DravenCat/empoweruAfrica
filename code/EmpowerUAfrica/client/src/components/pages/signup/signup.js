@@ -17,10 +17,20 @@ export default class signin extends Component {
     signupURL = '/account/signup';
 
     // State
-    state = {
-        accountType: 0,
-        error: null
-    }
+
+
+    constructor() {
+        super();
+        
+        this.state = {
+            showMenu: false,
+            accountType: 0,
+            error: null
+        }
+        
+        this.showMenu = this.showMenu.bind(this);
+        this.closeMenu = this.closeMenu.bind(this);
+      }
 
     showMenu(event) {
         event.preventDefault();
@@ -30,7 +40,7 @@ export default class signin extends Component {
         });
       }
       
-      closeMenu(event) {
+    closeMenu(event) {
         
         if (!this.dropdownMenu.contains(event.target)) {
           
@@ -189,9 +199,9 @@ export default class signin extends Component {
             this.state.error; 
         if (this.state.redirect !== undefined) {
             
-            return (
-                <Redirect to={this.state.redirect}/>
-            )
+            // return (
+            //     // <Redirect to={this.state.redirect}/>
+            // )
         }
         return(
             <div className="signup-page">
@@ -203,11 +213,31 @@ export default class signin extends Component {
                     {/* <button id="entrepreneur" onClick={this.entrepreneurClick}>Entrepreneur</button>
                     <button id="company" onClick={this.companyClick}>Company</button>
                     <button id="investor" onClick={this.investorClick}>Investor</button> */}
-                    <div className="type">
-                        <button onClick={this.entrepreneurClick}>Entrepreneur</button>
-                        <button onClick={this.companyClick}>Company</button>
-                        <button onClick={this.investorClick}>Investor</button>
+                    <div>
+                        <button onClick={this.showMenu}>
+                        Show menu
+                        </button>
+                        
+                        {
+                        this.state.showMenu
+                            ? (
+                            <div
+                                className="menu"
+                                ref={(element) => {
+                                this.dropdownMenu = element;
+                                }}
+                            >
+                                <button onClick={this.entrepreneurClick}>Entrepreneur</button>
+                                <button onClick={this.companyClick}>Company</button>
+                                <button onClick={this.investorClick}>Investor</button>
+                            </div>
+                            )
+                            : (
+                            null
+                            )
+                        }
                     </div>
+
                     
 
                     <span>Account<br/><br/></span>
