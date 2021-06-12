@@ -1,7 +1,8 @@
 'use strict'; 
 const Express = require('express');
-const Utils = require('./utils');
+const cookieParser = require('cookie-parser');
 
+const Utils = require('./utils');
 const accountRouter = require('./account');
 
 const PORT = 5000; 
@@ -17,15 +18,21 @@ const app = Express();
     which fields are expected. 
 */
 const expectedFields = {
-    '/api/account/signup': ['username', 'email', 'password', 'type', 'firstname'], 
-    "/api/account/signin": ['id', 'password']
+    '/api/account/signup': ['username', 'email', 'password', 'type'], 
+    '/api/account/signin': ['id', 'password'],
+    '/api/account/updateCredentials': ['type', 'new']
 };
 
 // parse the request body as json. 
 app.use(Express.json());
 
+app.use(cookieParser());
+
 // checks whether the expected fields are present in the request body
 app.use((req, res, next) => {
+    console.log(`[server]: Request recieved. `);
+    console.log(req.body);
+    console.log(req.headers.cookie);
     // If the required field is not specified
     if (!(req.path in expectedFields)) {
         next();
@@ -47,4 +54,4 @@ app.get("/", (req, res) => {
 
 app.use('/api/account', accountRouter); 
 
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`)); 
+app.listen(PORT, () => console.log(`[server]: Server started on port ${PORT}`)); 

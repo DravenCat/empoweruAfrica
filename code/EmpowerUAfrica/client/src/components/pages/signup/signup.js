@@ -1,4 +1,5 @@
 import React, { Component } from 'react'; 
+import { Redirect } from 'react-router-dom';
 import './signup.css';
 
 
@@ -59,6 +60,7 @@ export default class signin extends Component {
         // document.getElementById("company").style.color="black";
         // document.getElementById("investor").style.background="white";
         // document.getElementById("investor").style.color="black";
+
         this.setState({accountType: 0}); 
     }
 
@@ -69,6 +71,7 @@ export default class signin extends Component {
         // document.getElementById("entrepreneur").style.color="black";
         // document.getElementById("investor").style.background="white";
         // document.getElementById("investor").style.color="black";
+
         this.setState({accountType: 1}); 
     }
 
@@ -79,6 +82,7 @@ export default class signin extends Component {
         // document.getElementById("company").style.color="black";
         // document.getElementById("entrepreneur").style.background="white";
         // document.getElementById("entrepreneur").style.color="black";
+
         this.setState({accountType: 2});
     }
 
@@ -202,6 +206,7 @@ export default class signin extends Component {
             // return (
             //     // <Redirect to={this.state.redirect}/>
             // )
+
         }
         return(
             <div className="signup-page">
@@ -240,6 +245,7 @@ export default class signin extends Component {
 
                     
 
+
                     <span>Account<br/><br/></span>
                     <div className="direct-signin">
                         <span>
@@ -251,45 +257,73 @@ export default class signin extends Component {
                     </div>
                     <div className="signup-form-field">
                         <div>
-                            Username
+                            <div>
+                                Username
+                            </div>
+                                <input 
+                                type="text" 
+                                id="signup-username-input" 
+                                maxLength={this.userNameMaxLen}
+                                />
                         </div>
-                            <input type="text" id="signin-username-input"/>
-                    </div>
-                    <div>
+                        <br/>
                         <div>
-                            Email
+                            <div>
+                                Email
+                            </div>
+                                <input 
+                                type="email" 
+                                id="signup-email-input" 
+                                maxLength={this.emailMaxLen}
+                                pattern={this.emailValidationRegex}
+                                />
                         </div>
-                            <input type="text" id="signin-email-input"/>
-                    </div>
-                    <div>
+                        <br/>
                         <div>
-                            Confirm Email
+                            <div>
+                                Confirm Email
+                            </div>
+                                <input 
+                                type="email" 
+                                id="signup-cemail-input" 
+                                maxLength={this.emailMaxLen}
+                                pattern={this.emailValidationRegex}
+                                />
                         </div>
-                            <input type="text" id="signin-cemail-input"/>
-                    </div>
-                    <div>
+                        <br/>
                         <div>
-                            Password
+                            <div>
+                                Password
+                            </div>
+                                <input 
+                                type="password" 
+                                id="signup-password-input" 
+                                maxLength={this.passwordMaxLen}
+                                />
                         </div>
-                            <input type="password" id="signin-password-input"/>
-                    </div>
-                    <div>
+                        <br/>
                         <div>
-                            Confirm password
+                            <div>
+                                Confirm password
+                            </div>
+                                <input 
+                                type="password" 
+                                id="signup-cpassword-input" 
+                                maxLength={this.passwordMaxLen}
+                                />
                         </div>
-                            <input type="password" id="signin-cpassword-input"/>
                     </div>
-                
-        
-                <div className="signup-button">
-                    <a href="/sutype">
-                    <button id="signup-button">
-                        Create Account
-                    </button>
-                    </a>
+
+
+                    <p className="warningMsg">{errMsg}</p>
+
+                    <div className="signup-button">
+                        <button id="signup-button" onClick={this.sendSignupRequest}>
+                            Create Account
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    )
-  }
+        )
+    }
 }

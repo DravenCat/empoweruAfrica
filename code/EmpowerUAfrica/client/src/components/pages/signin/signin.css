@@ -3,14 +3,7 @@
     height: 1000px;
 }
 
-.signin-field {
-    background-color: white;
-    width: 500px;
-    height: 450px;
-    text-align: center;
-    margin: 50px auto;
-    box-shadow: 0px 1px 10px #888888;
-}
+
 
 .signin-title {
     padding-top: 50px;
@@ -55,7 +48,7 @@
     transition-duration: 0.4s;
     background-color: rgb(34, 100, 243);
     color:white;
-    padding: 10px 25px;
+    padding: 10px 15px;
     font-size: 20px;
     border-radius: 12px;
 }
@@ -66,20 +59,15 @@
 }
 
 .signin-field {
-    background-color: gray;
+    background-color: white;
     width: 500px;
-    height: 400px;
-    padding: 40px;
+    height: 450px;
+    text-align: center;
     margin: 50px auto;
-    border: black solid 3px;
+    box-shadow: 0px 1px 10px #888888;
 }
 
-.signin-title {
-    font-size: 50px;
-    margin:10px auto;
-}
-
-.form-field {
-    font-size: 20px;
-    padding: 40px;
+p.warningMsg {
+    color : red;
+    margin: 0;
 }
