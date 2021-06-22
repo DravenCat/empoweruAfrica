@@ -229,5 +229,5 @@ Tracking on Jira Total Mark: 19 / 20
 
 ## Total Mark
 
-82 / 89
+82 / 88
 
