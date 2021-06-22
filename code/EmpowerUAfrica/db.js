@@ -81,12 +81,48 @@ const db = {
         returns:
             nothing
     */
-   updateCredentials: async (type, username, newCredential) => {
+    updateCredentials: async (type, username, newCredential) => {
         let sql = `UPDATE Accounts SET ${type} = ? WHERE username = ?`; 
         let data = [newCredential, username];
         await connection.execute(sql, data);
-   }
+   },
+   /*
+        params:
+            - token: String, the user's token 
+            - username: String
+            - expirationTime: Number, int
+        returns:
+            nothing
+   */
+    addToken: async (token, username, expirationTime) => {
+        let sql = 'INSERT INTO Token(token, username, expiration_time) \
+                    VALUES(?, ?, ?)';
+        let data = [token, username, expirationTime]; 
+        await connection.execute(sql, data);
+    }, 
+   
+    /*
+        params: 
+            - token: String, the token to be deleted. 
+        returns:
+            nothing
+    */
+    delToken: async (token) => {
+        let sql = 'DELETE FROM Token WHERE token=?'; 
+        let date = [token]; 
+        await connection.execute(sql, data);
+    }, 
 
+    /*
+        params:
+            - token: String, the token to be queried. 
+        returns:
+            - username: String, the username to corresponding to the token. 
+            - null if the token is not found in the database. (might be expired and deleted)
+    */
+    getUsernameByToken: async (token) => {
+
+    }
 }; 
 
 

@@ -1,9 +1,13 @@
 const fs = require('fs').promises; 
 const mysql = require('mysql2/promise'); 
+const stringFormat = require('string-format');
+
 const objHasFields = require('./utils').objHasFields; 
+const config = require('./config');
 
 const credentialFilePath = './db/credentials.json';
-const tableStructDir = './db/';
+const tableStructDirPath = './db/Tables/';
+const eventDirPath = './db/Events/';
 
 const port = '3306'; 
 const database = 'EmpowerUAfricaDB'; 
@@ -97,7 +101,7 @@ const checkTables = async (connection) => {
     let tables = result[0].map((row) => {return Object.values(row)[0]});
 
     // Search for all .sql files under tableStructDir
-    let allFiles = await fs.readdir(tableStructDir);
+    let allFiles = await fs.readdir(tableStructDirPath);
     let tableStructs = {}; 
     for (let file of allFiles) {
         let len = file.length; 
@@ -110,17 +114,26 @@ const checkTables = async (connection) => {
     for (let tableName in tableStructs) {
         // If the table is not present
         if (tables.indexOf(tableName) === -1) {
-            let tableStruct = await fs.readFile(tableStructDir + tableName + '.sql');
+            let tableStruct = await fs.readFile(tableStructDirPath + tableName + '.sql');
             await connection.execute(tableStruct.toString()); 
             console.log(`[db-init]: Table ${tableName} created. `);
         }
     }
 }
+
+const loadEvents = async (connection) => {
+    let cleanExpiredTokens = await fs.readFile(eventDirPath + "cleanExpiredTokens" + ".sql");
+    let sql = stringFormat(cleanExpiredTokens.toString(), config.tokens); 
+    console.log(sql); 
+    await connection.execute(sql); 
+    console.log(`[db-init] Event cleanExpiredTokens loaded`); 
+}
+
 const init = async () => {
     const connectionInfo = await getConnectionInfo(); 
     const connection = await getConnection(connectionInfo); 
     await checkTables(connection);
-
+    await loadEvents(connection);
     return connection; 
 }
 
