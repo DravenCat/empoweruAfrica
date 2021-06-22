@@ -14,7 +14,6 @@ export default class index extends Component {
     <div>
 
       <div className="title-image">
-          <img src={wallup} alt="wallup" id="wallup"/>
           <div className="wallup-text">
             Welcome to EmpowerU Africa
           </div>

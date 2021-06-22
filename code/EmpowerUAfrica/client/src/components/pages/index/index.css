@@ -1,15 +1,17 @@
-#wallup {
-  width: 100%;
-  height: 500px;
+.title-image {
+  background-image: url('../../../resource/icons/wallup.png');
+  background-size: cover;
+  padding-bottom: 300px;
+  margin-top: 80px;
   z-index: -2;
 }
 
 .wallup-text {
   color: white;
-  position: relative;
-  top: -150px;
   font-size: 100px;
   text-align: center;
+  position: relative;
+  top: 250px;
 }
 
 
@@ -21,7 +23,7 @@
 } 
 
 .title-area1 {
-  font-family: Snell Roundhand, cursive;
+  font-family: Georgia, 'Times New Roman', Times, serif;
   text-align: center;
 }
 
@@ -29,6 +31,11 @@
   font-family: Arial, sans-serif;
   font-size: 15px;
   text-align: center;
+  margin-top: 90px;
+}
+
+.title-area2 .left{
+  font-size: 20px;
 }
 
 .learnmore {

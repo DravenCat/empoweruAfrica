@@ -90,20 +90,29 @@ export default class setting_password extends Component {
     
     return(
       <div className="setting-cp">
-        <h2 className="cp-sidenav-title">Account Setting</h2>
-        <div className="cp-sidenav">
-            <a id="changepassword" href="/setting_password">Change Password</a>
-            <a id="changeemail" href="/setting_email">Change Email</a>
+
+        <div className="setting-cp-left">
+          <h2 className="cp-sidenav-title">Account Setting</h2>
+          <div className="cp-sidenav">
+              <a id="changepassword" href="/setting_password">Change Password</a>
+              <a id="changeemail" href="/setting_email">Change Email</a>
+          </div>
         </div>
-        <div className="change-passowrd-section">
-          <h2>Change Password</h2><br/>
+
+        <div className="setting-cp-midleft">
+
+        </div>
+
+        <div className="setting-cp-midright">
+          <h2 className="cp-form-field-title">Change Password</h2>
           <div className="cp-form-field">
             <div>
               <div>
                 New Password
               </div>
-                <input type="text" id="change-password-input"/><br/><br/>
+                <input type="text" id="change-password-input"/>
               </div>
+              <br></br><br></br>
               <div>
                 <div>
                   Confrim Password
@@ -115,13 +124,17 @@ export default class setting_password extends Component {
               <p className="warningMsg">{errorMsg}</p>
 
               <div className="cp-button">
-                <br/>
                 <button id="cp-button" onClick={this.sendUpdateRequest}>
                   Confirm
                 </button>
               </div>
-            </div>
-        </div>
+          </div>
+
+          <div className="setting-cp-right">
+            
+          </div>
+
+      </div>
     )
   }
 }

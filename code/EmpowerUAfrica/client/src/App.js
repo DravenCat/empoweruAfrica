@@ -23,10 +23,12 @@ export default function App() {
         </Route>
 
         <Route exact path="/signup">
+          <Navbar />
           <Signup />
         </Route>
 
         <Route exact path="/signin">
+          <Navbar />
           <Signin />
         </Route>
 

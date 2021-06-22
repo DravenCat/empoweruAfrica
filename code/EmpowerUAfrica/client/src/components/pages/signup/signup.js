@@ -54,35 +54,14 @@ export default class signin extends Component {
     
 
     entrepreneurClick = ()=> {
-        // document.getElementById("entrepreneur").style.background="rgb(34, 100, 243)";
-        // document.getElementById("entrepreneur").style.color="white";
-        // document.getElementById("company").style.background="white";
-        // document.getElementById("company").style.color="black";
-        // document.getElementById("investor").style.background="white";
-        // document.getElementById("investor").style.color="black";
-
         this.setState({accountType: 0}); 
     }
 
     companyClick = ()=> {
-        // document.getElementById("company").style.background="rgb(34, 100, 243)";
-        // document.getElementById("company").style.color="white";
-        // document.getElementById("entrepreneur").style.background="white";
-        // document.getElementById("entrepreneur").style.color="black";
-        // document.getElementById("investor").style.background="white";
-        // document.getElementById("investor").style.color="black";
-
         this.setState({accountType: 1}); 
     }
 
     investorClick = ()=> {
-        // document.getElementById("investor").style.background="rgb(34, 100, 243)";
-        // document.getElementById("investor").style.color="white";
-        // document.getElementById("company").style.background="white";
-        // document.getElementById("company").style.color="black";
-        // document.getElementById("entrepreneur").style.background="white";
-        // document.getElementById("entrepreneur").style.color="black";
-
         this.setState({accountType: 2});
     }
 
@@ -202,126 +181,116 @@ export default class signin extends Component {
             "":
             this.state.error; 
         if (this.state.redirect !== undefined) {
-            
-            // return (
-            //     // <Redirect to={this.state.redirect}/>
-            // )
 
         }
         return(
             <div className="signup-page">
-
+                &nbsp;
                 <div className="signup-field">
-                    <h2 className="signup-title">
-                        Sign up as
-                    </h2> 
-                    {/* <button id="entrepreneur" onClick={this.entrepreneurClick}>Entrepreneur</button>
-                    <button id="company" onClick={this.companyClick}>Company</button>
-                    <button id="investor" onClick={this.investorClick}>Investor</button> */}
-                    <div>
-                        <button onClick={this.showMenu}>
-                        Show menu
-                        </button>
-                        
-                        {
-                        this.state.showMenu
-                            ? (
-                            <div
-                                className="menu"
-                                ref={(element) => {
-                                this.dropdownMenu = element;
-                                }}
-                            >
-                                <button onClick={this.entrepreneurClick}>Entrepreneur</button>
-                                <button onClick={this.companyClick}>Company</button>
-                                <button onClick={this.investorClick}>Investor</button>
-                            </div>
-                            )
-                            : (
-                            null
-                            )
-                        }
+
+                    <div className="signup-left">
+                        <p className="signup-left-title">Welcome to Our Community</p>
+                        <p className="signup-left-text">To keep connected with us please sign up with 
+                            your personal information by email and password
+                        </p>
+                        <p className="signup-left-text2">Or log into an account if you have one
+                        </p>
+                        <a id="direct-signin" href="/signin">Log into your account</a>
                     </div>
 
+                    <div className="signup-midleft">
+
+                    </div>
+
+                    <div className="signup-midright">
+                        <h2 className="signup-title">
+                            Sign up 
+                        </h2>   
+
+                        <div class="account-type">
+                            <div>
+                                Account type
+                            </div>
+                            <select id="account-type">
+                                <option>entrepreneur</option>
+                                <option>Company</option>
+                                <option>Investor</option>
+                            </select>
+                        </div>
+
+                        <div className="signup-form-field">
+                            <div>
+                                <div>
+                                    Username
+                                </div>
+                                    <input 
+                                    type="text" 
+                                    id="signup-username-input" 
+                                    maxLength={this.userNameMaxLen}
+                                    />
+                            </div>
+                            <br/>
+                            <div>
+                                <div>
+                                    Email
+                                </div>
+                                    <input 
+                                    type="email" 
+                                    id="signup-email-input" 
+                                    maxLength={this.emailMaxLen}
+                                    pattern={this.emailValidationRegex}
+                                    />
+                            </div>
+                            <br/>
+                            <div>
+                                <div>
+                                    Confirm Email
+                                </div>
+                                    <input 
+                                    type="email" 
+                                    id="signup-cemail-input" 
+                                    maxLength={this.emailMaxLen}
+                                    pattern={this.emailValidationRegex}
+                                    />
+                            </div>
+                            <br/>
+                            <div>
+                                <div>
+                                    Password
+                                </div>
+                                    <input 
+                                    type="password" 
+                                    id="signup-password-input" 
+                                    maxLength={this.passwordMaxLen}
+                                    />
+                            </div>
+                            <br/>
+                            <div>
+                                <div>
+                                    Confirm password
+                                </div>
+                                    <input 
+                                    type="password" 
+                                    id="signup-cpassword-input" 
+                                    maxLength={this.passwordMaxLen}
+                                    />
+                            </div>
+                        </div>
+
+
+                        <p className="warningMsg">{errMsg}</p>
+
+                        <div className="signup-button">
+                            <button id="signup-button" onClick={this.sendSignupRequest}>
+                                Create Account
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="signup-right">
+
+                    </div>
                     
-
-
-                    <span>Account<br/><br/></span>
-                    <div className="direct-signin">
-                        <span>
-                            Have an acount?
-                        </span>
-                        <a id="signin" href="signin">
-                            &nbsp;Sign in
-                        </a>
-                    </div>
-                    <div className="signup-form-field">
-                        <div>
-                            <div>
-                                Username
-                            </div>
-                                <input 
-                                type="text" 
-                                id="signup-username-input" 
-                                maxLength={this.userNameMaxLen}
-                                />
-                        </div>
-                        <br/>
-                        <div>
-                            <div>
-                                Email
-                            </div>
-                                <input 
-                                type="email" 
-                                id="signup-email-input" 
-                                maxLength={this.emailMaxLen}
-                                pattern={this.emailValidationRegex}
-                                />
-                        </div>
-                        <br/>
-                        <div>
-                            <div>
-                                Confirm Email
-                            </div>
-                                <input 
-                                type="email" 
-                                id="signup-cemail-input" 
-                                maxLength={this.emailMaxLen}
-                                pattern={this.emailValidationRegex}
-                                />
-                        </div>
-                        <br/>
-                        <div>
-                            <div>
-                                Password
-                            </div>
-                                <input 
-                                type="password" 
-                                id="signup-password-input" 
-                                maxLength={this.passwordMaxLen}
-                                />
-                        </div>
-                        <br/>
-                        <div>
-                            <div>
-                                Confirm password
-                            </div>
-                                <input 
-                                type="password" 
-                                id="signup-cpassword-input" 
-                                maxLength={this.passwordMaxLen}
-                                />
-                        </div>
-                    </div>
-
-
-                    <p className="warningMsg">{errMsg}</p>
-
-                    <div className="signup-button">
-                        <button id="signup-button" onClick={this.sendSignupRequest}>
-                            Create Account
-                        </button>
-                    </div>
                 </div>
             </div>
         )
