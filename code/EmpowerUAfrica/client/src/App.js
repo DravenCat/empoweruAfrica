@@ -3,6 +3,7 @@ import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import Index from './components/pages/index/index'; 
 import Footer from './components/components/footer/footer'; 
 import Header from './components/components/header/header'; 
+import Navbar from './components/components/navbar/navbar';
 import Signup from './components/pages/signup/signup';
 import Signin from './components/pages/signin/signin'; 
 
@@ -17,6 +18,7 @@ export default function App() {
       <Switch>
 
         <Route exact path="/">
+          <Navbar />
           <Index />
         </Route>
 
@@ -29,10 +31,12 @@ export default function App() {
         </Route>
 
         <Route exact path="/setting_password">
+          <Navbar />
           <SetPassword />
         </Route>
 
         <Route exact path="/setting_email">
+          <Navbar />
           <SetEmail/>
         </Route>
         
