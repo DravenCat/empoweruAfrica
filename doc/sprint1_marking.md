@@ -1,7 +1,7 @@
 # Sprint 1 Marking Scheme
 
-**Team Name:** [Team Name]  
-**Github:** [GitHub Repo Link]  
+**Team Name:** UofT-Kings
+**Github:** https://github.com/UTSCCSCC01/project-uoft-kings 
 
 *(Convention: N=sprint number, ex: sprintN.md means sprint2.md for sprint 2, and SR(N-1)md means SR1.md for sprint 2, that is Sprint Retrospective for Sprint 1, to be hold during planning meeting at the beginning of Sprint 2)*
 
@@ -192,6 +192,8 @@ Tracking on Jira Total Mark: 19 / 20
 
     Your Mark: 4
 
+    System Design Total: 10/10
+
 ---
 
 ## Documentation (max 3 marks)
@@ -201,8 +203,8 @@ Tracking on Jira Total Mark: 19 / 20
 	- 1 mark = documentation has been created, but portions of the codebase are un-documented or the documentation is vague/not helpful
   - 0 marks = documentation has not been created
 
-  Your Mark: 0 / 3
-  Feedback: README file missing from root directory
+  Your Mark: 1 / 3
+  Feedback: Portions of the codebase are undocumented. Missing details about frontend and backend systems.
 
 
 ---
@@ -220,12 +222,12 @@ Tracking on Jira Total Mark: 19 / 20
     - 8 marks = features presented work flawlessly
     - 1 mark removed for each error or missing records on Jira
 
-  Your Mark: __ / 10
+  Your Mark: 10 / 10
 
 ---
 
 
 ## Total Mark
 
-71 / 89
+82 / 89
 
