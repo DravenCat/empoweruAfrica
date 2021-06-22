@@ -1,0 +1,83 @@
+.signup-page {
+    background-color: rgb(252, 252, 252);
+    height: 1000px;
+}
+
+.signup-field {
+    background-color: white;
+    width: 500px;
+    height: 700px;
+    text-align: center;
+    margin: 50px auto;
+    box-shadow: 0px 1px 10px #888888;
+}
+
+.signup-title {
+    padding-top: 50px;
+    font-size: 50px;
+    text-align: center;
+}
+
+.signup-form-field {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    text-align: center;
+    font-size: 20px;
+    padding-top: 30px;
+}
+
+.signup-navbar {
+    background-color: white;
+    box-shadow: 0px 1px 4px #888888;
+}
+
+#signup-home {
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: 40px;
+    text-decoration: none;
+    color: black;
+}
+
+.signup-title {
+    text-align: center;
+}
+
+.direct-signin {
+    text-align: center;
+}
+
+.signup-button {
+    padding-top: 40px;
+}
+
+#signup-button {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+    background-color: rgb(34, 100, 243);
+    color:white;
+    padding: 10px 25px;
+    font-size: 20px;
+    border-radius: 12px;
+}
+
+#signup-button:hover {
+    background-color: #2689da; 
+    color: white;
+}
+
+#entrepreneur, #company, #investor {
+    color: black;
+    background-color: white;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 15px;
+}
+
+#entrepreneur:hover, #company:hover, #investor:hover {
+    color: white;
+    background-color: rgb(34, 100, 243);
+}
+
+p.warningMsg {
+    color: red; 
+    margin: 0; 
+}
