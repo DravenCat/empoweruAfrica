@@ -1,10 +1,19 @@
 const init = require('./db-init'); 
-
-
+const config = require('./config');
 
 let connection;
+
+
+/*
+    When executed, removes all rows in Tokens table that are expired. 
+*/
+const removeExpiredTokens = async () => {
+    await connection.execute("DELETE FROM Tokens WHERE expiration_time < NOW(); "); 
+}
+
 (async () => {
     connection = await init();
+    setInterval(removeExpiredTokens, 60 * 1000 * config.tokens.cleanExpiredTokenInterval); 
     console.log('[db]: connected to MySQL server');
 })();
 
@@ -81,12 +90,55 @@ const db = {
         returns:
             nothing
     */
-   updateCredentials: async (type, username, newCredential) => {
+    updateCredentials: async (type, username, newCredential) => {
         let sql = `UPDATE Accounts SET ${type} = ? WHERE username = ?`; 
         let data = [newCredential, username];
         await connection.execute(sql, data);
-   }
+   },
+   /*
+        params:
+            - token: String, the user's token 
+            - username: String
+            - expirationTime: Number, int
+        returns:
+            nothing
+   */
+    addToken: async (token, username) => {
+        let sql = `INSERT INTO Tokens(token, username, expiration_time) \
+        VALUES(?, ?, NOW() + INTERVAL ${config.tokens.tokenExpirationTime});`;
+        console.log(sql);
+        let data = [token, username]; 
+        await connection.execute(sql, data);
+    }, 
+   
+    /*
+        params: 
+            - token: String, the token to be deleted. 
+        returns:
+            nothing
+    */
+    delToken: async (token) => {
+        let sql = 'DELETE FROM Tokens WHERE token=?'; 
+        let data = [token]; 
+        await connection.execute(sql, data);
+    }, 
 
+    /*
+        params:
+            - token: String, the token to be queried. 
+        returns:
+            - username: String, the username to corresponding to the token. 
+            - null if the token is not found in the database, or has expired. 
+    */
+    getUsernameByToken: async (token) => {
+        let sql = 'SELECT username FROM Tokens WHERE token = ? AND expiration_time > NOW()';
+        let data = [token]; 
+        let response = await connection.execute(sql, data); 
+        if (response[0].length === 0) {
+            return null;
+        }
+        return response[0][0].username; 
+    }
 }; 
 
 
