@@ -127,6 +127,7 @@ const loadEvents = async (connection) => {
     console.log(sql); 
     await connection.execute(sql); 
     console.log(`[db-init] Event cleanExpiredTokens loaded`); 
+    
 }
 
 const init = async () => {
