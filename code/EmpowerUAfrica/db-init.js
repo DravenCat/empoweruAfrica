@@ -121,20 +121,10 @@ const checkTables = async (connection) => {
     }
 }
 
-const loadEvents = async (connection) => {
-    let cleanExpiredTokens = await fs.readFile(eventDirPath + "cleanExpiredTokens" + ".sql");
-    let sql = stringFormat(cleanExpiredTokens.toString(), config.tokens); 
-    console.log(sql); 
-    await connection.execute(sql); 
-    console.log(`[db-init] Event cleanExpiredTokens loaded`); 
-    
-}
-
 const init = async () => {
     const connectionInfo = await getConnectionInfo(); 
     const connection = await getConnection(connectionInfo); 
     await checkTables(connection);
-    await loadEvents(connection);
     return connection; 
 }
 

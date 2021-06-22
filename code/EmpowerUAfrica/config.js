@@ -5,7 +5,7 @@
 
 module.exports = {
     tokens: {
-        tokenExpirationTime : "48 HOUR", 
-        cleanExpiredTokenInterval: "1 HOUR"
+        tokenExpirationTime : "48 HOUR",    // In the form '<amount> [MINUTE or HOUR or DAY]'
+        cleanExpiredTokenInterval: 60       // In minutes
     }
 }

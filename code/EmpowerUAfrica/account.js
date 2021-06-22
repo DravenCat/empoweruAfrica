@@ -4,7 +4,6 @@ const utils = require('./utils')
 
 const router = express.Router(); 
 
-let tokenToUsrname = {}
 
 router.post('/signup', async (req, res) => {
     console.log('[account]: signup request recieved. ');
@@ -38,7 +37,7 @@ router.post('/signup', async (req, res) => {
     }
 
     let token = utils.getToken();
-    tokenToUsrname[token] = username;
+    await db.addToken(token, username); 
     res.cookie('token', token, 
     {
         httpOnly: true
@@ -90,21 +89,20 @@ router.post('/signin', async (req, res) => {
     {
         httpOnly: true
     })
-    tokenToUsrname[token] = username; 
+    await db.addToken(token, username);
     res.status(200).json({
         "message": "Sign in success.", 
         "username": username
     });
-    console.log(tokenToUsrname);
     
 });
 
-router.post('/signout', (req, res) => {
+router.post('/signout', async (req, res) => {
     let token = req.cookies.token;
 
     // Remove token from tokenToUsername
     if (token !== undefined) {
-        delete tokenToUsrname[token]; 
+        await db.delToken(token);
     }
     
     res.clearCookie('token').json({"message": "success"});
@@ -114,15 +112,15 @@ router.post('/updateCredentials', async (req, res) => {
     let type = req.body.type;
     let newCredential = req.body.new;
     let token = req.cookies.token; 
-    
+    let username = token === undefined ? null: await db.getUsernameByToken(token); 
+
     // The user is not signed in, or the token is not valid.
-    if (token === undefined || !(token in tokenToUsrname)) {
+    if (username === null) {
         res.status(403).clearCookie('token').json({
             "message": "You have to sign in before updating your email or password."
         });
         return; 
     }
-    let username = tokenToUsrname[token];
 
     // type field is invalid
     if (type !== 'email' && type !== 'password') {

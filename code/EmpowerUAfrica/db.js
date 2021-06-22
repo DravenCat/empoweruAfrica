@@ -1,10 +1,19 @@
 const init = require('./db-init'); 
-
-
+const config = require('./config');
 
 let connection;
+
+
+/*
+    When executed, removes all rows in Tokens table that are expired. 
+*/
+const removeExpiredTokens = async () => {
+    await connection.execute("DELETE FROM Tokens WHERE expiration_time < NOW(); "); 
+}
+
 (async () => {
     connection = await init();
+    setInterval(removeExpiredTokens, 60 * 1000 * config.tokens.cleanExpiredTokenInterval); 
     console.log('[db]: connected to MySQL server');
 })();
 
@@ -94,10 +103,11 @@ const db = {
         returns:
             nothing
    */
-    addToken: async (token, username, expirationTime) => {
-        let sql = 'INSERT INTO Token(token, username, expiration_time) \
-                    VALUES(?, ?, ?)';
-        let data = [token, username, expirationTime]; 
+    addToken: async (token, username) => {
+        let sql = `INSERT INTO Tokens(token, username, expiration_time) \
+        VALUES(?, ?, NOW() + INTERVAL ${config.tokens.tokenExpirationTime});`;
+        console.log(sql);
+        let data = [token, username]; 
         await connection.execute(sql, data);
     }, 
    
@@ -108,8 +118,8 @@ const db = {
             nothing
     */
     delToken: async (token) => {
-        let sql = 'DELETE FROM Token WHERE token=?'; 
-        let date = [token]; 
+        let sql = 'DELETE FROM Tokens WHERE token=?'; 
+        let data = [token]; 
         await connection.execute(sql, data);
     }, 
 
@@ -118,10 +128,16 @@ const db = {
             - token: String, the token to be queried. 
         returns:
             - username: String, the username to corresponding to the token. 
-            - null if the token is not found in the database. (might be expired and deleted)
+            - null if the token is not found in the database, or has expired. 
     */
     getUsernameByToken: async (token) => {
-
+        let sql = 'SELECT username FROM Tokens WHERE token = ? AND expiration_time > NOW()';
+        let data = [token]; 
+        let response = await connection.execute(sql, data); 
+        if (response[0].length === 0) {
+            return null;
+        }
+        return response[0][0].username; 
     }
 }; 
 
