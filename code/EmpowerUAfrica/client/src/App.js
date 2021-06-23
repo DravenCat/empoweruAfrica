@@ -10,6 +10,8 @@ import Signin from './components/pages/signin/signin';
 import SetPassword from './components/pages/setting/setting_password'; 
 import SetEmail from './components/pages/setting/setting_email'; 
 
+import Profile from './components/pages/profile/profile'; 
+
 
 export default function App() {
   return (
@@ -40,6 +42,11 @@ export default function App() {
         <Route exact path="/setting_email">
           <Navbar />
           <SetEmail/>
+        </Route>
+
+        <Route exact path="/profile">
+          <Navbar />
+          <Profile/>
         </Route>
         
       </Switch>
