@@ -1,24 +1,35 @@
+/*
+    This file is responsible for setting up database connections / drivers (MySQL, Neo4j)
+    And creating required database & tables if they arn't present.
+    Connection credentials and host info will be read from ./db/credentials.json
+*/
+
 const fs = require('fs').promises; 
 const mysql = require('mysql2/promise'); 
+const neo4j = require('neo4j-driver'); 
 
 const objHasFields = require('./utils').objHasFields; 
-const config = require('./config');
 
 const credentialFilePath = './db/credentials.json';
 const tableStructDirPath = './db/Tables/';
-const eventDirPath = './db/Events/';
-
 const port = '3306'; 
 const database = 'EmpowerUAfricaDB'; 
 
 const getConnectionInfo = async () => {
 
     let connectionInfo = {
-        host: '',
-        user: '',
-        password: '',
-        database,
-        port
+        MySQL: {
+            host: '',
+            user: '',
+            password: '',
+            database,
+            port
+        },
+        Neo4j: {
+            uri: '', 
+            user: '', 
+            password: ''
+        }
     }
 
     // Read MySQLCredentials.json
@@ -32,6 +43,8 @@ const getConnectionInfo = async () => {
             console.error(`[db-init]: ${credentialFilePath} not found. Please create it as said in README.md. `);
             process.exit();
         }
+        console.error(err); 
+        process.exit(1);
     }
 
     // Parse file content
@@ -47,16 +60,18 @@ const getConnectionInfo = async () => {
         }
     }
 
-    if (!objHasFields(credentialObj, ['host', 'user', 'password'])) {
-        console.error(`[db-init]: ${credentialFilePath} does not contain required infoemation. Please fill it in as said in README.md`); 
+    if (!objHasFields(credentialObj['MySQL'], ['host', 'user', 'password']) || 
+        !objHasFields(credentialObj['Neo4j'], ['uri', 'user', 'password'])) {
+        console.error(`[db-init]: ${credentialFilePath} does not contain required information. Please fill it in as said in README.md`); 
         process.exit();
     }
 
-    Object.assign(connectionInfo, credentialObj); 
+    Object.assign(connectionInfo.MySQL, credentialObj.MySQL); 
+    Object.assign(connectionInfo.Neo4j, credentialObj.Neo4j); 
     return connectionInfo; 
 }
 
-const getConnection = async (connectionInfo) => {
+const getMySQLConnection = async (connectionInfo) => {
     let connection;
     try {
         connection = await mysql.createConnection(connectionInfo); 
@@ -69,16 +84,17 @@ const getConnection = async (connectionInfo) => {
         }
         // No database named ${database}
         else if (err.code === 'ER_BAD_DB_ERROR') {
-            connection = createDatabase(connectionInfo, database);
+            connection = createMySQLDatabase(connectionInfo, database);
         }
         else {
             throw err;
         }
     }
+    console.log('[db-init]: Connected to MySQL Server.');
     return connection; 
 }
 
-const createDatabase = async (connectionInfo, newDatabase ) => {
+const createMySQLDatabase = async (connectionInfo, newDatabase ) => {
     // Make a clone of connectionInfo, remove the database field. 
     connectionInfo = Object.assign({}, connectionInfo); 
     delete connectionInfo.database; 
@@ -120,11 +136,58 @@ const checkTables = async (connection) => {
     }
 }
 
+const getNeo4jDriver = async (driverInfo) => {
+    let driver; 
+    const uri = driverInfo.uri; 
+    const user = driverInfo.user; 
+    const password = driverInfo.password; 
+
+    try {
+        driver = neo4j.driver(uri, neo4j.auth.basic(user, password)); 
+    }
+    catch (err) {
+        console.error('[db-init]: Error creating Neo4j driver with given credentials. ');
+        console.error(err); 
+        process.exit(1);
+    }
+    
+    try {
+        let session = driver.session(); 
+        await session.run(`CREATE DATABASE ${database} IF NOT EXISTS`); 
+        await session.close();
+    }
+    catch (err) {
+        console.error(`[db-init]: Error creating Neo4j database ${database}.`); 
+        console.error(err); 
+        process.exit(1); 
+    }
+    // Session object from this method will be operating on ${database} database. 
+    driver.wrappedSession = () => {return driver.session({database})};
+    
+    console.log('[db-init]: Connected to Neo4j Server.');
+    return driver; 
+}
+
 const init = async () => {
     const connectionInfo = await getConnectionInfo(); 
-    const connection = await getConnection(connectionInfo); 
-    await checkTables(connection);
-    return connection; 
+    const MySQLPromise = getMySQLConnection(connectionInfo.MySQL);
+    const Neo4jPromise = getNeo4jDriver(connectionInfo.Neo4j); 
+    let MySQLConnection, Neo4jDriver;
+
+    try {
+        [MySQLConnection, Neo4jDriver] = await Promise.all([MySQLPromise, Neo4jPromise]); 
+    }
+    catch (err) {
+        console.error(err); 
+        process.exit(1); 
+    }
+    await checkTables(MySQLConnection);
+
+    
+    return {
+        MySQL: MySQLConnection,
+        Neo4j: Neo4jDriver
+    }; 
 }
 
 module.exports = init; 
