@@ -16,10 +16,6 @@ const removeExpiredTokens = async () => {
     MySQLConnection = connections.MySQL; 
     Neo4jDriver = connections.Neo4j; 
 
-    let session = Neo4jDriver.wrappedSession(); 
-    await session.run("CREATE (a:actor)");
-    await session.close();
-
     setInterval(removeExpiredTokens, 60 * 1000 * config.tokens.cleanExpiredTokenInterval); 
 })();
 
