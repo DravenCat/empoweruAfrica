@@ -1,20 +1,26 @@
 const init = require('./db-init'); 
 const config = require('./config');
 
-let connection;
-
+let MySQLConnection;
+let Neo4jDriver; 
 
 /*
     When executed, removes all rows in Tokens table that are expired. 
 */
 const removeExpiredTokens = async () => {
-    await connection.execute("DELETE FROM Tokens WHERE expiration_time < NOW(); "); 
+    await MySQLConnection.execute("DELETE FROM Tokens WHERE expiration_time < NOW(); "); 
 }
 
 (async () => {
-    connection = await init();
+    let connections = await init(); 
+    MySQLConnection = connections.MySQL; 
+    Neo4jDriver = connections.Neo4j; 
+
+    let session = Neo4jDriver.wrappedSession(); 
+    await session.run("CREATE (a:actor)");
+    await session.close();
+
     setInterval(removeExpiredTokens, 60 * 1000 * config.tokens.cleanExpiredTokenInterval); 
-    console.log('[db]: connected to MySQL server');
 })();
 
 const db = {
@@ -36,7 +42,7 @@ const db = {
         let sql = 'INSERT INTO Accounts(username, email, password, type)\
         VALUES(?, ?, ?, ?);'; 
         let data = [username, email, password, type]; 
-        await connection.execute(sql, data); 
+        await MySQLConnection.execute(sql, data); 
     }, 
 
     /*
@@ -53,7 +59,7 @@ const db = {
     credentialsMatch: async (idtype, id, password) => {
         let sql = `SELECT password FROM Accounts WHERE ${idtype} = ?`; 
         let data = [id]; 
-        let response = await connection.execute(sql, data);
+        let response = await MySQLConnection.execute(sql, data);
 
         if (response[0].length === 0) {
             return null;
@@ -72,7 +78,7 @@ const db = {
     usernameForEmail: async (email) => {
 	    let sql = 'SELECT username FROM Accounts WHERE email = ?';
         let data = [email];
-        let response = await connection.execute(sql, data);
+        let response = await MySQLConnection.execute(sql, data);
 
         if (response[0].length === 0) {
             return null;
@@ -93,7 +99,7 @@ const db = {
     updateCredentials: async (type, username, newCredential) => {
         let sql = `UPDATE Accounts SET ${type} = ? WHERE username = ?`; 
         let data = [newCredential, username];
-        await connection.execute(sql, data);
+        await MySQLConnection.execute(sql, data);
    },
    /*
         params:
@@ -108,7 +114,7 @@ const db = {
         VALUES(?, ?, NOW() + INTERVAL ${config.tokens.tokenExpirationTime});`;
         console.log(sql);
         let data = [token, username]; 
-        await connection.execute(sql, data);
+        await MySQLConnection.execute(sql, data);
     }, 
    
     /*
@@ -120,7 +126,7 @@ const db = {
     delToken: async (token) => {
         let sql = 'DELETE FROM Tokens WHERE token=?'; 
         let data = [token]; 
-        await connection.execute(sql, data);
+        await MySQLConnection.execute(sql, data);
     }, 
 
     /*
@@ -133,13 +139,33 @@ const db = {
     getUsernameByToken: async (token) => {
         let sql = 'SELECT username FROM Tokens WHERE token = ? AND expiration_time > NOW()';
         let data = [token]; 
-        let response = await connection.execute(sql, data); 
+        let response = await MySQLConnection.execute(sql, data); 
         if (response[0].length === 0) {
             return null;
         }
         return response[0][0].username; 
-    }
+    }, 
+    /*
+        This method is only here for demonstrating how a neo4j query would work, 
+        and should not be called
+    */
+   neo4jExample: async () => {
+        let session = Neo4jDriver.wrappedSession(); 
+        let query = "CREATE (a:Example {Name: $name})"; 
+        let params = {"name": "myname"};
+        let result;
+        try {
+            result = session.run(query, params);
+        }
+        catch (err) {
+            console.error(err);
+        }
+        
+   }
 }; 
 
-
+process.on('exit', () => {
+    MySQLConnection.end(); 
+    Neo4jDriver.close(); 
+}); 
 module.exports = db; 
