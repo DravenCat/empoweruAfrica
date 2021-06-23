@@ -1,4 +1,54 @@
-.footer {
-    background-color: #EED2AA;
-    border-top: #D85541 solid 3px;
+.footer-area1 {
+    margin-top: 50px;
+    background-color: rgb(63, 63, 63);
+    display: grid;
+    grid-template-columns: 30% 30%;
+    justify-content: space-between;
+}
+
+.footer-area1 > div{
+    align-items: center;
+    text-align: center;
+}
+
+.footer-brand {
+    font-size: 40px;
+}
+
+#footer-home {
+    color: white;
+    text-decoration: none;
+}
+
+.footer-info {
+    font-size: 20px;
+    margin-top: 15px;
+}
+
+#footer-github {
+    background-color: black;
+    color: white;
+    text-decoration: none;
+    padding: 5px 10px;
+}
+
+#footer-github:hover {
+    background-color: rgb(19, 19, 19);
+    color: rgb(207, 207, 207);
+    text-decoration: none;
+}
+
+
+.team-description {
+    background-color: black;
+    color: white;
+    text-align: center;
+    height: 50px;
+    position: relative;
+    top: -18px;
+}
+
+.team {
+    position: relative;
+    top: 10px;
 }
