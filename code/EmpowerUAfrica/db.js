@@ -151,12 +151,12 @@ const db = {
         let params = {"name": "myname"};
         let result;
         try {
-            result = session.run(query, params);
+            result = await session.run(query, params);
         }
         catch (err) {
             console.error(err);
         }
-        
+        session.close();
    }
 }; 
 
