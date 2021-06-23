@@ -8,6 +8,7 @@ __Prerequisites__:
 
 - Node.js ^12.12.0
 - MySQL ^8.0.25
+- Neo4j ^4.1.3
 
 __Before you run__:
 1. Clone the repository to your machine. 
@@ -15,9 +16,9 @@ __Before you run__:
 
     cd into `EmpowerUAfrica` directory, run `npm run install-all`
 
-3. Prepare MySQL database
+3. Prepare databases
 
-    Before you run the webapp, you have to make sure your MySQL server is running, and enter your MySQL credentials into `EmpowerUAfrica/db/credentials.json`, in the following form: 
+    Before you run the webapp, you have to make sure your MySQL server and your Neo4j database are running properly, and enter your database credentials into `EmpowerUAfrica/db/credentials.json`, in the following form: 
 
     ```
     {
