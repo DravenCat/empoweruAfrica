@@ -17,14 +17,21 @@ __Before you run__:
 
 3. Prepare MySQL database
 
-    Before you run the webapp, you have to make sure your MySQL server is running, and enter your MySQL credentials into `EmpowerUAfrica/db/credentials`, in the following form: 
+    Before you run the webapp, you have to make sure your MySQL server is running, and enter your MySQL credentials into `EmpowerUAfrica/db/credentials.json`, in the following form: 
 
     ```
     {
-        "host": "<host name>",
-        "user": "<username>", 
-        "password": "<user password>"
+    "MySQL": {
+        "host": "<MySQL host>",
+        "user": "<MySQL username>", 
+        "password": "<MySQL password>"
+    }, 
+    "Neo4j": {
+        "uri": "<Neo4j URI (bolt://)>", 
+        "user": "<Neo4j username>",
+        "password": "<Neo4j password>"
     }
+}
     ```
 
 To run the webapp, use
