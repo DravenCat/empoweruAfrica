@@ -1,6 +1,5 @@
 const fs = require('fs').promises; 
 const mysql = require('mysql2/promise'); 
-const stringFormat = require('string-format');
 
 const objHasFields = require('./utils').objHasFields; 
 const config = require('./config');
