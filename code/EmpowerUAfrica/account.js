@@ -1,6 +1,8 @@
 const express = require('express'); 
 const db = require('./db'); 
-const utils = require('./utils')
+const utils = require('./utils');
+const { validatePassword, passwordErrMsg } = require('./validation');
+const validation = require('./validation');
 
 const router = express.Router(); 
 
@@ -19,6 +21,19 @@ router.post('/signup', async (req, res) => {
         return;
     }
 
+    // Check whether all the entries are valid.
+    let validationFuncs = [validation.validateUsername, validation.validateEmail, validation.validatePassword];
+    let entries = [username, email,  req.body.password]; 
+    for (let i = 0; i < entries.length; i++) {
+        let errCode = validationFuncs[i](entries[i]); 
+        if (errCode !== 0) {
+            res.status(409).json({
+                "message": validation.errMsgs[errCode]
+            });
+            return;
+        }
+    } 
+
     try {
         await db.createNewAccount(
             username,
@@ -29,8 +44,17 @@ router.post('/signup', async (req, res) => {
     }
     catch (err) {
         if (err.code === 'ER_DUP_ENTRY') {
+            // If email or username is duplicated. 
+            let errMsg = '';
+            let emailExists = (await db.usernameForEmail(email)) !== null; 
+            if (emailExists) {
+                errMsg = 'Email already exists. Try a new one. '
+            }
+            else {
+                errMsg = 'Username already exists. Try a new one. '
+            }
             res.status(409).json({
-                "message": "Username or email already exists."
+                "message": errMsg
             });
             return;
         }
@@ -129,8 +153,31 @@ router.post('/updateCredentials', async (req, res) => {
         }); 
         return; 
     }
+
+    // Validate newCredential
+    let errCode
     if (type === 'password') {
+        errCode = validatePassword(newCredential); 
+        
+        // Hash password
         newCredential = utils.hash(newCredential); 
+    }
+    else {
+        // Check whether the new email is used. 
+        if ((await db.usernameForEmail(newCredential)) !== null) {
+            res.status(409).json({
+                "message": "Email already exists. Try a new one. "
+            });
+            return;
+        }
+        errCode = validation.validateEmail(newCredential); 
+    }
+    // Send error message if newCredential is invalid. 
+    if (errCode !== 0) {
+        res.status(400).json({
+            "message": validation.errMsgs[errCode]
+        });
+        return; 
     }
 
     await db.updateCredentials(type, username, newCredential);
