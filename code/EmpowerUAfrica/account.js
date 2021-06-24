@@ -1,7 +1,6 @@
 const express = require('express'); 
 const db = require('./db'); 
 const utils = require('./utils');
-const { validatePassword, passwordErrMsg } = require('./validation');
 const validation = require('./validation');
 
 const router = express.Router(); 
@@ -157,7 +156,7 @@ router.post('/updateCredentials', async (req, res) => {
     // Validate newCredential
     let errCode
     if (type === 'password') {
-        errCode = validatePassword(newCredential); 
+        errCode = validation.validatePassword(newCredential); 
         
         // Hash password
         newCredential = utils.hash(newCredential); 
