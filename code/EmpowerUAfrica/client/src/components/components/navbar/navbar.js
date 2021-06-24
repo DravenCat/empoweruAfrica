@@ -71,14 +71,12 @@ export default class header extends Component {
                         <div className="navbar-notification">
                             <a id="navbar-notification" href="/notifications">
                                 <img src={bell} alt="bell" height='30px' width='30px'/>
-                                <span id="navbar-notification-text">Notification</span>
                             </a>
                         </div>
                 
                         <div className="navbar-chat">
                             <a id = "navbar-chat" href="/chat">
                                 <img src={chat} alt="chat" height='30px' width='30px'/>
-                                <span id="navbar-chat-text">Chat</span>
                             </a>
                         </div>
 
@@ -86,7 +84,6 @@ export default class header extends Component {
                             <div id ="navbar-profile" href="/signup">
                                 <div className="profile-dropdown">
                                     <img src={profile} alt="profile" height='30px' width='30px' className="dropbtn"/>
-                                    <span id="navbar-profile-text">Account</span>
                                     <div className="profile-dropdown-content">
                                         <a href="/profile" id="account-profile">Profile</a>
                                         <a href="/viewallmyposts" id="account-viewallmyposts">View My Posts</a>

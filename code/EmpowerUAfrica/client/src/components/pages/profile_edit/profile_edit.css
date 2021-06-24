@@ -1,4 +1,4 @@
-.profile {
+.edit-profile {
     margin-top: 80px;
     display: grid;
     grid-template-columns: 7% 23% 3% 55% 12%;
@@ -10,16 +10,20 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.grid1 {
+input {
+    outline: none;
+}
+
+.edit-grid1 {
     
 }
 
-.grid2 {
+.edit-grid2 {
     margin-top: 60px;
 
 }
 
-.grid2-photo {
+.edit-grid2-photo {
     background-image: url('../../../resource/icons/p-photo.jpg');
     background-size: cover;
     position: -webkit-sticky;
@@ -33,13 +37,13 @@
     border: 2px solid black;
 }
 
-.grid2-infoarea {
+.edit-grid2-infoarea {
     position: -webkit-sticky;
     position: sticky;
     top: 160px;
     background-color: white;
     color: black;
-    min-height: 150px;
+    min-height: 200px;
     max-width: 90%;
     margin: 0 auto;
     z-index: 1;
@@ -47,49 +51,59 @@
     box-shadow: 0 0 3px gray;
 }
 
-.grid2-name {
+.edit-grid2-name {
     padding-top: 30px;
 }
 
-.grid2-title {
+#fname, #lname{
+    margin-top: 15px;
+    padding: 3px 0;
+    border-radius: 10px;
+}
+
+.edit-grid2-title {
     background-color: rgb(236, 236, 236);
-    margin: 40px 80px;
+    margin: 30px 80px;
     padding: 5px 5px;
     border-radius: 10px;
     box-shadow: 0 0 3px gray;
 }
 
-.grid2-infoarea2 {
+.edit-grid2-infoarea2 {
     position: -webkit-sticky;
     position: sticky;
-    top: 260px;
-    background-color: rgb(236, 236, 236);
-    min-height: 250px;
+    top: 300px;
+    background-color: rgba(236, 236, 236, 90%);
+    min-height: 270px;
     border-radius: 10px;
     box-shadow: 0 0 3px gray;
 }
 
-.grid2-birthday {
+.edit-grid2-age {
     padding-top: 70px;
 }
 
-.grid2-location {
+#age {
+    width: 60px;
+}
+
+.edit-grid2-location {
     margin-top: 10px;
 }
 
-.grid2-email {
+.edit-grid2-email {
     margin-top: 10px;
 }
 
-.grid2-phone {
+.edit-grid2-phone {
     margin-top: 10px;
 }
 
-.grid2-edit {
+.edit-grid2-confirm {
     margin-top: 30px;
 }
 
-#grid2-edit {
+#edit-grid2-confirm {
     text-decoration: none;
     color: black;
     background-color: yellowgreen;
@@ -97,67 +111,77 @@
     border-radius: 20px;
     box-shadow: 0 0 3px gray;
     transition: 0.5s;
+    margin-top: 0px;
 }
 
-#grid2-edit:hover {
+#edit-grid2-confirm:hover {
     color: white;
     background-color: black;
 }
 
-.grid3 {
+.edit-grid3 {
     
 }
 
-.grid4 {
-    background-color: white;
+.edit-grid4 {
+    background-color: rgba(255, 255, 255, 90%);
     margin-top: 120px;
-    height: 700px;
+    min-height: 700px;
     border-radius: 10px;
     box-shadow: 0 0 3px gray;
- 
 }
 
-.grid4-aboutme-header {
+.edit-grid4-aboutme-header {
     text-align: left;
     margin-left: 20px;
 }
 
-.grid4-aboutme-text {
-    text-align: left;
-    margin: 20px 40px;
+#edit-aboutme {
+    max-width: 70%;
+    min-width: 70%;
+    min-height: 200px;
+    border-radius: 10px;
+    box-shadow: 0 0 3px gray;
 }
 
-.grid4-industry {
+.edit-grid4-industry {
     background-color: rgb(236, 236, 236);
-    margin-top: 50px;
-    padding: 20px 0;
+    margin-top: 30px;
+    padding: 30px 0;
 }
 
-.grid4-industry-header {
+.edit-grid4-industry-header {
     text-align: left;
     margin-left: 20px;
 }
 
-.grid4-industry-text {
-    text-align: left;
-    margin: 20px 40px;
+#edit-industry {
+    max-width: 70%;
+    min-width: 70%;
+    min-height: 200px;
+    border-radius: 10px;
+    box-shadow: 0 0 3px gray;
 }
 
-.grid4-tag {
+.edit-grid4-industry-text {
+    padding: 0 auto;
+}
+
+.edit-grid4-tag {
     margin-top: 50px;
 }
 
-.grid4-tag-header {
+.edit-grid4-tag-header {
     text-align: left;
     margin-left: 20px;
 }
 
-.grid4-tag-text {
+.edit-grid4-tag-text {
     text-align: left;
     margin: 20px 40px;
 }
 
-.grid4-tag-text p{
+.edit-grid4-tag-text p{
     background-color: yellowgreen;
     text-align: left;
     padding: 5px 10px;
@@ -168,7 +192,30 @@
     box-shadow: 0 0 3px gray;
 }
 
-.grid5 {
-    
+.edit-grid4-tag-text p input{
+    border-radius: 10px;
+    box-shadow: 0 0 3px gray;
+    min-width: 100%;
+    overflow: auto;
 }
 
+#tag-add {
+    margin-left: 10px;
+    font-size: 17px;
+    border-radius: 10px;
+    box-shadow: 0 0 3px gray;
+    background-color: yellowgreen;
+    color: black;
+    transition: 0.5s;
+
+}
+
+#tag-add:hover {
+    background-color: black;
+    color: white;
+
+}
+
+.edit-grid5 {
+    
+}

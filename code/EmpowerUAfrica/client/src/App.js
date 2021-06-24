@@ -11,6 +11,7 @@ import SetPassword from './components/pages/setting/setting_password';
 import SetEmail from './components/pages/setting/setting_email'; 
 
 import Profile from './components/pages/profile/profile'; 
+import EditProfile from './components/pages/profile_edit/profile_edit'; 
 
 
 export default function App() {
@@ -47,6 +48,11 @@ export default function App() {
         <Route exact path="/profile">
           <Navbar />
           <Profile/>
+        </Route>
+
+        <Route exact path="/edit-profile">
+          <Navbar />
+          <EditProfile/>
         </Route>
         
       </Switch>
