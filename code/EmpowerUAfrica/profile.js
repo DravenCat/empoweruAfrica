@@ -1,5 +1,5 @@
 const express = require('express'); 
-const fs = require('fs/promises'); 
+const fs = require('fs').promises; 
 
 const db = require('./db'); 
 const utils = require('./utils');

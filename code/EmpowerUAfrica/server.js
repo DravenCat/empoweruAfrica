@@ -4,7 +4,7 @@ const cookieParser = require('cookie-parser');
 
 const Utils = require('./utils');
 const accountRouter = require('./account');
-const profileRouter = requeire('./profile');
+const profileRouter = require('./profile');
 
 const PORT = 5000; 
 

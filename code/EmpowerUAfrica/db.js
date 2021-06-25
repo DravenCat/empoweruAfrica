@@ -199,8 +199,4 @@ const db = {
 
 }; 
 
-process.on('exit', () => {
-    MySQLConnection.end(); 
-    Neo4jDriver.close(); 
-}); 
 module.exports = db; 
