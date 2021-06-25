@@ -16,7 +16,7 @@ router.get('/getProfile', async (req, res) => {
         res.json({
             username, 
             type,
-            profile: await db.getProfileByUsername(username)
+            profile: await db.getProfileByUsername(username, type)
         });
     }else{
         res.status(404).json({message: "User does not exist"});
@@ -29,7 +29,7 @@ router.get('/getProfilePic', async (req, res) => {
     let type = await db.getUserType(username);
 
     if(type !== null){
-        let pfp_type = (await db.getProfileByUsername(username)).pfp_type;
+        let pfp_type = (await db.getProfileByUsername(username, type)).pfp_type;
 
         if(pfp_type === 1){
             res.json({url: "../client/public/profilepics/" + username + ".jpg"});
@@ -45,20 +45,21 @@ router.get('/getProfilePic', async (req, res) => {
 });
 
 router.post('/updateProfile', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
 
-    let username = req.body.username; 
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            mesage: 'You have to sign in before you edit your profile. '
+        });
+        return;
+    }
+    let updates = req.body.updates; 
     let type = await db.getUserType(username);
     if(type !== null){
 
-        await db.updateProfile(
-            req.body.username,
-            req.body.name,
-            req.body.gender,
-            req.body.birthdate,
-            req.body.phone_number,
-            req.body.industry,
-            req.body.pfp_type,
-            req.body.description);
+        await db.updateProfile(username, updates, type);
 
         res.status(200).json({message: "Success"});
 
