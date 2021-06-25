@@ -157,7 +157,51 @@ const db = {
             console.error(err);
         }
         session.close();
+   },
+
+    /*
+        params:
+            - username: String
+        returns:
+            - JSON: the user's entire profile
+    */
+   getProfileByUsername: async(username) =>{
+
+   },
+
+   
+    /*
+        params:
+            - username: String
+        returns:
+            - int: the user's type as an int
+    */
+   getUserType: async(username) =>{
+
+   },
+
+   /*
+        params:
+            - username: String
+            - name: String
+            - gender: int
+            - birthdate: date
+            - phone_number: String
+            - industry: String
+            - pfp_type: int
+            - description: String
+    */
+
+   updateProfile: async(username, name, gender, birthdate, phone_number, industry, pfp_type, description) =>{
+
+
+   },
+
+
+   updateProfilePic: async() =>{
+       
    }
+
 }; 
 
 process.on('exit', () => {
