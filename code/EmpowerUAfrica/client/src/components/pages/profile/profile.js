@@ -20,7 +20,7 @@ export default class profile extends Component {
     let profile = {
       "name": "Bosco Njoku",
       "gender": "male",
-      "birthday": "1970-01-01",
+      "birthdate": "1970-01-01",
       "phone": "100 1111 1010",
       "industry": "Software Engineering",
       "description": "I am a male homo-sapiens, currently working as a programmer. I’m learning to start my own online short video platform",
@@ -109,7 +109,7 @@ export default class profile extends Component {
   
               {/* profile age */}
               <div className="grid2-birthday">
-                <span>Birthday: {profile.birthday}</span>
+                <span>Birthday: {profile.birthdate}</span>
               </div>
   
               {/* profile location
