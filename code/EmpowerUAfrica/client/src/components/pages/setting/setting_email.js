@@ -133,7 +133,7 @@ export default class setting_email extends Component {
                 </div>
                 <input type="text" id="cchange-email-input"/>
                   
-                <p className="warningMsg">{errorMsg}</p>
+                <p className="errorMsg">{errorMsg}</p>
 
                 <div className="ce-button">
                   <button id="ce-button" onClick={this.sendUpdateRequest}>

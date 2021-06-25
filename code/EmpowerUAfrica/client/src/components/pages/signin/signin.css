@@ -100,9 +100,3 @@
     background-color: black; 
     color: white;
 }
-
-/* signin page warning message */
-p.warningMsg {
-    color : red;
-    margin: 0;
-}

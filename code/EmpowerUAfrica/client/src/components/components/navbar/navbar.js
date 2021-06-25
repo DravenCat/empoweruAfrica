@@ -22,6 +22,16 @@ export default class header extends Component {
             }
         })
     }
+    viewMyProfile = () => {
+        let url = ''
+        if (localStorage.getItem('signedIn') !== 'true') {
+            url = '/signin';
+        }
+        else {
+            url = '/profile/' + localStorage.getItem('username');
+        }
+        window.location.replace(url);
+    }
 
     render() {
         let username = localStorage.getItem('username');
@@ -97,7 +107,7 @@ export default class header extends Component {
                                     <img src={profile} alt="profile" height='30px' width='30px'/>
                                     <div className="profile-dropdown-content">
                                         {/* Website navbar profile link*/}
-                                        <a href="/profile" id="account-profile">Profile</a>
+                                        <button onClick={this.viewMyProfile} id="account-profile">Profile</button>
                                         {/* Website navbar view all posts link*/}
                                         <a href="/viewallmyposts" id="account-viewallmyposts">View My Posts</a>
                                         {/* Website navbar account setting link*/}

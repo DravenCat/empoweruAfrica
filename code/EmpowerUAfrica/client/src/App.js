@@ -18,41 +18,34 @@ export default function App() {
   return (
     <Router>
       <Header />
+      <Navbar />
       <Switch>
 
         <Route exact path="/">
           <Index />
-          <Navbar />
         </Route>
 
         <Route exact path="/signup">
           <Signup />
-          <Navbar />
         </Route>
 
         <Route exact path="/signin">
           <Signin />
-          <Navbar />
         </Route>
 
         <Route exact path="/setting_password">
           <SetPassword />
-          <Navbar />
         </Route>
 
         <Route exact path="/setting_email">
           <SetEmail/>
-          <Navbar />
         </Route>
 
-        <Route exact path="/profile">
-          <Profile/>
-          <Navbar />
+        <Route exact path="/profile/:username" component={Profile}>
         </Route>
 
         <Route exact path="/edit-profile">
           <EditProfile/>
-          <Navbar />
         </Route>
         
       </Switch>

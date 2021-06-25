@@ -121,7 +121,7 @@ export default class setting_password extends Component {
                 </div>
               </div>
 
-              <p className="warningMsg">{errorMsg}</p>
+              <p className="errorMsg">{errorMsg}</p>
 
               <div className="cp-button">
                 <button id="cp-button" onClick={this.sendUpdateRequest}>
