@@ -15,7 +15,7 @@ export default class profile_edit extends Component {
 
             <div className="edit-grid2">
               <div className="edit-grid2-photo">
-            
+                <a id="change-photo">change photo</a>
               </div>
 
               <div className="edit-grid2-infoarea">

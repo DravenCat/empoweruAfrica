@@ -37,6 +37,22 @@ input {
     border: 2px solid black;
 }
 
+#change-photo {
+    text-decoration: none;
+    color: black;
+    background-color: yellowgreen;
+    padding: 8px 40px;
+    border-radius: 20px;
+    box-shadow: 0 0 3px gray;
+    transition: 0.5s;
+}
+
+#change-photo:hover {
+    color: white;
+    background-color: black;
+    cursor: pointer;
+}
+
 .edit-grid2-infoarea {
     position: -webkit-sticky;
     position: sticky;
@@ -49,6 +65,7 @@ input {
     z-index: 1;
     border-radius: 10px;
     box-shadow: 0 0 3px gray;
+    z-index: 2;
 }
 
 .edit-grid2-name {
@@ -77,6 +94,7 @@ input {
     min-height: 270px;
     border-radius: 10px;
     box-shadow: 0 0 3px gray;
+    z-index: 1;
 }
 
 .edit-grid2-age {
@@ -117,6 +135,7 @@ input {
 #edit-grid2-confirm:hover {
     color: white;
     background-color: black;
+    cursor: pointer;
 }
 
 .edit-grid3 {
@@ -213,6 +232,7 @@ input {
 #tag-add:hover {
     background-color: black;
     color: white;
+    cursor: pointer;
 
 }
 

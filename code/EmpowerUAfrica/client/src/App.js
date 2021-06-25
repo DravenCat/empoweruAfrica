@@ -21,38 +21,38 @@ export default function App() {
       <Switch>
 
         <Route exact path="/">
-          <Navbar />
           <Index />
+          <Navbar />
         </Route>
 
         <Route exact path="/signup">
-          <Navbar />
           <Signup />
+          <Navbar />
         </Route>
 
         <Route exact path="/signin">
-          <Navbar />
           <Signin />
+          <Navbar />
         </Route>
 
         <Route exact path="/setting_password">
-          <Navbar />
           <SetPassword />
+          <Navbar />
         </Route>
 
         <Route exact path="/setting_email">
-          <Navbar />
           <SetEmail/>
+          <Navbar />
         </Route>
 
         <Route exact path="/profile">
-          <Navbar />
           <Profile/>
+          <Navbar />
         </Route>
 
         <Route exact path="/edit-profile">
-          <Navbar />
           <EditProfile/>
+          <Navbar />
         </Route>
         
       </Switch>
