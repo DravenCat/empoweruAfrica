@@ -1,5 +1,6 @@
 const init = require('./db-init'); 
 const config = require('./config');
+const { username } = require('./config');
 
 let MySQLConnection;
 let Neo4jDriver; 
@@ -20,7 +21,7 @@ const removeExpiredTokens = async () => {
 })();
 
 const db = {
-
+/*=======================These method are for MySQL=========================== */
     /*
         params:
             - username: String
@@ -146,6 +147,78 @@ const db = {
         params:
             - username: String 
         returns:
+            - nothing
+     */
+    addUserProfile: async (username) => {
+        let sql = "INSERT INTO Profile(username) VALUES(?);";
+        console.log(sql);
+        let data = [username];
+        await MySQLConnection.execute(sql, data);
+    },
+
+    /*
+        params:
+            - username: String
+            - updates: Object, keys are fields to be updated, values are the new value for the said field
+    */
+    updateProfile: async(username, updates) =>{
+        for (const key in updates) {
+            if (key !== 'username' && updates[key] != undefined && updates[key] != NaN) {
+                let sql = `UPDATE Profile SET ${key} = ? WHERE username=?`
+                let data = [updates[key], username];
+                await MySQLConnection.execute(sql, data);
+            }
+        }
+    },
+
+    /*
+        params:
+            - username: String
+     */
+    getProfilebyUsername: async (username) => {
+        let profile;
+        let sql = "SELECT name, gender, birthdate, phone_number, industry, pfp_type, description "
+                  "FROM Profile "
+                  "WHERE username=?";
+        let data = [username];
+        let response = await MySQLConnection.execute(sql, data);
+        if (response[0].length === 0) {
+            return null;
+        }
+        profile = {
+            username: username,
+            name: response[0][0].name,
+            gender: response[0][0].gender,
+            birthdate: response[0][0].birthdate,
+            phone_number: response[0][0].phone_number,
+            industry: response[0][0].industry,
+            pfp_type: response[0][0].pfp_type,
+            description: response[0][0].description,
+            website: response[0][0].website
+        }
+        return profile;
+    },
+
+    /*
+        params:
+            - username: String
+     */
+    getUserType: async (username) => {
+        let sql = "SELECT type FROM Accounts WHERE username=?";
+        let data = [username];
+        let response = await MySQLConnection.execute(sql, data);
+        if (response[0].length === 0) {
+            return null;
+        }
+        return response[0][0].username; 
+    },
+
+    /*====================================================================================*/
+    /*These methods are for Neo4j database*/
+    /*
+        params:
+            - username: String 
+        returns:
             nothing
     */
     createUser: async (username) => {
@@ -169,11 +242,11 @@ const db = {
         returns:
             nothing
     */
-    makePost: async (username, content, postId, time) => {
+    makePost: async (username, content, title, postId, time) => {
         let session = Neo4jDriver.wrappedSession();
         let query = "MATCH (u:user {UserName: $username}) "
-                   "CREATE (u)-[m:MAKE]->(p:post {Content: $content, Time: $time, PostId: $postId}) ";
-        let params = {"username":username, "content": content, "time": time, "postId": postId};
+                   "CREATE (u)-[:CREATE_POST]->(p:post {Title: $title, Content: $content, Time: $time, PostId: $postId}) ";
+        let params = {"username":username, "content": content, "title": title, "time": time, "postId": postId};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -194,8 +267,8 @@ const db = {
     deletePost: async (username, postId) => {
         let session = Neo4jDriver.wrappedSession();
         let query = "MATCH (u:user {UserName: $username}), "
-                          "(u)-[m:MAKE]->(p:post {PostId: $postId}), "
-                          "(:reply)-[rp:REPLY]->(p) " 
+                          "(u)-[m:CREATE_POST]->(p:post {PostId: $postId}), "
+                          "(:reply)-[rp:REPLY_TO]->(p) " 
                     "DELETE rp, m, p";
         let params = {"username": username, "postId": postId};
         try {
@@ -222,15 +295,15 @@ const db = {
         let query;
         let params;
         if (type === "post") {
-            query = "MATCH (u:user {UserName: $username}), (p:post {PostId: $postId}) "
-                    "CREATE (u)-[:MAKE]->(r:reply {Content: $content, Time: $time, ReplyId: $replyId}) "
-                    "CREATE (r)-[:REPLY]->(p)";
-            params = {"username": username, "postId": targetId, "content": content, "time": time, "replyId": replyId};
+            query = "MATCH (u:user {UserName: $username}), (p:post {PostId: $targetId}) "
+                    "CREATE (u)-[:CREATE_REPLY]->(r:reply {Content: $content, Time: $time, ReplyId: $replyId}) "
+                    "CREATE (r)-[:REPLY_TO]->(p)";
+            params = {"username": username, "targetId": targetId, "content": content, "time": time, "replyId": replyId};
         }else if (type === "reply") {
-            query = "MATCH (u:user {UserName: $username}), (rp:reply {ReplyId: $replyId}) "
-                    "CREATE (u)-[:MAKE]->(r:reply {Content: $content, Time: $time, ReplyId: $replyId}) "
-                    "CREATE (r)-[:REPLY]->(rp)";
-            params = {"username": username, "replyId": targetId, "content": content, "time": time, "replyId": replyId};
+            query = "MATCH (u:user {UserName: $username}), (rp:reply {ReplyId: $targetId}) "
+                    "CREATE (u)-[:CREATE_REPLY]->(r:reply {Content: $content, Time: $time, ReplyId: $replyId}) "
+                    "CREATE (r)-[:REPLY_TO]->(rp)";
+            params = {"username": username, "targetId": targetId, "content": content, "time": time, "replyId": replyId};
         }
         try {
             await session.run(query, params);
@@ -250,8 +323,8 @@ const db = {
     deleteReply: async (username, replyId) => {
         let session = Neo4jDriver.wrappedSession();
         let query = "MATCH (u:user {UserName: $username}), "
-                          "(u)-[m:MAKE]->(r:reply {ReplyId: $replyId}), "
-                          "(r)-[rp:REPLY]->() "
+                          "(u)-[m:CREATE_REPLY]->(r:reply {ReplyId: $replyId}), "
+                          "(r)-[rp:REPLY_TO]->() "
                     "DELETE m, rp, r";
         let params = {"username": username, "replyId": replyId};
         try {
@@ -272,7 +345,7 @@ const db = {
     addTag: async (username, tagName) => {
         let session = Neo4jDriver.wrappedSession();
         let query = "MATCH (u:user {UserName: $username}) "
-                    "CREATE (u)-[:HAS_TAG]->(t:tag {TagName: $tagName})";
+                    "CREATE (u)-[:TAGGED]->(t:tag {TagName: $tagName})";
         let params = {"username": username, "tagName": tagName};
         try {
             await session.run(query, params);
@@ -293,7 +366,7 @@ const db = {
         let session = Neo4jDriver.wrappedSession();
         let query = "MATCH (u:user {UserName: $username}), "
                           "(t:tag {TagName: $tagName}), "
-                          "(u)-[ht:HAS_TAG]->(t) "
+                          "(u)-[ht:TAGGED]->(t) "
                     "DELETE ht, t";
         let params = {"username": username, "tagName": tagName};
         try {
