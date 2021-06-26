@@ -37,7 +37,7 @@
   }
 }
 
-.errorMsg {
+.warningMsg {
   color: red; 
   font-weight: bold;
   margin: 0; 

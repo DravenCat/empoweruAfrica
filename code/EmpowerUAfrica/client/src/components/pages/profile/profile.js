@@ -1,7 +1,6 @@
 import React, { Component } from 'react'; 
 import Loading from '../../components/loading/loading'; 
 import Tag from '../../components/tag/tag';
-import EditableText from '../../components/editableText/editableText';
 import "./profile.css"
 
 
@@ -14,6 +13,7 @@ export default class profile extends Component {
     ['name', 'phone', 'industry', 'description']
   ];
   genders = ['Male', 'Female', 'other'];
+  getProfileURL = "/api/profile/getProfile"; 
 
   state = {
     username: null,
@@ -23,7 +23,7 @@ export default class profile extends Component {
     error: null,
     edit: false
   }
-  getProfileData = (username) => {
+  getProfileData = async (username) => {
     // Fake data
     let type = 0;
     let profile = {
@@ -52,15 +52,55 @@ export default class profile extends Component {
   //     "tags": ["software engineering", "investor"]
   // }
   
+    // ajax
+    let res; 
+    try {
+      res = await fetch(
+        this.getProfileURL, {
+        method: 'POST',
+        body: JSON.stringify({
+          username
+        }),
+        headers: {
+          'content-type': 'application/json'
+        }
+      
+      }
+      );
+    }
+    catch (err) {
+      alert('Internet Failure'); 
+      console.error(err); 
+      return;
+    }
     
+    let body; 
+    try{
+      body = await res.json();
+    }
+    catch (err) {
+      console.error(err); 
+      this.setState({
+        error: 'Failed to parse response body as JSON. '
+      })
+      return; 
+    }
 
-    this.setState({
-      username,
-      type,
-      profile,
-      updatedProfile: JSON.parse(JSON.stringify(profile)) // deep copy 
-    })
-
+    if (res.ok) {
+      // 2xx
+      this.setState({
+        username,
+        type: body.type,
+        profile: body.profile,
+        updatedProfile: JSON.parse(JSON.stringify(profile)) // deep copy 
+      });
+    }
+    else {
+      // 4xx
+      this.setState({
+        error: `${res.status}: ${body.message}`
+      }); 
+    }
   }
 
   componentDidMount() {
@@ -121,14 +161,15 @@ export default class profile extends Component {
   
 
   render() {
-    if (this.state.username === null) {
-      // If this.getProfileData havn't finish executing
-      return(<Loading />);
-    }
 
     if (this.state.error !== null) {
       // There is an error message
-      return(<p className="warningMsg">{this.state.error}</p>);
+      return(<><br /><br/ ><br /><h1 className="warningMsg">{this.state.error}</h1></>);
+    }
+
+    if (this.state.username === null) {
+      // If this.getProfileData havn't finish executing
+      return(<Loading />);
     }
     
     let profile = this.state.profile;
