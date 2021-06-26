@@ -184,17 +184,10 @@ const db = {
         params:
             - username: String
             - updates: Object, keys are fields to be updated, values are the new value for the said field
-            - type: Number, indicate the type of the user. 
     */
 
-   updateProfile: async(username, updates, type) =>{
+   updateProfile: async(username, updates) =>{
 
-
-   },
-
-
-   updateProfilePic: async() =>{
-       
    }
 
 }; 
