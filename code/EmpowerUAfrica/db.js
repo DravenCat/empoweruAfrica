@@ -447,11 +447,6 @@ const db = {
         session.close();
         return usernameSet;       
     }
-        
 }; 
 
-process.on('exit', () => {
-    MySQLConnection.end(); 
-    Neo4jDriver.close(); 
-}); 
 module.exports = db; 
