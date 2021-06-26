@@ -14,6 +14,7 @@ export default class profile extends Component {
   ];
   genders = ['Male', 'Female', 'other'];
   getProfileURL = "/api/profile/getProfile"; 
+  updateProfileURL = "/api/profile/updateProfile";
 
   state = {
     username: null,
@@ -24,40 +25,12 @@ export default class profile extends Component {
     edit: false
   }
   getProfileData = async (username) => {
-    // Fake data
-    let type = 0;
-    let profile = {
-      "name": "Bosco Njoku",
-      "gender": 0,
-      "birthdate": "1970-01-01",
-      "phone": "100 1111 1010",
-      "industry": "Software Engineering",
-      "description": "I am a male homo-sapiens, currently working as a programmer. I’m learning to start my own online short video platform",
-      "tags": ["software engineering", "programmer", "streaming"]
-    }
-    type = 1;
-    profile = {
-      "name": "Bosco Network Co., Ltd.",
-      "website": "bosco.io",
-      "industry": "Entertainment",
-      "description": "We are aiming to make short video entertainment more accessible than ever in Africa. ",
-      "tags": ["entertainment", "short video", "streaming"]
-    }
-  //   type = 2;
-  //   profile = {
-  //     "name": "Adaora Din-Kariuki",
-  //     "phone": "100 1111 1011",
-  //     "industry": "Software Engineering",
-  //     "description": "I am looking for startup companies to invest in. ",
-  //     "tags": ["software engineering", "investor"]
-  // }
-  
     // ajax
     let res; 
     try {
       res = await fetch(
         this.getProfileURL, {
-        method: 'POST',
+        method: 'GET',
         body: JSON.stringify({
           username
         }),
@@ -69,8 +42,10 @@ export default class profile extends Component {
       );
     }
     catch (err) {
-      alert('Internet Failure'); 
       console.error(err); 
+      this.setState({
+        error: 'Internet Failure: Failed to connect to server.'
+      })
       return;
     }
     
@@ -112,7 +87,7 @@ export default class profile extends Component {
     this.setState({edit: true});
   }
 
-  updateProfileData = () => {
+  updateProfileData = async () => {
     let updatedProfile = JSON.parse(JSON.stringify(this.state.updatedProfile));
     let updates = {};
 
@@ -128,6 +103,7 @@ export default class profile extends Component {
       updatedProfile[key] = val;
     }
 
+    // Find all changed fields. 
     for (let key in updatedProfile) {
       
       if (updatedProfile[key] === this.state.profile[key]) {
@@ -149,6 +125,9 @@ export default class profile extends Component {
       updates[key] = updatedProfile[key];
     }
 
+    // TODO: Finish AJAX
+    let res;
+    
     console.log(updates);
   }
 
@@ -162,9 +141,9 @@ export default class profile extends Component {
 
   render() {
 
-    if (this.state.error !== null) {
-      // There is an error message
-      return(<><br /><br/ ><br /><h1 className="warningMsg">{this.state.error}</h1></>);
+    if (this.state.error !== null && this.state.profile===null) {
+      // Error occured before profile data was loaded. 
+      return(<><h1 className="warningMsg">{this.state.error}</h1></>);
     }
 
     if (this.state.username === null) {
