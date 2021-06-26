@@ -1,25 +1,34 @@
 import React, { Component } from 'react'; 
 import Loading from '../../components/loading/loading'; 
 import Tag from '../../components/tag/tag';
+import EditableText from '../../components/editableText/editableText';
 import "./profile.css"
 
 
 export default class profile extends Component {
 
   userTypes = ['Individual', 'Company', 'Partner']; 
+  fields = [
+    ['name', 'gender', 'birthdate', 'phone', 'industry', 'description'],
+    ['name', 'phone', 'website', 'industry', 'description'],
+    ['name', 'phone', 'industry', 'description']
+  ];
+  genders = ['Male', 'Female', 'other'];
 
   state = {
     username: null,
     type: null,
-    profile: null,
-    error: null
+    profile: {},
+    updatedProfile: {}, 
+    error: null,
+    edit: false
   }
   getProfileData = (username) => {
     // Fake data
     let type = 0;
     let profile = {
       "name": "Bosco Njoku",
-      "gender": "male",
+      "gender": 0,
       "birthdate": "1970-01-01",
       "phone": "100 1111 1010",
       "industry": "Software Engineering",
@@ -48,7 +57,8 @@ export default class profile extends Component {
     this.setState({
       username,
       type,
-      profile
+      profile,
+      updatedProfile: JSON.parse(JSON.stringify(profile)) // deep copy 
     })
 
   }
@@ -57,6 +67,58 @@ export default class profile extends Component {
     let { username } = this.props.match.params; 
     this.getProfileData(username);
   }
+
+  enterEditMode = () => {
+    this.setState({edit: true});
+  }
+
+  updateProfileData = () => {
+    let updatedProfile = JSON.parse(JSON.stringify(this.state.updatedProfile));
+    let updates = {};
+
+    // List of profile fields for all three kinds of users. Not including tags
+    let fields = this.fields; 
+
+    for (let key of fields[this.state.type]) {
+      let id = 'input-' + key;
+      let val = document.getElementById(id).value; 
+      if (key === 'gender') {
+        val = parseInt(val);
+      }
+      updatedProfile[key] = val;
+    }
+
+    for (let key in updatedProfile) {
+      
+      if (updatedProfile[key] === this.state.profile[key]) {
+        continue;
+      }
+      if (updatedProfile[key] instanceof Array && 
+        updatedProfile[key].length === this.state.profile[key].length) {
+        let equals = true; 
+        for (let i = 0; i < updatedProfile[key].length; i++) {
+          if (updatedProfile[key][i] !== this.state.profile[key][i]) {
+            equals = false;
+            break;
+          }
+        }
+        if (equals) {
+          continue; 
+        }
+      }
+      updates[key] = updatedProfile[key];
+    }
+
+    console.log(updates);
+  }
+
+  discardChanges = () => {
+    this.setState({
+      updatedProfile: JSON.parse(JSON.stringify(this.state.profile)),
+      edit: false
+    })
+  }
+  
 
   render() {
     if (this.state.username === null) {
@@ -70,345 +132,200 @@ export default class profile extends Component {
     }
     
     let profile = this.state.profile;
-    let tags = profile.tags.map((tag)=>{return <Tag tag={tag}/>});
+    let updatedProfile = this.state.updatedProfile;
+    let tags = profile.tags.map((tag)=>{return <Tag tag={tag} key={tag}/>});
+    let type = this.state.type;
 
-    if (this.state.type === 0) {
-      // Individual profile
-      return(
-        <div className="profile">
-          
-          {/* grid display column 1 */}
-          <div className="grid1">
-          
+    return(
+      <div className="profile">
+        
+        {/* grid display column 1 */}
+        <div className="grid1">
+        
+        </div>
+
+        {/* grid display column 2 */}
+        <div className="grid2">
+
+          {/* profile picture */}
+          <div className="grid2-photo">
+            {
+              this.state.edit === true?
+              <button className="change-photo">Change Profile Picture</button>:
+              <></>
+            }
           </div>
-  
-          {/* grid display column 2 */}
-          <div className="grid2">
-  
-            {/* profile picture */}
-            <div className="grid2-photo">
-          
+
+          {/* profile information */}
+          <div className="grid2-infoarea">
+
+            <div className="grid2-name">
+              {/* profile fullname */}
+              <b>
+                {this.state.edit===true? 
+                <>
+                  <span>{this.state.type === 1? 'Company Name: ': 'Your Name: '}</span>
+                  <input
+                  id="input-name" 
+                  defaultValue={updatedProfile.name}></input>
+                </>:
+                <span>{profile.name}</span>}
+              </b>
             </div>
-  
-            {/* profile information */}
-            <div className="grid2-infoarea">
-  
-              <div className="grid2-name">
-                {/* profile fullname */}
-                <b>{profile.name}</b>
-              </div>
-  
-              <div className="grid2-title">
-                {/* profile account type */}
-                <span>{this.userTypes[this.state.type]}</span>
-              </div>
+
+            <div className="grid2-title">
+              {/* profile account type */}
+              <span>{this.userTypes[this.state.type]}</span>
             </div>
-  
-            {/* profile information */}
-            <div className="grid2-infoarea2">
-  
-              {/* profile age */}
-              <div className="grid2-birthday">
+          </div>
+
+          {/* profile information */}
+          <div className="grid2-infoarea2">
+
+            {/* profile birthday */}
+            { type === 0? 
+            <div className="grid2-text">
+              {
+                this.state.edit === true?
+                <>
+                  <span>Birthday:</span>
+                  <input type="date" defaultValue={updatedProfile.birthdate}
+                  id="input-birthdate"/>
+                </>:
                 <span>Birthday: {profile.birthdate}</span>
-              </div>
-  
-              {/* profile location
-              <div className="grid2-location">
-                <span>Location: Toronto, Canada</span>
-              </div> */}
-  
-              {/* profile email */}
-              <div className="grid2-email">
-                <span>Email: example@mail.com</span>
-              </div>
-  
-              {/* profile phone number */}
-              <div className="grid2-phone">
-                <span>Phone: {profile.phone}</span>
-              </div>
-  
-              {/* direct to profile edit page */}
-              <div className="grid2-edit">
-                {
-                  localStorage.getItem('username') === this.state.username?
-                  <a id="grid2-edit" href="/edit-profile">Edit</a>:
-                  <p></p>
-                }
-              </div>
-  
-            </div>
-  
-          </div>
-  
-          {/* grid display column 3 */}
-          <div className="grid3">
-          
-          </div>
-  
-          {/* grid display column 4 */}
-          <div className="grid4">
-  
-            <div className="grid4-aboutme">
-              <h1 className="grid4-aboutme-header">About me</h1>
-              <div className="grid4-aboutme-text">
-                {/* profile aboutme section */}
-                <span>
-                  {profile.description}
-                </span>
-              </div>
-            </div>
-  
-            <div className="grid4-industry">
-              <h1 className="grid4-industry-header">Industry</h1>
-              <div className="grid4-industry-text">
-                {/* profile aboutme industry */}
-                <span>
-                  {profile.industry}
-                </span>
-              </div>
-            </div>
-  
-            <div className="grid4-tag">
-              <h1 className="grid4-tag-header">Tags</h1>
-              <div className="grid4-tag-text">
-                {/* profile tag section */}
-                {tags}
-              </div>
-            </div>
-  
-          </div>
-  
-          {/* grid display column 5 */}
-          <div className="grid5">
-          
-          </div>
-  
-        </div>
-      )
-    }
-    if (this.state.type === 1) {
-      // Company profile
-      return(
-        <div className="profile">
-          
-          {/* grid display column 1 */}
-          <div className="grid1">
-          
-          </div>
-  
-          {/* grid display column 2 */}
-          <div className="grid2">
-  
-            {/* profile picture */}
-            <div className="grid2-photo">
-          
-            </div>
-  
-            {/* profile information */}
-            <div className="grid2-infoarea">
-  
-              <div className="grid2-name">
-                {/* profile fullname */}
-                <b>{profile.name}</b>
-              </div>
-  
-              <div className="grid2-title">
-                {/* profile account type */}
-                <span>{this.userTypes[this.state.type]}</span>
-              </div>
-            </div>
-  
-            {/* profile information */}
-            <div className="grid2-infoarea2">
-  
-              {/* profile age */}
-              <div className="grid2-birthday">
-                <span>Website: {profile.website}</span>
-              </div>
-  
-              {/* profile location
-              <div className="grid2-location">
-                <span>Location: Toronto, Canada</span>
-              </div> */}
-  
-              {/* profile email */}
-              <div className="grid2-email">
-                <span>Email: example@mail.com</span>
-              </div>
-  
-              {/* profile phone number */}
-              <div className="grid2-phone">
-                <span>Phone: {profile.phone}</span>
-              </div>
-  
-              {/* direct to profile edit page */}
-              <div className="grid2-edit">
-                {
-                  localStorage.getItem('username') === this.state.username?
-                  <a id="grid2-edit" href="/edit-profile">Edit</a>:
-                  <p></p>
-                }
-              </div>
-  
-            </div>
-  
-          </div>
-  
-          {/* grid display column 3 */}
-          <div className="grid3">
-          
-          </div>
-  
-          {/* grid display column 4 */}
-          <div className="grid4">
-  
-            <div className="grid4-aboutme">
-              <h1 className="grid4-aboutme-header">About Us</h1>
-              <div className="grid4-aboutme-text">
-                {/* profile aboutme section */}
-                <span>
-                  {profile.description}
-                </span>
-              </div>
-            </div>
-  
-            <div className="grid4-industry">
-              <h1 className="grid4-industry-header">Industry</h1>
-              <div className="grid4-industry-text">
-                {/* profile aboutme industry */}
-                <span>
-                  {profile.industry}
-                </span>
-              </div>
-            </div>
-  
-            <div className="grid4-tag">
-              <h1 className="grid4-tag-header">Tags</h1>
-              <div className="grid4-tag-text">
-                {/* profile tag section */}
-                {tags}
-              </div>
-            </div>
-  
-          </div>
-  
-          {/* grid display column 5 */}
-          <div className="grid5">
-          
-          </div>
-  
-        </div>
-      )
-    }
-    if (this.state.type === 2) {
-      // Partner profile
-      return(
-        <div className="profile">
-          
-          {/* grid display column 1 */}
-          <div className="grid1">
-          
-          </div>
-  
-          {/* grid display column 2 */}
-          <div className="grid2">
-  
-            {/* profile picture */}
-            <div className="grid2-photo">
-          
-            </div>
-  
-            {/* profile information */}
-            <div className="grid2-infoarea">
-  
-              <div className="grid2-name">
-                {/* profile fullname */}
-                <b>{profile.name}</b>
-              </div>
-  
-              <div className="grid2-title">
-                {/* profile account type */}
-                <span>{this.userTypes[this.state.type]}</span>
-              </div>
-            </div>
-  
-            {/* profile information */}
-            <div className="grid2-infoarea2">
-  
-              {/* profile location
-              <div className="grid2-location">
-                <span>Location: Toronto, Canada</span>
-              </div> */}
-  
-              {/* profile email */}
-              <div className="grid2-email">
-                <span>Email: example@mail.com</span>
-              </div>
-  
-              {/* profile phone number */}
-              <div className="grid2-phone">
-                <span>Phone: {profile.phone}</span>
-              </div>
-  
-              {/* direct to profile edit page */}
-              <div className="grid2-edit">
-                {
-                  localStorage.getItem('username') === this.state.username?
-                  <a id="grid2-edit" href="/edit-profile">Edit</a>:
-                  <p></p>
-                }
-              </div>
-  
-            </div>
-  
-          </div>
-  
-          {/* grid display column 3 */}
-          <div className="grid3">
-          
-          </div>
-  
-          {/* grid display column 4 */}
-          <div className="grid4">
-  
-            <div className="grid4-aboutme">
-              <h1 className="grid4-aboutme-header">About me</h1>
-              <div className="grid4-aboutme-text">
-                {/* profile aboutme section */}
-                <span>
-                  {profile.description}
-                </span>
-              </div>
-            </div>
-  
-            <div className="grid4-industry">
-              <h1 className="grid4-industry-header">Interested Industry</h1>
-              <div className="grid4-industry-text">
-                {/* profile aboutme industry */}
-                <span>
-                  {profile.industry}
-                </span>
-              </div>
-            </div>
-  
-            <div className="grid4-tag">
-              <h1 className="grid4-tag-header">Tags</h1>
-              <div className="grid4-tag-text">
-                {/* profile tag section */}
-                {tags}
-              </div>
-            </div>
-  
-          </div>
-  
-          {/* grid display column 5 */}
-          <div className="grid5">
-          
-          </div>
-  
-        </div>
-      )
-    }
-  }
+              }
+              {/* company website */}
+            </div>:
+            <></>
+            }
 
+              {
+                type === 1?
+                <div className="grid2-text">
+                  <span>Website: </span>
+                  {
+                    this.state.edit === true? 
+                    <input id="input-website" defaultValue={updatedProfile.website} />:
+                    <span>{profile.website}</span>
+                  }
+                </div>
+                :
+                <></>
+              }
+
+            { type === 0?
+            <div className="grid2-text">
+              <span>Gender: </span>
+              <select id='input-gender'>
+                <option key="0" value="0">Male</option>
+                <option key="1" value="1">Female</option>
+                <option key="2" value="2">Other</option>
+              </select>
+            </div>:
+            <></>
+            }
+
+            {/* profile email */}
+            <div className="grid2-text">
+              <span>Email: example@mail.com</span>
+            </div>
+
+            
+
+            {/* profile phone number */}
+            <div className="grid2-text">
+
+              <span>Phone: </span>
+            {
+              this.state.edit === true?
+              <input id="input-phone" defaultValue={updatedProfile.phone}/>:
+              <span>{profile.phone}</span>
+            }
+            </div>
+
+            {/* direct to profile edit page */}
+            <div className="grid2-edit">
+              {
+                this.state.edit === true? 
+                <>
+                  <button className="grid2-btn" onClick={this.updateProfileData}>Confirm</button>
+                  <button className="grid2-btn" id="discard-btn" onClick={this.discardChanges}>Discard</button>
+                </>: 
+                localStorage.getItem('username') === this.state.username?
+                <button className="grid2-btn" onClick={this.enterEditMode}>Edit</button>:
+                <></>
+              }
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* grid display column 3 */}
+        <div className="grid3">
+        
+        </div>
+
+        {/* grid display column 4 */}
+        <div className="grid4">
+
+          <div className="grid4-aboutme">
+            <h1 className="grid4-aboutme-header">
+              {type === 1?
+                <span>About Us</span>:
+                <span>About Me</span>
+              }
+            </h1>
+            <div className="grid4-aboutme-text">
+              {/* profile aboutme section */}
+              {this.state.edit === true?
+                <textarea 
+                className="edit-textbox" 
+                id="input-description" 
+                defaultValue={updatedProfile.description} 
+                />:
+                <span>
+                  {profile.description}
+                </span>
+              }
+            </div>
+          </div>
+
+          <div className="grid4-industry">
+            <h1 className="grid4-industry-header">
+              Focused Industry
+            </h1>
+            <div className="grid4-industry-text">
+              {/* profile aboutme industry */}
+              {this.state.edit === true?
+                <textarea 
+                className="edit-textbox" 
+                id="input-industry" 
+                defaultValue={updatedProfile.industry} 
+                />:
+                <span>
+                  {profile.industry}
+                </span>
+              }
+            </div>
+          </div>
+
+          <div className="grid4-tag">
+            <h1 className="grid4-tag-header">Tags</h1>
+            <div className="grid4-tag-text">
+              {/* profile tag section */}
+              {tags}
+            </div>
+          </div>
+
+        </div>
+
+        {/* grid display column 5 */}
+        <div className="grid5">
+        
+        </div>
+
+      </div>
+    );
+  }
 }

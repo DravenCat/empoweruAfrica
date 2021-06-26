@@ -32,7 +32,20 @@
     border-radius: 20px;
     border: 2px solid black;
 }
-
+.change-photo {
+    text-decoration: none;
+    color: black;
+    background-color: yellowgreen;
+    padding: 8px 40px;
+    border-radius: 20px;
+    box-shadow: 0 0 3px gray;
+    transition: 0.5s;
+}
+.change-photo:hover {
+    color: white;
+    background-color: black;
+    cursor: pointer;
+}
 .grid2-infoarea {
     position: -webkit-sticky;
     position: sticky;
@@ -68,29 +81,18 @@
     border-radius: 10px;
     box-shadow: 0 0 3px gray;
     z-index: 1;
-}
-
-.grid2-birthday {
     padding-top: 70px;
+    margin-top: 1em;
 }
 
-.grid2-location {
-    margin-top: 10px;
+.grid2-text {
+   margin-top: 0.5em;
+}
+.grid2-edit{
+    margin-top: 4em;
 }
 
-.grid2-email {
-    margin-top: 10px;
-}
-
-.grid2-phone {
-    margin-top: 10px;
-}
-
-.grid2-edit {
-    margin-top: 30px;
-}
-
-#grid2-edit {
+.grid2-btn {
     text-decoration: none;
     color: black;
     background-color: yellowgreen;
@@ -100,9 +102,16 @@
     transition: 0.5s;
 }
 
-#grid2-edit:hover {
+.grid2-btn:hover {
     color: white;
     background-color: black;
+}
+
+#discard-btn {
+    background-color: rgb(252, 57, 45);
+}
+#discard-btn:hover{
+    background-color: rgb(202, 7, 0);
 }
 
 .grid3 {
@@ -117,6 +126,10 @@
     min-height: 700px;
 }
 
+.grid4-aboutme {
+    min-height: 8em;
+}
+
 .grid4-aboutme-header {
     text-align: left;
     margin-left: 20px;
@@ -125,6 +138,13 @@
 .grid4-aboutme-text {
     text-align: left;
     margin: 20px 40px;
+}
+
+.edit-textbox {
+    width: 80%;
+    min-height: 200px;
+    border-radius: 10px;
+    box-shadow: 0 0 3px gray;
 }
 
 .grid4-industry {

@@ -11,7 +11,7 @@ import SetPassword from './components/pages/setting/setting_password';
 import SetEmail from './components/pages/setting/setting_email'; 
 
 import Profile from './components/pages/profile/profile'; 
-import EditProfile from './components/pages/profile_edit/profile_edit'; 
+// import EditProfile from './components/pages/profile_edit/profile_edit'; 
 
 
 export default function App() {
@@ -42,10 +42,6 @@ export default function App() {
         </Route>
 
         <Route exact path="/profile/:username" component={Profile}>
-        </Route>
-
-        <Route exact path="/edit-profile">
-          <EditProfile/>
         </Route>
         
       </Switch>
