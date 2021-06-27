@@ -18,6 +18,7 @@
     "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
     "mysql2": "^2.2.5",
+    "neo4j-driver": "^4.3.1",
     "react-bootstrap": "^1.6.1",
     "react-router": "^5.2.0"
   },

@@ -3,17 +3,8 @@ import './signup.css';
 
 
 
-export default class signin extends Component {
 
-    // Consts
-    emailMinLen = 0; // But it has to pass the RE validation
-    emailMaxLen = 255; 
-    passwordMinLen = 6; 
-    passwordMaxLen = 255;
-    userNameMinLen = 3; 
-    userNameMaxLen = 31;
-    userNameValidChars = ['-', '_'];
-    emailValidationRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+export default class signin extends Component {
     signupURL = '/account/signup';
 
     // State
@@ -64,66 +55,6 @@ export default class signin extends Component {
         this.setState({accountType: 2});
     }
 
-    /*
-        params: 
-            - email: String, the email to be validated
-            - cemail: String, the email user inputted in the 
-            'confirm email' input. 
-        returns:
-            - true, if email is a valid email address and cemail === email
-            - false, o\w
-    */
-    validateEmail = (email, cemail) => {
-        // Two emails do not match
-        if (email !== cemail) {
-            this.setState({error: 'Two email entries does not match.'});
-            return false; 
-        }
-        // Email too long or too short
-        if (email.length > this.emailMaxLen || email.length < this.emailMinLen) {
-            this.setState({error: `Emails should be between ${this.emailMinLen} and ${this.emailMaxLen} characters.`});
-            return false; 
-        }
-        // Email not in correct form
-        if (!(this.emailValidationRegex.test(email))) {
-            this.setState({error: 'Email not in correct format. An \'@\' is expected. '})
-            return false; 
-        }
-
-        return true; 
-    }
-
-    // Similiar to validateEmail, but with password. 
-    validatePassword = (password, cpassword) => {
-        // Two passwords do not match.
-        if (password !== cpassword) {
-            this.setState({error: 'Two password entries does not match.'});
-            return false; 
-        }
-        // Password too long or too short. 
-        if (password.length > this.passwordMaxLen || password.length < this.passwordMinLen) {
-            this.setState({error: `Passwords should be between ${this.passwordMinLen} and ${this.passwordMaxLen} characters.`})
-            return false; 
-        }
-
-        return true; 
-    }
-
-    validateUsername = (username) => {
-        if (username.length > this.userNameMaxLen || username.length < this.userNameMinLen) {
-            this.setState({error: `Username should be between ${this.userNameMinLen} and ${this.userNameMaxLen} characters.`}); 
-            return false; 
-        }
-        for (let char of username) {
-            if ( !(char >= 'a' && char <= 'z') && !(char >= 'A' && char <= 'Z') && !(char >= '0' && char <= '9') && !(char in this.userNameValidChars)) {
-                this.setState({'error': `Username can only contain upper and lower case letters, digits and special symbols ${this.userNameValidChars.join(', ')}`});
-                return false;
-            }
-        }
-        this.setState({error: null});
-        return true;
-    }
-
     sendSignupRequest = async () => {
         let type = this.state.accountType;
         let username = document.getElementById('signup-username-input').value;
@@ -132,10 +63,15 @@ export default class signin extends Component {
         let password = document.getElementById('signup-password-input').value;
         let cpassword = document.getElementById('signup-cpassword-input').value;
 
-        // If any of the user entry is invalid. 
-        if (!this.validateUsername(username)|| !this.validateEmail(email, cemail) || !this.validatePassword(password, cpassword)) {
-            return;
+        if (password !== cpassword) {
+            this.setState({error: 'Two password entries does not match'});
+            return; 
         }
+        if (email !== cemail) {
+            this.setState({error: 'Two email entries does not match'});
+            return; 
+        }
+
         let res; 
         // ajax
         try{
