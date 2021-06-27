@@ -126,7 +126,55 @@ export default class profile extends Component {
     }
 
     // TODO: Finish AJAX
+
     let res;
+
+    try {
+      res = await fetch(
+        this.getProfileURL, {
+        method: 'POST',
+        body: JSON.stringify({
+          updates
+        }),
+        headers: {
+          'content-type': 'application/json'
+        }
+      
+      }
+      );
+    }
+    catch (err) {
+      console.error(err); 
+      this.setState({
+        error: 'Internet Failure: Failed to connect to server.'
+      })
+      return;
+    }
+    
+    let body; 
+    try{
+      body = await res.json();
+    }
+    catch (err) {
+      console.error(err); 
+      this.setState({
+        error: 'Failed to parse response body as JSON. '
+      })
+      return; 
+    }
+
+    if (res.ok) {
+      // 2xx
+      this.setState({
+        edit: false
+      });
+    }
+    else {
+      // 4xx
+      this.setState({
+        error: `${res.status}: ${body.message}`
+      }); 
+    }
     
     console.log(updates);
   }
