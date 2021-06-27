@@ -89,7 +89,7 @@ export default class header extends Component {
                                     <span id="navbar-profile-text">Account</span>
                                     <div className="profile-dropdown-content">
                                         <a href="/profile" id="account-profile">Profile</a>
-                                        <a href="/viewallmyposts" id="account-viewallmyposts">View My Posts</a>
+                                        <a href="/view_all_posts" id="account-viewallmyposts">View My Posts</a>
                                         <a href="/setting_password" id="account-setting">Setting</a>
                                         <button onClick={this.signOut} id="account-logout">Logout</button>
                                     </div>

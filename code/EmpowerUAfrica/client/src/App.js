@@ -10,6 +10,10 @@ import Signin from './components/pages/signin/signin';
 import SetPassword from './components/pages/setting/setting_password'; 
 import SetEmail from './components/pages/setting/setting_email'; 
 
+import Community from './components/pages/community/community'; 
+import PostContent from './components/pages/postContent/postContent';
+
+import ViewAllPost from './components/pages/viewAllPosts/viewAllPosts'; 
 
 export default function App() {
   return (
@@ -40,6 +44,21 @@ export default function App() {
         <Route exact path="/setting_email">
           <Navbar />
           <SetEmail/>
+        </Route>
+
+        <Route exact path="/community">
+          <Navbar />
+          <Community/>
+        </Route>
+
+        <Route exact path="/view_all_posts">
+          <Navbar />
+          <ViewAllPost/>
+        </Route>
+
+        <Route exact path="/community/post_content">
+          <Navbar />
+          <PostContent/>
         </Route>
         
       </Switch>
