@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 
 const Utils = require('./utils');
 const accountRouter = require('./account');
+const profileRouter = require('./profile');
 
 const PORT = 5000; 
 
@@ -20,7 +21,10 @@ const app = Express();
 const expectedFields = {
     '/api/account/signup': ['username', 'email', 'password', 'type'], 
     '/api/account/signin': ['id', 'password'],
-    '/api/account/updateCredentials': ['type', 'new']
+    '/api/account/updateCredentials': ['type', 'new'],
+    '/api/profile/getProfile': ['username'], 
+    '/api/profile/getProfilePic': ['username'],
+    '/api/profile/updateProfile': ['username', 'updates']
 };
 
 // parse the request body as json. 
@@ -53,5 +57,6 @@ app.get("/", (req, res) => {
 });
 
 app.use('/api/account', accountRouter); 
+app.use('/api/profile', profileRouter); 
 
 app.listen(PORT, () => console.log(`[server]: Server started on port ${PORT}`)); 

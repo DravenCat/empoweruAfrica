@@ -1,5 +1,6 @@
 const init = require('./db-init'); 
 const config = require('./config');
+const { username } = require('./config');
 
 let MySQLConnection;
 let Neo4jDriver; 
@@ -20,7 +21,7 @@ const removeExpiredTokens = async () => {
 })();
 
 const db = {
-
+/*=======================These method are for MySQL=========================== */
     /*
         params:
             - username: String
@@ -141,27 +142,311 @@ const db = {
         }
         return response[0][0].username; 
     }, 
+
     /*
-        This method is only here for demonstrating how a neo4j query would work, 
-        and should not be called
+        params:
+            - username: String 
+        returns:
+            - nothing
+     */
+    addUserProfile: async (username) => {
+        let sql = "INSERT INTO Profile(username) VALUES(?);";
+        console.log(sql);
+        let data = [username];
+        await MySQLConnection.execute(sql, data);
+    },
+
+    /*
+        params:
+            - username: String
+            - updates: Object, keys are fields to be updated, values are the new value for the said field
     */
-   neo4jExample: async () => {
-        let session = Neo4jDriver.wrappedSession(); 
-        let query = "CREATE (a:Example {Name: $name})"; 
-        let params = {"name": "myname"};
-        let result;
-        try {
-            result = await session.run(query, params);
+    updateProfile: async(username, updates) =>{
+        for (const key in updates) {
+            if (key !== 'username' && updates[key] != undefined && updates[key] != NaN) {
+                let sql = `UPDATE Profile SET ${key} = ? WHERE username=?`
+                let data = [updates[key], username];
+                await MySQLConnection.execute(sql, data);
+            }
         }
-        catch (err) {
+    },
+
+    /*
+        params:
+            - username: String
+     */
+    getProfilebyUsername: async (username) => {
+        let profile;
+        let sql = "SELECT name, gender, birthdate, phone_number, industry, pfp_type, description "
+                  "FROM Profile "
+                  "WHERE username=?";
+        let data = [username];
+        let response = await MySQLConnection.execute(sql, data);
+        if (response[0].length === 0) {
+            return null;
+        }
+        profile = {
+            username: username,
+            name: response[0][0].name,
+            gender: response[0][0].gender,
+            birthdate: response[0][0].birthdate,
+            phone_number: response[0][0].phone_number,
+            industry: response[0][0].industry,
+            pfp_type: response[0][0].pfp_type,
+            description: response[0][0].description,
+            website: response[0][0].website
+        }
+        return profile;
+    },
+
+    /*
+        params:
+            - username: String
+     */
+    getUserType: async (username) => {
+        let sql = "SELECT type FROM Accounts WHERE username=?";
+        let data = [username];
+        let response = await MySQLConnection.execute(sql, data);
+        if (response[0].length === 0) {
+            return null;
+        }
+        return response[0][0].username; 
+    },
+
+    /*====================================================================================*/
+    /*These methods are for Neo4j database*/
+    /*
+        params:
+            - username: String 
+        returns:
+            nothing
+    */
+    createUser: async (username) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = "CREATE (u:user {UserName: $username})";
+        let params = {"username": username};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+    },
+
+    /*
+        params: 
+            - username: String
+            - content: String, the content of the post
+            - postId: the unique postId of the post
+            - time: the time that user makes the post
+        returns:
+            nothing
+    */
+    makePost: async (username, content, title, postId, time) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = "MATCH (u:user {UserName: $username}) "
+                   "CREATE (u)-[:CREATE_POST]->(p:post {Title: $title, Content: $content, Time: $time, PostId: $postId}) ";
+        let params = {"username":username, "content": content, "title": title, "time": time, "postId": postId};
+        try {
+            await session.run(query, params);
+        } catch (err) {
             console.error(err);
         }
         session.close();
-   }
+    },
+
+    /*
+        params: 
+            - username: String
+            - time: the time that user makes the reply
+            - postId: the postId of the post that user reply to
+        returns:
+            nothing
+        (warning: deletePost will not delete any reply to this post. If more methods are needed, please contact the developer)
+    */
+    deletePost: async (username, postId) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = "MATCH (u:user {UserName: $username}), "
+                          "(u)-[m:CREATE_POST]->(p:post {PostId: $postId}), "
+                          "(:reply)-[rp:REPLY_TO]->(p) " 
+                    "DELETE rp, m, p";
+        let params = {"username": username, "postId": postId};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.error(err);
+        }
+        session.close();
+    },
+
+    /*
+        params: 
+            - username: String
+            - content: String, the content of the Reply
+            - replyId: the unique id of the reply
+            - targetId: the Id of the target that user reply to
+            - time: the time that user makes the reply
+            - type: the type of the target (should be "post" or "reply")
+        returns:
+            nothing
+    */
+    makeReply: async (username, content, replyId, targetId, time, type) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query;
+        let params;
+        if (type === "post") {
+            query = "MATCH (u:user {UserName: $username}), (p:post {PostId: $targetId}) "
+                    "CREATE (u)-[:CREATE_REPLY]->(r:reply {Content: $content, Time: $time, ReplyId: $replyId}) "
+                    "CREATE (r)-[:REPLY_TO]->(p)";
+            params = {"username": username, "targetId": targetId, "content": content, "time": time, "replyId": replyId};
+        }else if (type === "reply") {
+            query = "MATCH (u:user {UserName: $username}), (rp:reply {ReplyId: $targetId}) "
+                    "CREATE (u)-[:CREATE_REPLY]->(r:reply {Content: $content, Time: $time, ReplyId: $replyId}) "
+                    "CREATE (r)-[:REPLY_TO]->(rp)";
+            params = {"username": username, "targetId": targetId, "content": content, "time": time, "replyId": replyId};
+        }
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.error(err);
+        }
+        session.close();
+    },   
+
+    /*
+        params: 
+            - username: String
+            - replyId: the unique Id of the reply
+        returns:
+            nothing
+    */
+    deleteReply: async (username, replyId) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = "MATCH (u:user {UserName: $username}), "
+                          "(u)-[m:CREATE_REPLY]->(r:reply {ReplyId: $replyId}), "
+                          "(r)-[rp:REPLY_TO]->() "
+                    "DELETE m, rp, r";
+        let params = {"username": username, "replyId": replyId};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.error(err);
+        }
+        session.close();
+    },
+
+    /*
+        params: 
+            - username: String
+            - tagName: String
+        returns:
+            nothing
+    */
+    addTag: async (username, tagName) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = "MATCH (u:user {UserName: $username}) "
+                    "CREATE (u)-[:TAGGED]->(t:tag {TagName: $tagName})";
+        let params = {"username": username, "tagName": tagName};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+    },
+
+    /*
+        params: 
+            - username: String
+            - tagName: String
+        returns:
+            nothing
+    */
+    deleteTag: async (username, tagName) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = "MATCH (u:user {UserName: $username}), "
+                          "(t:tag {TagName: $tagName}), "
+                          "(u)-[ht:TAGGED]->(t) "
+                    "DELETE ht, t";
+        let params = {"username": username, "tagName": tagName};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+            session.close();
+    },
+
+    /*
+        params: 
+            - username: String
+            - postId: String, the postId of the post that user wants to follow
+        returns:
+            nothing
+    */
+    followPost: async (username, postId) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = "MATCH (u:user {UserName: $username}), "
+                           "(p:post {PostId: $postId}) "
+                    "CREATE (u)-[:FOLLOW]->(p)";
+        let params = {"username": username, "postId": postId};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+    },
+
+    /*
+        params: 
+            - username: String
+        returns:
+            A set of postId that user follows
+            Empty if user follows nothing
+    */
+    getFollowedPostByUser: async (username) => {
+        var postIdSet = [];
+        let session = Neo4jDriver.wrappedSession();
+        let query = "MATCH (u:user {UserName: $username}), "
+                           "(u)-[:FOLLOW]->(p:post)"
+                    "RETURN p.PostId AS postId";
+        let params = {"username": username};
+        let result;
+        try {
+            result = await session.run(query, params).then();
+            result.records.forEach(record => postIdSet.push(record.get("postId")));
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+        return postIdSet;
+    },
+
+    /*
+        params: 
+            - postId: String
+        returns:
+            A set of users that follow this post
+            Empty if the post is not followed by any user
+    */
+    getFollowingUserByPost: async (postId) => {
+        var usernameSet = [];
+        let session = Neo4jDriver.wrappedSession();
+        let query = "MATCH (p:post {PostId: $postId}), "
+                           "(u:user)-[:FOLLOW]->(p)"
+                    "RETURN u.UserName AS userName";
+        let params = {"postId": postId};
+        let result;
+        try {
+            result = await session.run(query, params).then();
+            result.records.forEach(record => postIdSet.push(record.get("userName")));
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+        return usernameSet;       
+    }
 }; 
 
-process.on('exit', () => {
-    MySQLConnection.end(); 
-    Neo4jDriver.close(); 
-}); 
 module.exports = db; 
