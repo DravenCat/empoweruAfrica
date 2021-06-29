@@ -12,6 +12,7 @@ import SetEmail from './components/pages/setting/setting_email';
 
 import Community from './components/pages/community/community'; 
 import PostContent from './components/pages/postContent/postContent';
+import MakePost from './components/pages/makePost/makePost'; 
 
 import ViewAllPost from './components/pages/viewAllPosts/viewAllPosts'; 
 
@@ -59,6 +60,11 @@ export default function App() {
         <Route exact path="/community/post_content">
           <Navbar />
           <PostContent/>
+        </Route>
+
+        <Route exact path="/community/make_post">
+          <Navbar />
+          <MakePost/>
         </Route>
         
       </Switch>

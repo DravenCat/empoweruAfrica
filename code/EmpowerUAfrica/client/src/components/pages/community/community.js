@@ -5,6 +5,24 @@ import Post from '../../components/post/post';
 export default class community extends Component{
 
     render() {
+        const postInfo = [
+            {
+                title: "title1",
+                content: "content1",
+                commentNumber: 20,
+            },
+            {
+                title: "title2",
+                content: "content2",
+                commentNumber: 30,
+            },
+            {
+                title: "title3",
+                content: "content3",
+                commentNumber: 40,
+            }
+        ]
+
         return (
             <div className="community">
 
@@ -16,13 +34,13 @@ export default class community extends Component{
 
                     <div className="grid2-topbar">
                         <h2>Community</h2>
-                        <a id="direct-makepost">Make Post</a>
+                        <a id="direct-makepost" href="/community/make_post">Make Post</a>
                     </div>
 
                     <div className="grid2-postsection">
-                        <Post/>
-                        <Post/>
-                        <Post/>
+                        <Post post={postInfo[0]} />
+                        <Post post={postInfo[1]} />
+                        <Post post={postInfo[2]} />
                     </div>
 
                 </div>

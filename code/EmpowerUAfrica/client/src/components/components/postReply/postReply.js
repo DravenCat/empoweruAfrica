@@ -10,7 +10,7 @@ export default class post extends Component{
             <div className="post">
                 <a className="inner" href="community/post_content">
                     <img src={profile}/>
-                    <p>Post Content</p>
+                    <p>{this.props.postReply.content}</p>
                 </a>
             </div>
         )

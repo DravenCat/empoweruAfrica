@@ -16,8 +16,21 @@
     height: 35px;
 }
 
-.post span{
-    padding: 5px 10px;
+.post .post_button{
+    padding: 3px 8px;
+    margin: 0 10px;
+    background-color: yellowgreen;
 }
+
+#post_share:hover {
+    color: white;
+    background-color: black;
+    transition: 0.5s;
+    cursor: pointer;
+}
+
+
+
+
 
 
