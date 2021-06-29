@@ -40,6 +40,7 @@ router.post('/signup', async (req, res) => {
             password, 
             type
         ); 
+        await db.addUserProfile(username);
     }
     catch (err) {
         if (err.code === 'ER_DUP_ENTRY') {

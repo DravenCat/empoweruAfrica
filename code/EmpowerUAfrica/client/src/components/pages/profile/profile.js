@@ -8,13 +8,15 @@ export default class profile extends Component {
 
   userTypes = ['Individual', 'Company', 'Partner']; 
   fields = [
-    ['name', 'gender', 'birthdate', 'phone', 'industry', 'description'],
-    ['name', 'phone', 'website', 'industry', 'description'],
-    ['name', 'phone', 'industry', 'description']
+    ['name', 'gender', 'birthdate', 'phone_number', 'industry', 'description'],
+    ['name', 'phone_number', 'website', 'industry', 'description'],
+    ['name', 'phone_number', 'industry', 'description']
   ];
-  genders = ['Male', 'Female', 'other'];
-  getProfileURL = "/api/profile/getProfile"; 
-  updateProfileURL = "/api/profile/updateProfile";
+  genders = ['Prefer not to tell', 'Male', 'Female', 'Other'];
+  getProfileURL = "/profile/getProfile"; 
+  updateProfileURL = "/profile/updateProfile";
+  updateProfilePicURL = "/profile/updateProfilePic"; 
+  defaultPicURL = "/profilepics/default/default_profile_pic.jpg";
 
   state = {
     username: null,
@@ -22,18 +24,17 @@ export default class profile extends Component {
     profile: {},
     updatedProfile: {}, 
     error: null,
-    edit: false
+    edit: false,
+    img: null
   }
   getProfileData = async (username) => {
     // ajax
     let res; 
+    let url = this.getProfileURL + '?username=' + username; 
     try {
       res = await fetch(
-        this.getProfileURL, {
+        url, {
         method: 'GET',
-        body: JSON.stringify({
-          username
-        }),
         headers: {
           'content-type': 'application/json'
         }
@@ -50,14 +51,17 @@ export default class profile extends Component {
     }
     
     let body; 
+    let text;
     try{
-      body = await res.json();
+      text = await res.text();
+      body = JSON.parse(text);
     }
     catch (err) {
+      console.log(text);
       console.error(err); 
       this.setState({
         error: 'Failed to parse response body as JSON. '
-      })
+      });
       return; 
     }
 
@@ -67,7 +71,7 @@ export default class profile extends Component {
         username,
         type: body.type,
         profile: body.profile,
-        updatedProfile: JSON.parse(JSON.stringify(profile)) // deep copy 
+        updatedProfile: JSON.parse(JSON.stringify(body.profile)) // deep copy 
       });
     }
     else {
@@ -87,6 +91,97 @@ export default class profile extends Component {
     this.setState({edit: true});
   }
 
+  postProfileUpdates = async (updates) => {
+    console.log('postUpdates');
+    let res;
+    try {
+      res = await fetch(
+        this.updateProfileURL, {
+        method: 'POST',
+        body: JSON.stringify({
+          updates
+        }),
+        headers: {
+          'content-type': 'application/json'
+        }
+      
+      }
+      );
+    }
+    catch (err) {
+      console.error(err); 
+      this.setState({
+        error: 'Internet Failure: Failed to connect to server.'
+      })
+      return;
+    }
+    let body; 
+    try{
+      body = await res.json();
+    }
+    catch (err) {
+      console.error(err); 
+      this.setState({
+        error: 'Failed to parse response body as JSON. '
+      })
+      return; 
+    }
+    if (res.ok) {
+      // 2xx
+      await this.getProfileData(this.state.username); 
+      this.setState({
+        edit: false
+      });
+    }
+    else {
+      // 4xx
+      this.setState({
+        error: `${res.status}: ${body.message}`
+      }); 
+    }
+  }
+
+  postNewProfilePic = async () => {
+    let res; 
+    let file = this.state.img; 
+    let formdata = new FormData(); 
+    formdata.append('file', file);
+
+    try {
+      res = await fetch (
+        this.updateProfilePicURL,
+        {
+          method: 'POST', 
+          body: formdata
+        }
+      )
+    }
+    catch (err) {
+      console.error(err); 
+      this.setState({
+        error: 'Internet Failure: Failed to connect to server.'
+      });
+      return;
+    }
+    if (!res.ok) {
+      let body; 
+      try {
+        body = await res.json(); 
+        this.setState({
+          error: body.message
+        });
+      }
+      catch (err) {
+        console.error(err); 
+        this.setState({
+          error: 'Failed to parse response body as JSON. '
+        });
+        return; 
+      }
+    }
+    this.setState({img: null, edit: false});
+  }
+
   updateProfileData = async () => {
     let updatedProfile = JSON.parse(JSON.stringify(this.state.updatedProfile));
     let updates = {};
@@ -102,7 +197,7 @@ export default class profile extends Component {
       }
       updatedProfile[key] = val;
     }
-
+    let hasUpdate = false; 
     // Find all changed fields. 
     for (let key in updatedProfile) {
       
@@ -123,69 +218,52 @@ export default class profile extends Component {
         }
       }
       updates[key] = updatedProfile[key];
+      hasUpdate = true;
     }
 
-    // TODO: Finish AJAX
-
-    let res;
-
-    try {
-      res = await fetch(
-        this.getProfileURL, {
-        method: 'POST',
-        body: JSON.stringify({
-          updates
-        }),
-        headers: {
-          'content-type': 'application/json'
-        }
-      
-      }
-      );
+    let promises = [];
+    if (hasUpdate) {
+      promises.push(this.postProfileUpdates(updates));
+    }    
+    if (this.state.img !== null) {
+      promises.push(this.postNewProfilePic()); 
     }
-    catch (err) {
-      console.error(err); 
-      this.setState({
-        error: 'Internet Failure: Failed to connect to server.'
-      })
-      return;
-    }
-    
-    let body; 
-    try{
-      body = await res.json();
-    }
-    catch (err) {
-      console.error(err); 
-      this.setState({
-        error: 'Failed to parse response body as JSON. '
-      })
-      return; 
+    console.log(promises); 
+    if (promises.length !== 0) {
+      await Promise.all(promises); 
     }
 
-    if (res.ok) {
-      // 2xx
-      this.setState({
-        edit: false
-      });
-    }
-    else {
-      // 4xx
-      this.setState({
-        error: `${res.status}: ${body.message}`
-      }); 
-    }
-    
-    console.log(updates);
   }
 
   discardChanges = () => {
     this.setState({
       updatedProfile: JSON.parse(JSON.stringify(this.state.profile)),
       edit: false
-    })
+    });
+    const profilePic = document.getElementById('profile-pic');
+    let src; 
+    switch (this.state.profile.pfp_type) {
+      case 0:
+        src = this.defaultPicURL;
+        break;
+      case 1:
+        src = "/profilepics/" + this.state.username + ".jpg";
+        break;
+      case 2:
+        src = "/profilepics/" + this.state.username + ".png";
+        break; 
+      default:
+        break; 
+    }
+    profilePic.src = src; 
   }
   
+  loadImg = () => {
+    const imgInput = document.getElementById('change-photo-input');
+    const profilePic = document.getElementById('profile-pic');
+    profilePic.src = URL.createObjectURL(imgInput.files[0]);
+    this.setState({img: imgInput.files[0]});
+  }
 
   render() {
 
@@ -201,7 +279,8 @@ export default class profile extends Component {
     
     let profile = this.state.profile;
     let updatedProfile = this.state.updatedProfile;
-    let tags = profile.tags.map((tag)=>{return <Tag tag={tag} key={tag}/>});
+    console.log(profile);
+    let tags = profile.tags.map((tag)=>{return <Tag tag={tag} key={tag}/>}); 
     let type = this.state.type;
 
     return(
@@ -209,7 +288,7 @@ export default class profile extends Component {
         
         {/* grid display column 1 */}
         <div className="grid1">
-        
+        <h2 className="warningMsg">{this.state.error}</h2>
         </div>
 
         {/* grid display column 2 */}
@@ -217,9 +296,23 @@ export default class profile extends Component {
 
           {/* profile picture */}
           <div className="grid2-photo">
+          <img id="profile-pic" alt="profile pic" src={
+            profile.pfp_type === 0?
+            this.defaultPicURL:
+              profile.pfp_type === 1?
+              "/profilepics/" + this.state.username + ".jpg":
+              "/profilepics/" + this.state.username + ".png"
+          }></img>
             {
               this.state.edit === true?
-              <button className="change-photo">Change Profile Picture</button>:
+              <div className="change-photo">
+                <span>Change profile picture</span>
+                <input 
+                type="file" 
+                id="change-photo-input" 
+                accept=".jpg,.jpeg,.png"
+                onChange={this.loadImg}></input>
+              </div>:
               <></>
             }
           </div>
@@ -281,18 +374,20 @@ export default class profile extends Component {
                 <></>
               }
 
-            { type === 0?
+            {type === 0? 
             <div className="grid2-text">
               <span>Gender: </span>
+              { this.state.edit === true?
               <select id='input-gender'>
-                <option key="0" value="0">Male</option>
-                <option key="1" value="1">Female</option>
-                <option key="2" value="2">Other</option>
-              </select>
+                <option key="0" value="0">Prefer not to tell</option>
+                <option key="1" value="1">Male</option>
+                <option key="2" value="2">Female</option>
+                <option key="3" value="3">Other</option>
+              </select>:
+              <span>{this.genders[profile.gender]}</span>}
             </div>:
             <></>
             }
-
             {/* profile email */}
             <div className="grid2-text">
               <span>Email: example@mail.com</span>
@@ -306,8 +401,8 @@ export default class profile extends Component {
               <span>Phone: </span>
             {
               this.state.edit === true?
-              <input id="input-phone" defaultValue={updatedProfile.phone}/>:
-              <span>{profile.phone}</span>
+              <input id="input-phone_number" defaultValue={updatedProfile.phone_number}/>:
+              <span>{profile.phone_number}</span>
             }
             </div>
 

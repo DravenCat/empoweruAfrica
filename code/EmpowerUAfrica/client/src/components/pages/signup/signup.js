@@ -43,20 +43,8 @@ export default class signin extends Component {
       }
     
 
-    entrepreneurClick = ()=> {
-        this.setState({accountType: 0}); 
-    }
-
-    companyClick = ()=> {
-        this.setState({accountType: 1}); 
-    }
-
-    investorClick = ()=> {
-        this.setState({accountType: 2});
-    }
-
     sendSignupRequest = async () => {
-        let type = this.state.accountType;
+        let type = parseInt(document.getElementById('account-type').value);
         let username = document.getElementById('signup-username-input').value;
         let email = document.getElementById('signup-email-input').value;
         let cemail = document.getElementById('signup-cemail-input').value;
@@ -147,9 +135,9 @@ export default class signin extends Component {
                                 Account type
                             </div>
                             <select id="account-type">
-                                <option>entrepreneur</option>
-                                <option>Company</option>
-                                <option>Investor</option>
+                                <option value="0">entrepreneur</option>
+                                <option value="1">Company</option>
+                                <option value="2">Investor</option>
                             </select>
                         </div>
 

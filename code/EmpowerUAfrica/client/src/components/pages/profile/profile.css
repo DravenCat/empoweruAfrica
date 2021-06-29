@@ -20,31 +20,45 @@
 }
 
 .grid2-photo {
-    background-image: url('../../../resource/icons/p-photo.jpg');
+    /* background-image: url('../../../resource/icons/p-photo.jpg'); */
     background-size: cover;
     position: -webkit-sticky;
     position: sticky;
     top: 100px;
     z-index: 1;
-    min-height: 180px;
-    max-width: 75%;
+    height: 200px;
+    width: 200px;
     margin: 0 auto;
     border-radius: 20px;
     border: 2px solid black;
+}
+#profile-pic {
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+    border: none; 
+    border-radius: inherit;
 }
 .change-photo {
     text-decoration: none;
     color: black;
     background-color: yellowgreen;
-    padding: 8px 40px;
+    position: absolute; 
+    top:0%;
     border-radius: 20px;
     box-shadow: 0 0 3px gray;
     transition: 0.5s;
+    width:100%;
+}
+#change-photo-input {
+    border: none;
+}
+#change-photo-input:hover {
+    cursor: pointer;
 }
 .change-photo:hover {
     color: white;
     background-color: black;
-    cursor: pointer;
 }
 .grid2-infoarea {
     position: -webkit-sticky;

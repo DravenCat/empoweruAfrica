@@ -5,6 +5,8 @@ const { username } = require('./config');
 let MySQLConnection;
 let Neo4jDriver; 
 
+let mySQLProfileFields; 
+
 /*
     When executed, removes all rows in Tokens table that are expired. 
 */
@@ -17,6 +19,9 @@ const removeExpiredTokens = async () => {
     MySQLConnection = connections.MySQL; 
     Neo4jDriver = connections.Neo4j; 
 
+    let res = await MySQLConnection.execute('SHOW columns FROM `Profile`');
+    mySQLProfileFields = res[0].map(row => row.Field); 
+    
     setInterval(removeExpiredTokens, 60 * 1000 * config.tokens.cleanExpiredTokenInterval); 
 })();
 
@@ -150,9 +155,9 @@ const db = {
             - nothing
      */
     addUserProfile: async (username) => {
-        let sql = "INSERT INTO Profile(username) VALUES(?);";
+        let sql = "INSERT INTO Profile(username, name) VALUES(?, ?);";
         console.log(sql);
-        let data = [username];
+        let data = [username, username];
         await MySQLConnection.execute(sql, data);
     },
 
@@ -162,31 +167,41 @@ const db = {
             - updates: Object, keys are fields to be updated, values are the new value for the said field
     */
     updateProfile: async(username, updates) =>{
-        for (const key in updates) {
-            if (key !== 'username' && updates[key] != undefined && updates[key] != NaN) {
-                let sql = `UPDATE Profile SET ${key} = ? WHERE username=?`
-                let data = [updates[key], username];
-                await MySQLConnection.execute(sql, data);
+        let keys = Object.keys(updates);
+        // Remove all keys that are not column names of the Profile table. 
+        for (const key of keys) {
+            if (mySQLProfileFields.indexOf(key) === -1) {
+                delete updates[key];
+                keys.pop(keys.indexOf(key));
             }
         }
+        let sql = `UPDATE Profile SET ${keys.map(key => key + '=?').join(', ')} 
+                    WHERE username=?`;
+        let data = keys.map(key => updates[key]);
+        console.log(sql);
+        console.log(keys);
+        console.log(data);
+        data.push(username); 
+
+        await MySQLConnection.execute(sql, data); 
     },
 
     /*
         params:
             - username: String
      */
-    getProfilebyUsername: async (username) => {
+    getProfileByUsername: async (username) => {
         let profile;
-        let sql = "SELECT name, gender, birthdate, phone_number, industry, pfp_type, description "
-                  "FROM Profile "
-                  "WHERE username=?";
+        let sql = `SELECT *
+                   FROM Profile 
+                   WHERE username=?`;
         let data = [username];
         let response = await MySQLConnection.execute(sql, data);
         if (response[0].length === 0) {
             return null;
         }
+
         profile = {
-            username: username,
             name: response[0][0].name,
             gender: response[0][0].gender,
             birthdate: response[0][0].birthdate,
@@ -210,7 +225,7 @@ const db = {
         if (response[0].length === 0) {
             return null;
         }
-        return response[0][0].username; 
+        return response[0][0].type; 
     },
 
     /*====================================================================================*/
