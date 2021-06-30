@@ -289,7 +289,7 @@ const db = {
         let session = Neo4jDriver.wrappedSession();
         let query = "MATCH (p:post)"
                     "WHERE p.Title =~'.*$title.*' "
-                    "RETURN p"
+                    "RETURN p";
         let params = {"title": title};
         let result;
         let postSet = [];
@@ -301,7 +301,8 @@ const db = {
                 postSet.push({
                     postId: post.properties.PostId,
                     title: post.properties.Title,
-                    time: post.properties.Time
+                    time: post.properties.Time,
+                    content: post.properties.Content
                 })
             }
         } catch (err) {
@@ -321,7 +322,7 @@ const db = {
         let session = Neo4jDriver.wrappedSession();
         let query = "MATCH (p:post)"
                     "WHERE p.PostId =~'.*$postId.*' "
-                    "RETURN p"
+                    "RETURN p";
         let params = {"postId": postId};
         let result;
         let postSet = [];
@@ -333,11 +334,45 @@ const db = {
                 postSet.push({
                     postId: post.properties.PostId,
                     title: post.properties.Title,
-                    time: post.properties.Time
+                    time: post.properties.Time,
+                    content: post.properties.Content
                 })
             }
         } catch (err) {
             console.error(err);
+        }
+        session.close();
+        return postSet;
+    },
+
+    /*
+        params: 
+            - Id: Part of the target postId
+        returns:
+            nothing
+    */
+    searchPostByUser: async (username) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = "MATCH (u:user {UserName: $username}) "
+                          "(u)-[:CREATE_POST]->(p) "
+                    "RETURN p";
+        let params = {"username": username};
+        let result;
+        let postSet = [];
+        try {
+            result = await session.run(query, params);
+            let records = result.records;
+            for (let i = 0; i < records.length; i++) {
+                let post = records[i].get(0);
+                postSet.push({
+                    postId: post.properties.PostId,
+                    title: post.properties.Title,
+                    time: post.properties.Time,
+                    content: post.properties.Content
+                })
+            }
+        } catch (err) {
+            console.log(err);
         }
         session.close();
         return postSet;
@@ -408,7 +443,7 @@ const db = {
     addTag: async (username, tagName) => {
         let session = Neo4jDriver.wrappedSession();
         let query = "MATCH (u:user {UserName: $username}) "
-                    "CREATE (u)-[:TAGGED]->(t:tag {TagName: $tagName})";
+                    "MERGE (u)-[:TAGGED]->(t:tag {TagName: $tagName})";
         let params = {"username": username, "tagName": tagName};
         try {
             await session.run(query, params);
@@ -427,10 +462,11 @@ const db = {
     */
     deleteTag: async (username, tagName) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = "MATCH (u:user {UserName: $username}), "
-                          "(t:tag {TagName: $tagName}), "
-                          "(u)-[ht:TAGGED]->(t) "
-                    "DELETE ht, t";
+        let query = "MATCH (u:user {UserName: $username})-[ht:HAS_TAG]->(t:tag {TagName: $tagName}) "
+                    "DELETE ht "
+                    "WITH t "
+                    "WHERE size(()-[:HAS_TAG]->(t)) = 0 "
+                    "DELETE t";
         let params = {"username": username, "tagName": tagName};
         try {
             await session.run(query, params);
@@ -471,7 +507,7 @@ const db = {
     unfollowPost: async (username, postId) => {
         let session = Neo4jDriver.wrappedSession();
         let query = "MATCH (u:user {UserName: $username})-[f:FOLLOW]->(p:post {PostId: $postId}) "
-                           "DELETE f";
+                    "DELETE f";
         let params = {"username": username, "postId": postId};
         try {
             await session.run(query, params);
@@ -492,7 +528,7 @@ const db = {
         var postIdSet = [];
         let session = Neo4jDriver.wrappedSession();
         let query = "MATCH (u:user {UserName: $username}), "
-                           "(u)-[:FOLLOW]->(p:post)"
+                           "(u)-[:FOLLOW]->(p:post) "
                     "RETURN p.PostId AS postId";
         let params = {"username": username};
         let result;
@@ -517,7 +553,7 @@ const db = {
         var usernameSet = [];
         let session = Neo4jDriver.wrappedSession();
         let query = "MATCH (p:post {PostId: $postId}), "
-                           "(u:user)-[:FOLLOW]->(p)"
+                           "(u:user)-[:FOLLOW]->(p) "
                     "RETURN u.UserName AS userName";
         let params = {"postId": postId};
         let result;
