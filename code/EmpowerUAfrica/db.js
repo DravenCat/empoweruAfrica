@@ -28,8 +28,6 @@ const db = {
             - email: String
             - password: String
             - type: int
-            - firstname: String
-            - lastname: String (optional, counld be undefined, if so don't put it into the table.)
         returns:
             nothing
         
@@ -130,7 +128,7 @@ const db = {
         params:
             - token: String, the token to be queried. 
         returns:
-            - username: String, the username to corresponding to the token. 
+            - username: String, the username corresponding to the token. 
             - null if the token is not found in the database, or has expired. 
     */
     getUsernameByToken: async (token) => {
