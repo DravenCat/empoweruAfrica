@@ -10,36 +10,38 @@ import Signin from './components/pages/signin/signin';
 import SetPassword from './components/pages/setting/setting_password'; 
 import SetEmail from './components/pages/setting/setting_email'; 
 
+import Profile from './components/pages/profile/profile'; 
+// import EditProfile from './components/pages/profile_edit/profile_edit'; 
+
 
 export default function App() {
   return (
     <Router>
       <Header />
+      <Navbar />
       <Switch>
 
         <Route exact path="/">
-          <Navbar />
           <Index />
         </Route>
 
         <Route exact path="/signup">
-          <Navbar />
           <Signup />
         </Route>
 
         <Route exact path="/signin">
-          <Navbar />
           <Signin />
         </Route>
 
         <Route exact path="/setting_password">
-          <Navbar />
           <SetPassword />
         </Route>
 
         <Route exact path="/setting_email">
-          <Navbar />
           <SetEmail/>
+        </Route>
+
+        <Route exact path="/profile/:username" component={Profile}>
         </Route>
         
       </Switch>
