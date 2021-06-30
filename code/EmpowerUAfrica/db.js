@@ -217,15 +217,21 @@ const db = {
     /*
         params:
             - username: String
-     */
-    getUserType: async (username) => {
-        let sql = "SELECT type FROM Accounts WHERE username=?";
-        let data = [username];
+        returns:
+            - null if the username specified does not exist
+            - {
+                email: the user's email,
+                type: (int) the user's type
+            }
+    */
+    getUserAbstract: async (username) => {
+        let sql = "SELECT type, email FROM ACcounts WHERE username=?"; 
+        let data = [username]; 
         let response = await MySQLConnection.execute(sql, data);
         if (response[0].length === 0) {
             return null;
         }
-        return response[0][0].type; 
+        return {email: response[0][0].email, type: response[0][0].type};
     },
 
     /*====================================================================================*/

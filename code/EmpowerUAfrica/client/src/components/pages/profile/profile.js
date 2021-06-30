@@ -390,7 +390,7 @@ export default class profile extends Component {
             }
             {/* profile email */}
             <div className="grid2-text">
-              <span>Email: example@mail.com</span>
+              <span>Email: {profile.email}</span>
             </div>
 
             

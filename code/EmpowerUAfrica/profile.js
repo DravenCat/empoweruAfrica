@@ -9,11 +9,13 @@ const router = express.Router();
 
 router.get('/getProfile', async (req, res) => {
     let username = req.query.username; 
-    let type = await db.getUserType(username);
+    let abstract = await db.getUserAbstract(username);
     let profile; 
-    if(type !== null){
+    if(abstract !== null){
+        let {type, email} = abstract;
         profile = await db.getProfileByUsername(username);
         profile.tags = []; // TODO: call neo4j db func to get tags. 
+        profile.email = email; 
         res.json({
             username, 
             type,
@@ -39,8 +41,8 @@ router.post('/updateProfile', async (req, res) => {
         return;
     }
     let updates = req.body.updates; 
-    let type = await db.getUserType(username);
-    if(type !== null){
+    let abstract = await db.getUserAbstract(username);
+    if(abstract !== null){
 
         await db.updateProfile(username, updates);
 
