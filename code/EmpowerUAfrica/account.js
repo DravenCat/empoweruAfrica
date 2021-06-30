@@ -1,7 +1,6 @@
 const express = require('express'); 
 const db = require('./db'); 
 const utils = require('./utils');
-const { validatePassword, passwordErrMsg } = require('./validation');
 const validation = require('./validation');
 
 const router = express.Router(); 
@@ -35,12 +34,12 @@ router.post('/signup', async (req, res) => {
     } 
 
     try {
-        await db.createNewAccount(
+        await Promise.all([db.createNewAccount(
             username,
             email,
             password, 
             type
-        ); 
+        ), db.addUserProfile(username), db.createUser(username)]);
     }
     catch (err) {
         if (err.code === 'ER_DUP_ENTRY') {
@@ -157,7 +156,7 @@ router.post('/updateCredentials', async (req, res) => {
     // Validate newCredential
     let errCode
     if (type === 'password') {
-        errCode = validatePassword(newCredential); 
+        errCode = validation.validatePassword(newCredential); 
         
         // Hash password
         newCredential = utils.hash(newCredential); 

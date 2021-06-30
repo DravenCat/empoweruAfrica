@@ -67,6 +67,7 @@ const getConnectionInfo = async () => {
     }
 
     Object.assign(connectionInfo.MySQL, credentialObj.MySQL); 
+    connectionInfo.MySQL.dateStrings = true; 
     Object.assign(connectionInfo.Neo4j, credentialObj.Neo4j); 
     return connectionInfo; 
 }
@@ -144,6 +145,7 @@ const getNeo4jDriver = async (driverInfo) => {
 
     try {
         driver = neo4j.driver(uri, neo4j.auth.basic(user, password)); 
+        await driver.verifyConnectivity();
     }
     catch (err) {
         console.error('[db-init]: Error creating Neo4j driver with given credentials. ');
@@ -181,6 +183,10 @@ const init = async () => {
         console.error(err); 
         process.exit(1); 
     }
+    process.on('exit', () => {
+        MySQLConnection.end(); 
+        Neo4jDriver.close(); 
+    }); 
     await checkTables(MySQLConnection);
 
     
