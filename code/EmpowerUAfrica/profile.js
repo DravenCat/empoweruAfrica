@@ -26,25 +26,6 @@ router.get('/getProfile', async (req, res) => {
 
 });
 
-router.get('/getProfilePic', async (req, res) => {
-    let username = req.body.username; 
-    let type = await db.getUserType(username);
-
-    if(type !== null){
-        let pfp_type = (await db.getProfileByUsername(username, type)).pfp_type;
-
-        if(pfp_type === 1){
-            res.json({url: "../client/public/profilepics/" + username + ".jpg"});
-        }else if(pfp_type === 2){
-            res.json({url:"../client/public/profilepics/" + username + ".png"});
-        }else{
-            res.json({url:"../client/public/profilepics/default_profile_pic.jpg"});
-        }
-
-    }else{
-        res.status(404).json({message: "User does not exist"});
-    }
-});
 
 router.post('/updateProfile', async (req, res) => {
     let token = req.cookies.token; 
@@ -97,7 +78,7 @@ router.post('/updateProfilePic', async (req, res) => {
     let extensionNames = [null, '.jpg', '.png'];
     let extension = newImg.name.slice(-3) === 'png'? 2: 1;
     try {
-        await newImg.mv('client/public/profilepics/' + username + extensionNames[extension]); 
+        await newImg.mv('client/public/profilepics/users/' + username + extensionNames[extension]); 
     }
     catch (err) {
         console.error(err); 

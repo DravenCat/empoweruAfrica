@@ -247,10 +247,10 @@ export default class profile extends Component {
         src = this.defaultPicURL;
         break;
       case 1:
-        src = "/profilepics/" + this.state.username + ".jpg";
+        src = "/profilepics/users/" + this.state.username + ".jpg";
         break;
       case 2:
-        src = "/profilepics/" + this.state.username + ".png";
+        src = "/profilepics/users/" + this.state.username + ".png";
         break; 
       default:
         break; 
@@ -300,8 +300,8 @@ export default class profile extends Component {
             profile.pfp_type === 0?
             this.defaultPicURL:
               profile.pfp_type === 1?
-              "/profilepics/" + this.state.username + ".jpg":
-              "/profilepics/" + this.state.username + ".png"
+              "/profilepics/users/" + this.state.username + ".jpg":
+              "/profilepics/users/" + this.state.username + ".png"
           }></img>
             {
               this.state.edit === true?

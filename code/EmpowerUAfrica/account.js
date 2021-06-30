@@ -34,13 +34,12 @@ router.post('/signup', async (req, res) => {
     } 
 
     try {
-        await db.createNewAccount(
+        await Promise.all([db.createNewAccount(
             username,
             email,
             password, 
             type
-        ); 
-        await db.addUserProfile(username);
+        ), db.addUserProfile(username), db.createUser(username)]);
     }
     catch (err) {
         if (err.code === 'ER_DUP_ENTRY') {
