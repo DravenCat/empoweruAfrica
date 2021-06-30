@@ -106,11 +106,13 @@ export default class header extends Component {
                                 <div className="profile-dropdown">
                                     <img src={profile} alt="profile" height='30px' width='30px'/>
                                     <div className="profile-dropdown-content">
+
                                         {/* Website navbar profile link*/}
                                         <button onClick={this.viewMyProfile} id="account-profile">Profile</button>
                                         {/* Website navbar view all posts link*/}
-                                        <a href="/viewallmyposts" id="account-viewallmyposts">View My Posts</a>
+                                        <a href="/view_all_posts" id="account-viewallmyposts">View My Posts</a>
                                         {/* Website navbar account setting link*/}
+
                                         <a href="/setting_password" id="account-setting">Setting</a>
                                         {/* Website navbar sign out link*/}
                                         <button onClick={this.signOut} id="account-logout">Logout</button>

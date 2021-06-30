@@ -10,8 +10,15 @@ import Signin from './components/pages/signin/signin';
 import SetPassword from './components/pages/setting/setting_password'; 
 import SetEmail from './components/pages/setting/setting_email'; 
 
+import Community from './components/pages/community/community'; 
+import PostContent from './components/pages/postContent/postContent';
+import MakePost from './components/pages/makePost/makePost'; 
+
+import ViewAllPost from './components/pages/viewAllPosts/viewAllPosts'; 
+
 import Profile from './components/pages/profile/profile'; 
 // import EditProfile from './components/pages/profile_edit/profile_edit'; 
+
 
 
 export default function App() {
@@ -41,7 +48,28 @@ export default function App() {
           <SetEmail/>
         </Route>
 
+
+        <Route exact path="/community">
+          <Navbar />
+          <Community/>
+        </Route>
+
+        <Route exact path="/view_all_posts">
+          <Navbar />
+          <ViewAllPost/>
+        </Route>
+
+        <Route exact path="/community/post_content">
+          <Navbar />
+          <PostContent/>
+        </Route>
+
+        <Route exact path="/community/make_post">
+          <Navbar />
+          <MakePost/>
+
         <Route exact path="/profile/:username" component={Profile}>
+
         </Route>
         
       </Switch>

@@ -1,0 +1,19 @@
+.viewAllPosts {
+    margin-top: 100px;
+    min-height: 600px;
+    background-image: url('../../../resource/icons/background_image.png');
+    background-size: cover;
+}
+
+.title {
+    background-color: white;
+    margin: 30px 60px;
+    padding: 20px 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 3px gray;
+}
+
+.postsection {
+    margin: 40px 60px;
+    padding: 20px 20px;
+}
