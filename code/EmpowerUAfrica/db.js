@@ -427,14 +427,14 @@ const db = {
         let query;
         let params;
         if (type === "post") {
-            query = "MATCH (u:user {UserName: $username}), (p:post {PostId: $targetId}) "
-                    "CREATE (u)-[:CREATE_REPLY]->(r:reply {Content: $content, Time: $time, ReplyId: $replyId}) "
-                    "CREATE (r)-[:REPLY_TO]->(p)";
+            query = `MATCH (u:user {UserName: $username}), (p:post {PostId: $targetId}) 
+                    CREATE (u)-[:CREATE_REPLY]->(r:reply {Content: $content, Time: $time, ReplyId: $replyId})
+                    CREATE (r)-[:REPLY_TO]->(p)`;
             params = {"username": username, "targetId": targetId, "content": content, "time": time, "replyId": replyId};
         }else if (type === "reply") {
-            query = "MATCH (u:user {UserName: $username}), (rp:reply {ReplyId: $targetId}) "
-                    "CREATE (u)-[:CREATE_REPLY]->(r:reply {Content: $content, Time: $time, ReplyId: $replyId}) "
-                    "CREATE (r)-[:REPLY_TO]->(rp)";
+            query = `MATCH (u:user {UserName: $username}), (rp:reply {ReplyId: $targetId})
+                    CREATE (u)-[:CREATE_REPLY]->(r:reply {Content: $content, Time: $time, ReplyId: $replyId}) 
+                    CREATE (r)-[:REPLY_TO]->(rp)`;
             params = {"username": username, "targetId": targetId, "content": content, "time": time, "replyId": replyId};
         }
         try {

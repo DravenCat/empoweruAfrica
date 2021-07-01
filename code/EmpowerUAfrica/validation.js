@@ -62,12 +62,26 @@ module.exports = {
 
         return 0; 
     },
+    validatePostTitle: (title) => {
+        if (title.length < config.postTitle.minlen || title.length > config.postTitle.maxlen) {
+            return 6;
+        }
+        return 0;
+    },
+    validatePostBody: (body) => {
+        if (body.length < config.postBody.minlen || body.length > config.postBody.maxlen) {
+            return 7;
+        }
+        return 0;
+    },
     errMsgs : [
         '',
         `Username should be between ${config.username.minlen} and ${config.username.maxlen} characters.`,
-        `Username can only contain upper and lower case letters, digits and special symbols ${config.username.specialChars.join(', ')}`,
+        `Username can only contain a-z, A-Z, 0-9 and special characters ${config.username.specialChars.join(', ')}`,
         `Emails should be between ${config.email.minlen} and ${config.email.maxlen} characters.`,
         'Email not in correct format. Valid email example: example@site.com',
-        `Passwords should be between ${config.password.minlen} and ${config.password.maxlen} characters.`
+        `Passwords should be between ${config.password.minlen} and ${config.password.maxlen} characters.`,
+        `Post title should be between ${config.postTitle.minlen} and ${config.postTitle.maxlen} characters.`,
+        `Post body should be between ${config.postBody.minlen} and ${config.postBody.maxlen} characters.`
     ]
 }
