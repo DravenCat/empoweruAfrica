@@ -518,9 +518,9 @@ const db = {
     */
     followPost: async (username, postId) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = "MATCH (u:user {UserName: $username}), "
-                           "(p:post {PostId: $postId}) "
-                    "CREATE (u)-[:FOLLOW]->(p)";
+        let query = `MATCH (u:user {UserName: $username}), 
+                           (p:post {PostId: $postId}) 
+                    CREATE (u)-[:FOLLOW]->(p)`;
         let params = {"username": username, "postId": postId};
         try {
             await session.run(query, params);
@@ -539,8 +539,8 @@ const db = {
     */
     unfollowPost: async (username, postId) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = "MATCH (u:user {UserName: $username})-[f:FOLLOW]->(p:post {PostId: $postId}) "
-                    "DELETE f";
+        let query = `MATCH (u:user {UserName: $username})-[f:FOLLOW]->(p:post {PostId: $postId}) 
+                    DELETE f`;
         let params = {"username": username, "postId": postId};
         try {
             await session.run(query, params);
