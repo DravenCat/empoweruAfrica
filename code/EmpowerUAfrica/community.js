@@ -80,4 +80,31 @@ router.post('/makeComment', async (req, res) => {
     });
 });
 
+router.post('/followPost', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            mesage: 'You have to sign in before making a comment. '
+        });
+        return;
+    }
+
+    const postId = req.body.id; 
+    const follow = req.body.follow; 
+
+    if (follow) {
+        await db.followPost(username, postId); 
+    }    
+    else {
+        await db.unfollowPost(username, postId);
+    }
+
+    res.json({
+        message: 'success'
+    });
+});
+
 module.exports = router;
