@@ -8,7 +8,7 @@ let Utils = {
     */
     objHasFields: (obj, fields) => {
         for (let field of fields) {
-            if (Object.keys(obj).indexOf(field) === -1) {
+            if (!(field in obj)) {
                 return false; 
             }
         }

@@ -9,27 +9,12 @@ export default class setting_password extends Component {
     error: null
   }
 
-  passwordMinLen = 6; 
-  passwordMaxLen = 255;
-
-  validatePassword = (password, cpassword) => {
-    // Two passwords do not match.
-    if (password !== cpassword) {
-        this.setState({error: 'Two password entries does not match.'});
-        return false; 
-    }
-    // Password too long or too short. 
-    if (password.length > this.passwordMaxLen || password.length < this.passwordMinLen) {
-        this.setState({error: `Passwords should be between ${this.passwordMinLen} and ${this.passwordMaxLen} characters.`})
-        return false; 
-    }
-
-    return true; 
-  }
   sendUpdateRequest = async () => {
     let password = document.getElementById('change-password-input').value; 
     let cpassword = document.getElementById('cchange-password-input').value; 
-    if (!this.validatePassword(password, cpassword)) {
+
+    if (password !== cpassword) {
+      this.setState({error: "Two password entries does not match"});
       return;
     }
 
@@ -110,18 +95,18 @@ export default class setting_password extends Component {
               <div>
                 New Password
               </div>
-                <input type="text" id="change-password-input"/>
+                <input type="password" id="change-password-input"/>
               </div>
               <br></br><br></br>
               <div>
                 <div>
                   Confrim Password
                 </div>
-                  <input type="text" id="cchange-password-input"/>
+                  <input type="password" id="cchange-password-input"/>
                 </div>
               </div>
 
-              <p className="warningMsg">{errorMsg}</p>
+              <p className="errorMsg">{errorMsg}</p>
 
               <div className="cp-button">
                 <button id="cp-button" onClick={this.sendUpdateRequest}>

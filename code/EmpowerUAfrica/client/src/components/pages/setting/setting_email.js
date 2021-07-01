@@ -4,49 +4,15 @@ import "./setting_email.css"
 
 
 export default class setting_email extends Component {
-
-
-  emailMinLen = 0; // But it has to pass the RE validation
-  emailMaxLen = 255; 
-  emailValidationRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-
   state = {
     error: null
-  }
-  /*
-      params: 
-          - email: String, the email to be validated
-          - cemail: String, the email user inputted in the 
-          'confirm email' input. 
-      returns:
-          - true, if email is a valid email address and cemail === email
-          - false, o\w
-  */
-  validateEmail = (email, cemail) => {
-    // Two emails do not match
-    if (email !== cemail) {
-        this.setState({error: 'Two email entries does not match.'});
-        return false; 
-    }
-    // Email too long or too short
-    if (email.length > this.emailMaxLen || email.length < this.emailMinLen) {
-        this.setState({error: `Emails should be between ${this.emailMinLen} and ${this.emailMaxLen} characters.`});
-        return false; 
-    }
-    // Email not in correct form
-    if (!(this.emailValidationRegex.test(email))) {
-        this.setState({error: 'Email not in correct format. An \'@\' is expected. '})
-        return false; 
-    }
-
-    return true; 
   }
 
   sendUpdateRequest = async () => {
     let email = document.getElementById('change-email-input').value; 
     let cemail = document.getElementById('cchange-email-input').value; 
-    if (!this.validateEmail(email, cemail)) {
-      return;
+    if (email !== cemail) {
+      this.setState({error: 'Two email entries does not match. '});
     }
 
     let res;
@@ -133,7 +99,7 @@ export default class setting_email extends Component {
                 </div>
                 <input type="text" id="cchange-email-input"/>
                   
-                <p className="warningMsg">{errorMsg}</p>
+                <p className="errorMsg">{errorMsg}</p>
 
                 <div className="ce-button">
                   <button id="ce-button" onClick={this.sendUpdateRequest}>

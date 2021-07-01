@@ -1,0 +1,19 @@
+.post {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 3px gray;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+.inner {
+    text-decoration: none;
+    color: black;
+}
+
+.post img{
+    width: 35px;
+    height: 35px;
+}
+
+

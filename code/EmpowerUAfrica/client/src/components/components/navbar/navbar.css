@@ -1,25 +1,35 @@
-body {
-    z-index: 10;
-}
-
 /* navigation bar body */
 .navbar {
     font-family: serif, Georgia, 'Times New Roman', Times;
     background-color: white;
     width: 100%;
-    min-height: 80px;
+    min-height: 70px;
     position: fixed;
     top: -1px;
+    z-index:10; 
 }
 
-.nav-wrapper {
+.navbar-grid {
     display: grid;
     grid-template-columns: 20% 30% 20%;
     justify-content: space-between;
     align-items: center;
 }
 
-.nav-wrapper > div{
+.navbar-brand {
+    margin-top: 20px;
+}
+
+.navbar-grid .navbar-links{
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    justify-content: space-between;
+    margin-top: 20px;
+    align-items: center;
+    text-align: center;
+}
+
+.navbar-grid .navbar-icons{
     display: grid;
     grid-template-columns: repeat(4, auto);
     justify-content: space-between;
@@ -60,45 +70,19 @@ body {
 /* navigation bar icons */
 #navbar-notification, #navbar-chat, #navbar-profile {
     opacity: 0.7;
-    text-decoration: none;
-    color: rgb(100, 100, 100);
 }
 
 #navbar-notification {
     position: relative;
-    left: 20px;
 }
 
 #navbar-chat {
     position: relative;
-    right: 5px;
 }
   
 #navbar-notification:hover, #navbar-chat:hover, #navbar-profile:hover {
     opacity: 1;
     color: black;
-}
-
-#navbar-notification-text {
-    position: relative;
-    top: 12px;
-    right: 45px;
-    font-size: 12px;
-}
-
-#navbar-chat-text {
-    position: relative;
-    top: 12px;
-    right: 27px;
-    font-size: 12px;
-}
-
-#navbar-profile-text {
-    position: relative;
-    top: 12px;
-    right: 35px;
-    font-size: 12px;
-    text-decoration: none;
 }
 
 /* navigation bar profile dropdown */
@@ -111,8 +95,7 @@ body {
     box-shadow: 0px 0px 3px black;
     display: none;
     position: absolute;
-    right: -17px;
-    top: 45px;
+    right: -60px;
     background-color: #f1f1f1;
     min-width: 150px;
     z-index: 1;
@@ -145,34 +128,35 @@ body {
 }
 
 /* navigation bar greeting */
-#greeting {
-    background-color: rgb(233, 214, 40);
-    text-decoration: none;
-    position: relative;
-    right: 25px;
-    padding: 8px 10px;
-    border-radius: 10px;
-}
-
-#greeting:hover {
-    background-color: black;
-    text-decoration: none;
-}
-
 #greeting-signin {
     text-decoration: none;
     color: black;
-    padding: 7px;
+    background-color: rgb(233, 214, 40);
+    padding: 7px 17px;
+    border-radius: 10px;
+    margin-right: 60px;
 }
 
 #greeting-signin:hover {
     color: white;
+    background-color: black;
 }
 
-@media screen and (max-width: 500px) {
-    .navbar a{
-      float: left;
-      display: block;
-      font-size: 10px;
+@media screen and (max-width: 600px) {
+    .navbar-grid {
+        grid-template-columns: 100%;
     }
+
+    .navbar-grid .navbar-links{
+        grid-template-columns: 100%;
+    }
+
+    .navbar {
+        position: relative;
+    }
+
+    * {
+        font-size: 50%;
+    }
+    
 }
