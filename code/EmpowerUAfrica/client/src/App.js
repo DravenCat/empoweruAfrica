@@ -67,6 +67,7 @@ export default function App() {
         <Route exact path="/community/make_post">
           <Navbar />
           <MakePost/>
+        </Route>
 
         <Route exact path="/profile/:username" component={Profile}>
 
