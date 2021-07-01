@@ -33,8 +33,6 @@ const db = {
             - email: String
             - password: String
             - type: int
-            - firstname: String
-            - lastname: String (optional, counld be undefined, if so don't put it into the table.)
         returns:
             nothing
         
@@ -135,7 +133,7 @@ const db = {
         params:
             - token: String, the token to be queried. 
         returns:
-            - username: String, the username to corresponding to the token. 
+            - username: String, the username corresponding to the token. 
             - null if the token is not found in the database, or has expired. 
     */
     getUsernameByToken: async (token) => {
@@ -218,6 +216,22 @@ const db = {
         params:
             - username: String
         returns:
+
+            - A string indicating user's type
+     */
+    getUserType: async (username) => {
+        let sql = "SELECT type FROM Accounts WHERE username=?";
+        let data = [username];
+        let response = await MySQLConnection.execute(sql, data);
+        if (response[0].length === 0) {
+            return null;
+        }
+        return response[0][0].type; 
+
+    /*
+        params:
+            - username: String
+        returns:
             - null if the username specified does not exist
             - {
                 email: the user's email,
@@ -225,7 +239,7 @@ const db = {
             }
     */
     getUserAbstract: async (username) => {
-        let sql = "SELECT type, email FROM ACcounts WHERE username=?"; 
+        let sql = "SELECT type, email FROM Accounts WHERE username=?"; 
         let data = [username]; 
         let response = await MySQLConnection.execute(sql, data);
         if (response[0].length === 0) {
@@ -258,6 +272,7 @@ const db = {
         params: 
             - username: String
             - content: String, the content of the post
+            - title: String, the title of the post
             - postId: the unique postId of the post
             - time: the time that user makes the post
         returns:
@@ -278,26 +293,122 @@ const db = {
 
     /*
         params: 
-            - username: String
-            - time: the time that user makes the reply
             - postId: the postId of the post that user reply to
         returns:
             nothing
         (warning: deletePost will not delete any reply to this post. If more methods are needed, please contact the developer)
     */
-    deletePost: async (username, postId) => {
+    deletePost: async (postId) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = "MATCH (u:user {UserName: $username}), "
-                          "(u)-[m:CREATE_POST]->(p:post {PostId: $postId}), "
+        let query = "MATCH (:user)-[m:CREATE_POST]->(p:post {PostId: $postId}), "
                           "(:reply)-[rp:REPLY_TO]->(p) " 
                     "DELETE rp, m, p";
-        let params = {"username": username, "postId": postId};
+        let params = {"postId": postId};
         try {
             await session.run(query, params);
         } catch (err) {
             console.error(err);
         }
         session.close();
+    },
+
+    /*
+        params: 
+            - title: String, part of the string of the title
+        returns:
+            nothing
+    */
+    searchPostByTitle: async (title) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = "MATCH (p:post)"
+                    "WHERE p.Title =~'.*$title.*' "
+                    "RETURN p";
+        let params = {"title": title};
+        let result;
+        let postSet = [];
+        try {
+            result = await session.run(query, params);
+            let records = result.records;
+            for (let i = 0; i < records.length; i++) {
+                let post = records[i].get(0);
+                postSet.push({
+                    postId: post.properties.PostId,
+                    title: post.properties.Title,
+                    time: post.properties.Time,
+                    content: post.properties.Content
+                })
+            }
+        } catch (err) {
+            console.error(err);
+        }
+        session.close();
+        return postSet;
+    },
+
+    /*
+        params: 
+            - Id: Part of the target postId
+        returns:
+            nothing
+    */
+    searchPostById: async (postId) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = "MATCH (p:post)"
+                    "WHERE p.PostId =~'.*$postId.*' "
+                    "RETURN p";
+        let params = {"postId": postId};
+        let result;
+        let postSet = [];
+        try {
+            result = await session.run(query, params);
+            let records = result.records;
+            for (let i = 0; i < records.length; i++) {
+                let post = records[i].get(0);
+                postSet.push({
+                    postId: post.properties.PostId,
+                    title: post.properties.Title,
+                    time: post.properties.Time,
+                    content: post.properties.Content
+                })
+            }
+        } catch (err) {
+            console.error(err);
+        }
+        session.close();
+        return postSet;
+    },
+
+    /*
+        params: 
+            - Id: Part of the target postId
+        returns:
+            nothing
+    */
+    searchPostByUser: async (username) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = "MATCH (u:user {UserName: $username}) "
+                          "(u)-[:CREATE_POST]->(p) "
+                    "RETURN p";
+        let params = {"username": username};
+        let result;
+        let postSet = [];
+        try {
+            result = await session.run(query, params);
+            let records = result.records;
+            for (let i = 0; i < records.length; i++) {
+                let post = records[i].get(0);
+                postSet.push({
+                    postId: post.properties.PostId,
+                    title: post.properties.Title,
+                    time: post.properties.Time,
+                    content: post.properties.Content
+                })
+            }
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+        return postSet;
     },
 
     /*
@@ -336,18 +447,17 @@ const db = {
 
     /*
         params: 
-            - username: String
             - replyId: the unique Id of the reply
         returns:
             nothing
     */
-    deleteReply: async (username, replyId) => {
+    deleteReply: async (replyId) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = "MATCH (u:user {UserName: $username}), "
-                          "(u)-[m:CREATE_REPLY]->(r:reply {ReplyId: $replyId}), "
-                          "(r)-[rp:REPLY_TO]->() "
-                    "DELETE m, rp, r";
-        let params = {"username": username, "replyId": replyId};
+        let query = "MATCH (:user)-[m:CREATE_REPLY]->(r:reply {ReplyId: $replyId}), "
+                          "(r)-[rp:REPLY_TO]->(), "
+                          "(:reply)-[rpp:REPLY_TO]-(r) "
+                    "DELETE m, rp, rpp, r";
+        let params = {"replyId": replyId};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -366,7 +476,7 @@ const db = {
     addTag: async (username, tagName) => {
         let session = Neo4jDriver.wrappedSession();
         let query = "MATCH (u:user {UserName: $username}) "
-                    "CREATE (u)-[:TAGGED]->(t:tag {TagName: $tagName})";
+                    "MERGE (u)-[:TAGGED]->(t:tag {TagName: $tagName})";
         let params = {"username": username, "tagName": tagName};
         try {
             await session.run(query, params);
@@ -385,10 +495,11 @@ const db = {
     */
     deleteTag: async (username, tagName) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = "MATCH (u:user {UserName: $username}), "
-                          "(t:tag {TagName: $tagName}), "
-                          "(u)-[ht:TAGGED]->(t) "
-                    "DELETE ht, t";
+        let query = "MATCH (u:user {UserName: $username})-[ht:HAS_TAG]->(t:tag {TagName: $tagName}) "
+                    "DELETE ht "
+                    "WITH t "
+                    "WHERE size(()-[:HAS_TAG]->(t)) = 0 "
+                    "DELETE t";
         let params = {"username": username, "tagName": tagName};
         try {
             await session.run(query, params);
@@ -422,6 +533,26 @@ const db = {
     /*
         params: 
             - username: String
+            - postId: String, the postId of the post that user wants to follow
+        returns:
+            nothing
+    */
+    unfollowPost: async (username, postId) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = "MATCH (u:user {UserName: $username})-[f:FOLLOW]->(p:post {PostId: $postId}) "
+                    "DELETE f";
+        let params = {"username": username, "postId": postId};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+    },
+
+    /*
+        params: 
+            - username: String
         returns:
             A set of postId that user follows
             Empty if user follows nothing
@@ -430,7 +561,7 @@ const db = {
         var postIdSet = [];
         let session = Neo4jDriver.wrappedSession();
         let query = "MATCH (u:user {UserName: $username}), "
-                           "(u)-[:FOLLOW]->(p:post)"
+                           "(u)-[:FOLLOW]->(p:post) "
                     "RETURN p.PostId AS postId";
         let params = {"username": username};
         let result;
@@ -455,7 +586,7 @@ const db = {
         var usernameSet = [];
         let session = Neo4jDriver.wrappedSession();
         let query = "MATCH (p:post {PostId: $postId}), "
-                           "(u:user)-[:FOLLOW]->(p)"
+                           "(u:user)-[:FOLLOW]->(p) "
                     "RETURN u.UserName AS userName";
         let params = {"postId": postId};
         let result;
