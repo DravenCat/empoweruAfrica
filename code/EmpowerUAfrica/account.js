@@ -4,7 +4,7 @@ const utils = require('./utils')
 
 const router = express.Router(); 
 
-
+// The endpoint for when the user is signing up
 router.post('/signup', async (req, res) => {
     console.log('[account]: signup request recieved. ');
     let username = req.body.username; 
@@ -12,6 +12,7 @@ router.post('/signup', async (req, res) => {
     let password = utils.hash( req.body.password );
     let type = parseInt( req.body.type ); 
 
+    // checking if the user is signing up with types 0, 1, or 2
     if (type !== 0 && type !== 1 && type !== 2) {
         res.status(400).json({
             "message": "Type should be an integer in the range [0, 2]"
@@ -19,6 +20,7 @@ router.post('/signup', async (req, res) => {
         return;
     }
 
+    // creates the new account in the database
     try {
         await db.createNewAccount(
             username,
@@ -36,6 +38,7 @@ router.post('/signup', async (req, res) => {
         }
     }
 
+    // gets a token
     let token = utils.getToken();
     await db.addToken(token, username); 
     res.cookie('token', token, 
@@ -44,6 +47,8 @@ router.post('/signup', async (req, res) => {
     }).status(200).json({"message": "success"});
 });
 
+
+// The endpoint for when the user is signing in
 router.post('/signin', async (req, res) => {
     let id = req.body.id; 
     let password = utils.hash( req.body.password ); 
@@ -59,6 +64,7 @@ router.post('/signin', async (req, res) => {
 
     let credentialsValid ; 
     try {
+        // checking if the user's credentials are valid
         credentialsValid = await db.credentialsMatch(idtype, id, password);
         if (credentialsValid === null) {
             res.status(404).json({
@@ -75,7 +81,9 @@ router.post('/signin', async (req, res) => {
         return; 
     }
 
+    // if the user's credentials are invalid
     if (!credentialsValid) {
+        // return a status of 403 with invaid credentials message
         res.status(403).json(
             {"message": "Email and password does not match. "}
         );
@@ -84,11 +92,14 @@ router.post('/signin', async (req, res) => {
 
     let username = idtype === 'email' ? await db.usernameForEmail(id): id; 
 
+    // gets a token
     let token = utils.getToken();
     res.cookie('token', token, 
     {
         httpOnly: true
     })
+
+    // adds a token for the user in the database
     await db.addToken(token, username);
     res.status(200).json({
         "message": "Sign in success.", 
@@ -97,6 +108,8 @@ router.post('/signin', async (req, res) => {
     
 });
 
+
+// The endpoint for when the user is signing out
 router.post('/signout', async (req, res) => {
     let token = req.cookies.token;
 
@@ -108,6 +121,8 @@ router.post('/signout', async (req, res) => {
     res.clearCookie('token').json({"message": "success"});
 });
 
+
+// The endpoint for when the user is updating credentials
 router.post('/updateCredentials', async (req, res) => {
     let type = req.body.type;
     let newCredential = req.body.new;
@@ -136,4 +151,6 @@ router.post('/updateCredentials', async (req, res) => {
     await db.updateCredentials(type, username, newCredential);
     res.status(200).json({"message": "success"});
 });
+
+
 module.exports = router; 
