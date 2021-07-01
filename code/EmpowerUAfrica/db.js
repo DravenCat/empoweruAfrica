@@ -280,8 +280,8 @@ const db = {
     */
     makePost: async (username, content, title, postId, time) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = "MATCH (u:user {UserName: $username}) "
-                   "CREATE (u)-[:CREATE_POST]->(p:post {Title: $title, Content: $content, Time: $time, PostId: $postId}) ";
+        let query = `MATCH (u:user {UserName: $username}) 
+                    CREATE (u)-[:CREATE_POST]->(p:post {Title: $title, Content: $content, Time: $time, PostId: $postId}) `;
         let params = {"username":username, "content": content, "title": title, "time": time, "postId": postId};
         try {
             await session.run(query, params);
