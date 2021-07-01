@@ -28,22 +28,27 @@ export default function App() {
       <Navbar />
       <Switch>
 
+        {/* Routing to the home page */}
         <Route exact path="/">
           <Index />
         </Route>
 
+        {/* Routing to the signup page */}
         <Route exact path="/signup">
           <Signup />
         </Route>
 
+        {/* Routing to the signin page */}
         <Route exact path="/signin">
           <Signin />
         </Route>
 
+        {/* Routing to the setting password page */}
         <Route exact path="/setting_password">
           <SetPassword />
         </Route>
 
+        {/* Routing to the setting email page */}
         <Route exact path="/setting_email">
           <SetEmail/>
         </Route>
