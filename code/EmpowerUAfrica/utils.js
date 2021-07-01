@@ -36,6 +36,17 @@ let Utils = {
 
    getToken: () => {
        return crypto.randomBytes(30).toString('hex');
+   },
+
+   getPostId: (username, title, timestamp) => {
+       return this.hash(username + title + timestamp.toString()); 
+   },
+    
+   /*
+        Returns number of seconds from 1970-1-1 00:00 until now
+   */
+   timestamp: () => {
+       return Math.round(Date.now() / 1000);
    }
 
 

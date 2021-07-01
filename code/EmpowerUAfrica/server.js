@@ -6,6 +6,7 @@ const fileUpload = require('express-fileupload');
 const Utils = require('./utils');
 const accountRouter = require('./account');
 const profileRouter = require('./profile');
+const communityRouter = require('./community');
 
 const PORT = 5000; 
 
@@ -25,7 +26,8 @@ const expectedFields = {
     '/api/account/updateCredentials': ['type', 'new'],
     '/api/profile/getProfile': ['username'], 
     '/api/profile/getProfilePic': ['username'],
-    '/api/profile/updateProfile': ['updates']
+    '/api/profile/updateProfile': ['updates'],
+    '/api/community/makePost': ['title', 'body']
 };
 
 // parse the request body as json. 
@@ -60,5 +62,6 @@ app.get("/", (req, res) => {
 
 app.use('/api/account', accountRouter); 
 app.use('/api/profile', profileRouter); 
+app.use('/api/community', communityRouter); 
 
 app.listen(PORT, () => console.log(`[server]: Server started on port ${PORT}`)); 
