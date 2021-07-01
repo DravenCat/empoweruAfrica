@@ -3,6 +3,7 @@ const express = require('express');
 const db = require('./db'); 
 const utils = require('./utils');
 const validation = require('./validation');
+const admin = require('./admin'); 
 
 const router = express.Router(); 
 
@@ -55,16 +56,14 @@ router.post('/makeComment', async (req, res) => {
     const timestamp = utils.timestamp();
     const replyId = 'C' + utils.hash(username + content.slice(0, 10) + timestamp.toString()); 
     const targetId = req.body.reply_to;
-    let type; 
-    switch (targetId[0]) {
-        case 'P': type = 'post'; break; 
-        case 'C': type = 'reply'; break; 
-        default: 
-            res.status(400).json({
-                message: 'Invalid taget id. '
-            });
-            return; 
+    let type = utils.typeOfId(targetId); 
+    if (type === null) {
+        res.status(400).json({
+            message: 'Invalid taget id. '
+        });
+        return; 
     }
+    
 
     let errCode;
     if ((errCode = validation.validatePostBody(content)) !== 0) {
@@ -100,6 +99,46 @@ router.post('/followPost', async (req, res) => {
     }    
     else {
         await db.unfollowPost(username, postId);
+    }
+
+    res.json({
+        message: 'success'
+    });
+});
+
+router.post('/delete', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            mesage: 'You have to sign in before deleting a post / comment. '
+        });
+        return;
+    }
+    const id = req.body.id;
+    const type = utils.typeOfId(id); 
+    if (type === null) {
+        res.status(400).json({
+            message: 'Invalid taget id. '
+        });
+        return; 
+    }
+
+    const author = await db.getAuthorOfContent(id, type); 
+    if (author !== username && !admin.isAdmin(username)) {
+        res.status(403).json({
+            message: 'You do not have permission to delete this content. '
+        });
+        return; 
+    }
+    
+    if (type === 'post') {
+        await db.deletePost(id);
+    }
+    else if (type === 'reply') {
+        await db.deleteReply(id)
     }
 
     res.json({
