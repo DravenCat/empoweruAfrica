@@ -216,7 +216,6 @@ const db = {
         params:
             - username: String
         returns:
-
             - A string indicating user's type
      */
     getUserType: async (username) => {
@@ -227,6 +226,7 @@ const db = {
             return null;
         }
         return response[0][0].type; 
+    },
 
     /*
         params:
