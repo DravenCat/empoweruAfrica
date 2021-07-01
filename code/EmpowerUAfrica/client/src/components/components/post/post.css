@@ -1,0 +1,36 @@
+.post {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 3px gray;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+.inner {
+    text-decoration: none;
+    color: black;
+}
+
+.post img{
+    width: 35px;
+    height: 35px;
+}
+
+.post .post_button{
+    padding: 3px 8px;
+    margin: 0 10px;
+    background-color: yellowgreen;
+}
+
+#post_share:hover {
+    color: white;
+    background-color: black;
+    transition: 0.5s;
+    cursor: pointer;
+}
+
+
+
+
+
+

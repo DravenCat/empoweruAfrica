@@ -67,6 +67,7 @@ const getConnectionInfo = async () => {
     }
 
     Object.assign(connectionInfo.MySQL, credentialObj.MySQL); 
+    connectionInfo.MySQL.dateStrings = true; 
     Object.assign(connectionInfo.Neo4j, credentialObj.Neo4j); 
     return connectionInfo; 
 }

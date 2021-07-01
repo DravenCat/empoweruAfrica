@@ -1,6 +1,7 @@
 'use strict'; 
 const Express = require('express');
 const cookieParser = require('cookie-parser');
+const fileUpload = require('express-fileupload');
 
 const Utils = require('./utils');
 const accountRouter = require('./account');
@@ -12,7 +13,7 @@ const app = Express();
 
 /*
     '/api/signup': ['email', 'password'] means that
-    route '/api/signup' is expecting the request body to have fields
+    route '/api/signup' is expecting the request body(or url if the request is a GET request) to have fields
     'email' and 'password'. 
 
     If a route is not present here, it means the route does not specify
@@ -24,28 +25,29 @@ const expectedFields = {
     '/api/account/updateCredentials': ['type', 'new'],
     '/api/profile/getProfile': ['username'], 
     '/api/profile/getProfilePic': ['username'],
-    '/api/profile/updateProfile': ['username', 'updates']
+    '/api/profile/updateProfile': ['updates']
 };
 
 // parse the request body as json. 
 app.use(Express.json());
-
 app.use(cookieParser());
+app.use(fileUpload()); 
 
 // checks whether the expected fields are present in the request body
 app.use((req, res, next) => {
     console.log(`[server]: Request recieved. `);
+    console.log(`${req.method} ${req.path}`);
     console.log(req.body);
-    console.log(req.headers.cookie);
     // If the required field is not specified
     if (!(req.path in expectedFields)) {
         next();
         return;
     }
-    
-    if (! Utils.objHasFields(req.body, expectedFields[req.path])) {
+
+    if ((req.method === 'GET' && !Utils.objHasFields(req.query, expectedFields[req.path]))||
+        (req.method !== 'GET' && !Utils.objHasFields(req.body, expectedFields[req.path]))) {
         res.status(400).json(
-            {"message": `Bad request: expecting fields [${expectedFields[req.path].join(', ')}] in request body.`}
+            {"message": `Bad request: expecting fields [${expectedFields[req.path].join(', ')}] in request body / url params.`}
         );
         return;
     }

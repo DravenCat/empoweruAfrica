@@ -101,7 +101,7 @@ export default class signin extends Component {
 
                     </div>
                     
-                    <p className="warningMsg">{errMsg}</p>
+                    <p className="errorMsg">{errMsg}</p>
 
                     <div className="signin-button">
                         <button id="signin-button" onClick={this.sendSigninRequest}>
