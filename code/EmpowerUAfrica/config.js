@@ -21,5 +21,13 @@ module.exports = {
     password: {
         minlen: 6,
         maxlen: 255
+    },
+    postTitle: {
+        minlen: 1,
+        maxlen: 128
+    },
+    postBody: {
+        minlen: 1,
+        maxlen: 8192
     }
 }

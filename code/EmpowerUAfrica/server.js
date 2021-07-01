@@ -27,7 +27,8 @@ const expectedFields = {
     '/api/profile/getProfile': ['username'], 
     '/api/profile/getProfilePic': ['username'],
     '/api/profile/updateProfile': ['updates'],
-    '/api/community/makePost': ['title', 'body']
+    '/api/community/makePost': ['title', 'body'],
+    '/api/community/makeComment': ['reply_to', 'body']
 };
 
 // parse the request body as json. 
