@@ -21,9 +21,9 @@ router.post('/makePost', async (req, res) => {
     const title = req.body.title;
     const content  = req.body.body; 
     const timestamp = utils.timestamp(); 
-    const postId = utils.getPostId(username, title, timestamp); 
+    const postId = utils.hash(username + title + timestamp.toString()); 
 
-    await db.makePost(username, content, title, postId, time); 
+    await db.makePost(username, content, title, postId, timestamp); 
     res.json({
         message: 'Success'
     });
