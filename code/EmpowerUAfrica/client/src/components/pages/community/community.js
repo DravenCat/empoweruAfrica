@@ -7,16 +7,19 @@ export default class community extends Component{
     render() {
         const postInfo = [
             {
+                userName: "user1",
                 title: "title1",
                 content: "content1",
                 commentNumber: 20,
             },
             {
+                userName: "user2",
                 title: "title2",
                 content: "content2",
                 commentNumber: 30,
             },
             {
+                userName: "user3",
                 title: "title3",
                 content: "content3",
                 commentNumber: 40,
@@ -34,7 +37,9 @@ export default class community extends Component{
 
                     <div className="grid2-topbar">
                         <h2>Community</h2>
-                        <a id="direct-makepost" href="/community/make_post">Make Post</a>
+                        <a id="direct-makepost" href="/community/make_post">Make Post</a><br></br>
+                        <input className="search_input" type="text" placeholder="search by title"></input>
+                        <button className="search_button" id="post_search">Search</button>
                     </div>
 
                     <div className="grid2-postsection">

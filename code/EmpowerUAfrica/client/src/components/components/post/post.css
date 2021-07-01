@@ -22,12 +22,27 @@
     background-color: yellowgreen;
 }
 
-#post_share:hover {
-    color: white;
-    background-color: black;
-    transition: 0.5s;
-    cursor: pointer;
+.share_img {
+    height: 10px;
+    width: 10px;
 }
+
+.share{
+    background-image: url('../../../resource/icons/share.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.share #share_text {
+    margin-left: 20px;
+}
+
+.post_footer {
+    display: grid;
+    grid-template-columns: 80% 20%;
+    justify-content: space-between;
+}
+
 
 
 

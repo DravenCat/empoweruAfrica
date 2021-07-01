@@ -8,16 +8,19 @@ export default class community extends Component{
 
         const postInfo = [
             {
+                userName: "user1",
                 title: "title1",
                 content: "content1",
                 commentNumber: 20
             },
             {
+                userName: "user1",
                 title: "title2",
                 content: "content2",
                 commentNumber: 30
             },
             {
+                userName: "user1",
                 title: "title3",
                 content: "content3",
                 commentNumber: 40

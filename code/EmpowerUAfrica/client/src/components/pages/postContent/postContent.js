@@ -27,6 +27,7 @@ export default class postContent extends Component{
     render() {
         const postInfo = [
             {
+                userName: "user1",
                 title: "title1",
                 content: "content1",
                 commentNumber: 20
@@ -35,12 +36,15 @@ export default class postContent extends Component{
 
         const postReplyInfo = [
             {
+                userName: "replyUser1",
                 content: "replyContent1",
             },
             {
+                userName: "replyUser1",
                 content: "replyContent1",
             },
             {
+                userName: "replyUser1",
                 content: "replyContent1",
             }
         ]

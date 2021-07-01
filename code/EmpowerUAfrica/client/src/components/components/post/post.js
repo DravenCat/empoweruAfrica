@@ -1,6 +1,7 @@
 import React, { Component } from 'react'; 
 import './post.css';
 import profile from '../../../resource/icons/profile.png'
+import share from '../../../resource/icons/share.png'
 
 
 
@@ -21,11 +22,23 @@ export default class post extends Component{
             <div className="post">
                 <a className="inner" href="community/post_content">
                     <img src={profile}/>
+                    <span>{this.props.post.userName}</span>
                     <h3>{this.props.post.title}</h3>
                     <p>{this.props.post.content}</p>
                 </a>
-                <span className="post_button">Comments {this.props.post.commentNumber}</span>
-                <button className="post_button" id="post_share" onClick={this.copyURL}>Share</button>
+
+                <div className="post_footer">
+                    <div>
+                        <span className="post_button">Comments {this.props.post.commentNumber}</span>  
+                    </div>
+                    
+                    <div>
+                        <a href="#" className="share" onClick={this.copyURL}>
+                            <a href="#" id="share_text">Share</a>
+                        </a>
+                    </div>
+                </div>
+
             </div>
         )
     }

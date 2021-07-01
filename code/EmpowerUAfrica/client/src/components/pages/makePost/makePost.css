@@ -14,11 +14,20 @@
 .makePost_title, .makePost_content {
     margin: 25px 30px;
 }
-.makePost_title textarea, .makePost_content textarea {
+.makePost_content textarea {
     min-height: 200px;
     min-width: 100%;
     border-radius: 10px;
     box-shadow: 0 0 3px gray;
+    font-size: 17px;
+}
+
+.makePost_title textarea {
+    min-height: 50px;
+    min-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 0 3px gray;
+    font-size: 25px;
 }
 
 #createPost {
