@@ -8,13 +8,8 @@ const admin = require('./admin');
 const router = express.Router(); 
 
 
-router.get('/getPosts', async (req, res) => {
-    
-});
 
-router.get('/getPostContent', async (req, res) => {
 
-}); 
 
 
 router.post('/createPost', async (req, res) => {
@@ -24,7 +19,7 @@ router.post('/createPost', async (req, res) => {
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
         res.status(403).json({
-            mesage: 'You have to sign in before making a post. '
+            message: 'You have to sign in before making a post. '
         });
         return;
     }
@@ -56,7 +51,7 @@ router.post('/createComment', async (req, res) => {
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
         res.status(403).json({
-            mesage: 'You have to sign in before making a comment. '
+            message: 'You have to sign in before making a comment. '
         });
         return;
     }
@@ -95,7 +90,7 @@ router.post('/followPost', async (req, res) => {
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
         res.status(403).json({
-            mesage: 'You have to sign in before making a comment. '
+            message: 'You have to sign in before making a comment. '
         });
         return;
     }
@@ -122,7 +117,7 @@ router.post('/deleteContent', async (req, res) => {
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
         res.status(403).json({
-            mesage: 'You have to sign in before deleting a post / comment. '
+            message: 'You have to sign in before deleting a post / comment. '
         });
         return;
     }
@@ -162,17 +157,38 @@ router.post('/getPosts', async (req, res) => {
         results = db.getPosts(req.pageNum, req.postsPerPage);
     }else{
         res.status(400).json({
-            mesage: 'Inputs are not valid'
+            message: 'Inputs are not valid'
         });
     }
     if(results != null){
         res.status(200).send(results);
     }else{
         res.status(412).json({
-            mesage: 'Requested number of posts exceeded total amount of posts'
+            message: 'Requested number of posts exceeded total amount of posts'
         });
     }
 
 });
+
+
+router.get('/getPostContent', async (req, res) => {
+    let post = db.searchPostById(req.postId);
+    let comments = db.getComments(req.postId);
+    if(post === null){
+        res.status(404).json({
+            message: 'Post not found'
+        });
+    }
+    res.status(200).json({
+        id: req.postId,
+        author: post.author,
+        post: {
+            post_time: post.timestamp,
+            title: post.title,
+            content: post.content
+        },
+        comments: comments
+    });
+}); 
 
 module.exports = router;
