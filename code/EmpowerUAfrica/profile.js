@@ -56,6 +56,55 @@ router.post('/updateProfile', async (req, res) => {
     
 }); 
 
+router.post('/addTag', async (req, res) =>{
+
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            mesage: 'You have to sign in before you edit your profile. '
+        });
+        return;
+    }
+
+    let hasTag = db.hasTag(username, req.tag);
+    if(!hasTag){
+        db.addTag(username, req.tag);
+        res.status(200).json({message: "Success"});
+    }else{
+        res.status(405).json({message: "User already has tag"});
+    }
+
+});
+
+
+router.post('/removeTag', async (req, res) =>{
+
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            mesage: 'You have to sign in before you edit your profile. '
+        });
+        return;
+    }
+
+    let hasTag = db.hasTag(username, req.tag);
+    if(!hasTag){
+        res.status(405).json({message: "User already does not have tag"});
+    }else{
+        db.deleteTag(username, req.tag);
+        res.status(200).json({message: "Success"});
+    }
+});
+
+
+
+
 router.post('/updateProfilePic', async (req, res) => {
 
     if (!req.files || Object.keys(req.files).length === 0) {
