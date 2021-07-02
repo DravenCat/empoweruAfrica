@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import './post.css';
 import profile from '../../../resource/icons/profile.png'
 import share from '../../../resource/icons/share.png'
+import { UserAbstract } from '../userAbstract/userAbstract';
+import Utils from '../../../utils';
 
 
 
@@ -9,7 +11,7 @@ export default class post extends Component{
 
     copyURL = ()=> {
         var inputc = document.body.appendChild(document.createElement("input"));
-        inputc.value = window.location.href;
+        inputc.value = `/community/post/${this.props.post.post_id}`;
         inputc.focus();
         inputc.select();
         document.execCommand('copy');
@@ -18,23 +20,29 @@ export default class post extends Component{
     }
 
     render() {
+        let post = this.props.post.post;
+        let author = this.props.post.author;  
+        if (post === undefined) {
+            return (<h2>Error: No Post Data</h2>); 
+        }
         return (
             <div className="post">
-                <a className="inner" href="community/post_content">
-                    <img src={profile}/>
-                    <span>{this.props.post.userName}</span>
-                    <h3>{this.props.post.title}</h3>
-                    <p>{this.props.post.content}</p>
+                <UserAbstract user={author}></UserAbstract>
+                <a className="inner" href={`community/post/${post.post_id}`}>
+                    <h3>{post.title}</h3>
+                    <p>{post.abbriv || post.content}</p>
                 </a>
 
                 <div className="post_footer">
                     <div>
-                        <span className="post_button">Comments {this.props.post.commentNumber}</span>  
+                        <span className="post_button">Comments {post.comment_count}</span>  
                     </div>
+
+                    <p>Post at: {Utils.timeStampToTime(post.post_time)}</p>
                     
                     <div>
                         <a href="#" className="share" onClick={this.copyURL}>
-                            <a href="#" id="share_text">Share</a>
+                            <span id="share_text">Share</span>
                         </a>
                     </div>
                 </div>

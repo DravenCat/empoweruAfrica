@@ -53,24 +53,20 @@ export default function App() {
           <SetEmail/>
         </Route>
 
+        <Route exact path="/community" component={Community}>
+        </Route>
 
-        <Route exact path="/community">
-          <Navbar />
-          <Community/>
+        <Route exact path="/community/:page" component={Community}>
         </Route>
 
         <Route exact path="/view_all_posts">
-          <Navbar />
           <ViewAllPost/>
         </Route>
 
-        <Route exact path="/community/post_content">
-          <Navbar />
-          <PostContent/>
+        <Route exact path="/community/post/:postId" component={PostContent}>
         </Route>
 
         <Route exact path="/community/make_post">
-          <Navbar />
           <MakePost/>
         </Route>
 
