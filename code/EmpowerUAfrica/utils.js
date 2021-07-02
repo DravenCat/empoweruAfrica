@@ -22,28 +22,40 @@ let Utils = {
             - true, if the username is valid. 
             - false o\w. 
     */
-   isValidUsername: (username) => {
-       if (username.indexOf('@') !== -1) {
-           return false;
-       }
-   }, 
+    isValidUsername: (username) => {
+        if (username.indexOf('@') !== -1) {
+            return false;
+        }
+    }, 
 
-   hash: (str) => {
+    hash: (str) => {
         const sha256 = crypto.createHash('sha256');
         const hash = sha256.update(str).digest('base64');
         return hash;
-   },
+    },
 
-   getToken: () => {
-       return crypto.randomBytes(30).toString('hex');
-   },
-    
-   /*
+    getToken: () => {
+        return crypto.randomBytes(30).toString('hex');
+    },
+        
+    /*
         Returns number of seconds from 1970-1-1 00:00 until now
-   */
-   timestamp: () => {
-       return Math.round(Date.now() / 1000);
-   }
+    */
+    timestamp: () => {
+        return Math.round(Date.now() / 1000);
+    },
+    /*
+        params:
+            - id: String, either an id for a post or a comment
+    */
+    typeOfId: (id) => {
+        switch (id[0]) {
+            case 'P': return 'post';
+            case 'C': return 'reply'; 
+            default: 
+                return null;
+        }
+    }
 
 
 }

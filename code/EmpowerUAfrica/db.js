@@ -300,9 +300,11 @@ const db = {
     */
     deletePost: async (postId) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (:user)-[m:CREATE_POST]->(p:post {PostId: $postId}), 
-                           (:reply)-[rp:REPLY_TO]->(p) 
-                     DELETE rp, m, p`;
+
+        let query = `MATCH 
+                        (r:reply)-[:REPLY_TO*0..]->(p:post {PostId: $postId})
+                    DETACH DELETE r, p`;
+
         let params = {"postId": postId};
         try {
             await session.run(query, params);
@@ -453,11 +455,12 @@ const db = {
     */
     deleteReply: async (replyId) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (:user)-[m:CREATE_REPLY]->(r:reply {ReplyId: $replyId}), 
-                           (r)-[rp:REPLY_TO]->(), 
-                           (:reply)-[rpp:REPLY_TO]-(r) 
-                     DELETE m, rp, rpp, r`;
-        let params = {"replyId": replyId};
+
+        let query = `MATCH 
+                        (r:reply {ReplyId: $replyId})
+                    SET r: DELETED`;
+        let params = {replyId};
+
         try {
             await session.run(query, params);
         } catch (err) {
@@ -594,10 +597,52 @@ const db = {
             result = await session.run(query, params).then();
             result.records.forEach(record => postIdSet.push(record.get("userName")));
         } catch (err) {
-            console.log(err);
+            console.error(err);
         }
         session.close();
         return usernameSet;       
+    },
+    /*
+        params:
+            id: String, the id of the post / reply
+            contentType: String, post | reply
+    */
+    getAuthorOfContent: async (id, contentType) => {
+        const session = Neo4jDriver.wrappedSession(); 
+
+        let query;
+        let params = {id};  
+        if (contentType === 'post') {
+            query = `MATCH 
+                        (p:post {PostId: $id}), 
+                        (u:user)-[:CREATE_POST]->(p)
+                    RETURN 
+                        u.UserName AS username`;
+        }
+        else if (contentType === 'reply') {
+            query = `MATCH 
+                        (r:reply {ReplyId: $id}), 
+                        (u:user)-[:CREATE_REPLY]->(r)
+                    RETURN 
+                        u.UserName AS username`;
+        }
+        else {
+            return null; 
+        }
+
+        let result; 
+        try {
+            result = await session.run(query, params).then();
+        } catch (err) {
+            console.error(err);
+        }
+        
+        if (result.records.length === 0) {
+            return null;
+        }
+        const author = result.records[0].get('username');
+        session.close();
+        return author; 
     }
 }; 
 
