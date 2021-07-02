@@ -30,7 +30,8 @@ const expectedFields = {
     '/api/community/createPost': ['title', 'body'],
     '/api/community/createComment': ['reply_to', 'body'],
     '/api/community/followPost': ['id', 'follow'],
-    '/api/community/deleteContent': ['id']
+    '/api/community/deleteContent': ['id'],
+    '/api/community/getPostList': ['post_per_page', 'pager_number']
 };
 
 // parse the request body as json. 

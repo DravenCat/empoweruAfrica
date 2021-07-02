@@ -7,7 +7,7 @@ const admin = require('./admin');
 
 const router = express.Router(); 
 
-
+// Endpoint for when the user wants to create a post
 router.post('/createPost', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
@@ -15,7 +15,7 @@ router.post('/createPost', async (req, res) => {
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
         res.status(403).json({
-            mesage: 'You have to sign in before making a post. '
+            message: 'You have to sign in before making a post. '
         });
         return;
     }
@@ -40,6 +40,8 @@ router.post('/createPost', async (req, res) => {
     });
 }); 
 
+
+// Endpoint for when the user wants to create a comment
 router.post('/createComment', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
@@ -47,7 +49,7 @@ router.post('/createComment', async (req, res) => {
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
         res.status(403).json({
-            mesage: 'You have to sign in before making a comment. '
+            message: 'You have to sign in before making a comment. '
         });
         return;
     }
@@ -79,6 +81,8 @@ router.post('/createComment', async (req, res) => {
     });
 });
 
+
+// Endpoint for when the user wants to follow a post
 router.post('/followPost', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
@@ -86,7 +90,7 @@ router.post('/followPost', async (req, res) => {
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
         res.status(403).json({
-            mesage: 'You have to sign in before making a comment. '
+            message: 'You have to sign in before making a comment. '
         });
         return;
     }
@@ -106,6 +110,8 @@ router.post('/followPost', async (req, res) => {
     });
 });
 
+
+// Endpoint for when the user wants to delete a post or reply
 router.post('/deleteContent', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
@@ -113,7 +119,7 @@ router.post('/deleteContent', async (req, res) => {
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
         res.status(403).json({
-            mesage: 'You have to sign in before deleting a post / comment. '
+            message: 'You have to sign in before deleting a post / comment. '
         });
         return;
     }
@@ -145,5 +151,51 @@ router.post('/deleteContent', async (req, res) => {
         message: 'success'
     });
 });
+
+
+// Endpoint for when the user wants to get all posts for a certain page
+router.post('/getPosts', async (req, res) => {
+    let results;
+    if(Number.isInteger(req.pageNum) && Number.isInteger(req.postsPerPage)){
+        results = db.getPosts(req.pageNum, req.postsPerPage);
+    }else{
+        res.status(400).json({
+            message: 'Inputs are not valid'
+        });
+    }
+    if(results != null){
+        res.status(200).send(results);
+    }else{
+        res.status(412).json({
+            message: 'Requested number of posts exceeded total amount of posts'
+        });
+    }
+
+});
+
+
+// Endpoint for when the user wants to get all contents
+// of a post and all comments for the post
+router.get('/getPostContent', async (req, res) => {
+    let post = db.searchPostById(req.postId);
+    let comments = db.getComments(req.postId);
+    // check if the post exists
+    if(post === null){
+        res.status(404).json({
+            message: 'Post not found'
+        });
+    }
+    // returns the object containing the post contents and all comments
+    res.status(200).json({
+        id: req.postId,
+        author: post.author,
+        post: {
+            post_time: post.timestamp,
+            title: post.title,
+            content: post.content
+        },
+        comments: comments
+    });
+}); 
 
 module.exports = router;
