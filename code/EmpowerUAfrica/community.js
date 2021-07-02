@@ -155,4 +155,24 @@ router.post('/deleteContent', async (req, res) => {
     });
 });
 
+
+router.post('/getPosts', async (req, res) => {
+    let results;
+    if(Number.isInteger(req.pageNum) && Number.isInteger(req.postsPerPage)){
+        results = db.getPosts(req.pageNum, req.postsPerPage);
+    }else{
+        res.status(400).json({
+            mesage: 'Inputs are not valid'
+        });
+    }
+    if(results != null){
+        res.status(200).send(results);
+    }else{
+        res.status(412).json({
+            mesage: 'Requested number of posts exceeded total amount of posts'
+        });
+    }
+
+});
+
 module.exports = router;
