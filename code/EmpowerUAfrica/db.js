@@ -598,7 +598,33 @@ const db = {
         }
         session.close();
         return usernameSet;       
+    },
+
+
+    /*
+        params: 
+            - username: String
+        returns:
+            An object containing all of the tags that the user has.
+    */
+    getTags: async (username) => {
+        // TODO
+        session.close();
+    },
+
+
+    /*
+        params: 
+            - username: String
+            - tagName: String
+        returns:
+            true if the user has a 'HAS_TAG' relationship with the tag, false if the user does not.
+    */
+    userHasTag: async (username, tagName) => {
+        // TODO
+        session.close();
     }
+
 }; 
 
 module.exports = db; 
