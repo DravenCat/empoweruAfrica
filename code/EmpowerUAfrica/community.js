@@ -8,7 +8,7 @@ const admin = require('./admin');
 const router = express.Router(); 
 
 
-router.post('/makePost', async (req, res) => {
+router.post('/createPost', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
 
@@ -40,7 +40,7 @@ router.post('/makePost', async (req, res) => {
     });
 }); 
 
-router.post('/makeComment', async (req, res) => {
+router.post('/createComment', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
 
@@ -106,7 +106,7 @@ router.post('/followPost', async (req, res) => {
     });
 });
 
-router.post('/delete', async (req, res) => {
+router.post('/deleteContent', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
 
