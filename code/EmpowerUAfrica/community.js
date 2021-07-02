@@ -8,6 +8,15 @@ const admin = require('./admin');
 const router = express.Router(); 
 
 
+router.get('/getPosts', async (req, res) => {
+    
+});
+
+router.get('/getPostContent', async (req, res) => {
+
+}); 
+
+
 router.post('/createPost', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
