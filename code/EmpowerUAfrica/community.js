@@ -7,11 +7,7 @@ const admin = require('./admin');
 
 const router = express.Router(); 
 
-
-
-
-
-
+// Endpoint for when the user wants to create a post
 router.post('/createPost', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
@@ -44,6 +40,8 @@ router.post('/createPost', async (req, res) => {
     });
 }); 
 
+
+// Endpoint for when the user wants to create a comment
 router.post('/createComment', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
@@ -83,6 +81,8 @@ router.post('/createComment', async (req, res) => {
     });
 });
 
+
+// Endpoint for when the user wants to follow a post
 router.post('/followPost', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
@@ -110,6 +110,8 @@ router.post('/followPost', async (req, res) => {
     });
 });
 
+
+// Endpoint for when the user wants to delete a post or reply
 router.post('/deleteContent', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
@@ -151,6 +153,7 @@ router.post('/deleteContent', async (req, res) => {
 });
 
 
+// Endpoint for when the user wants to get all posts for a certain page
 router.post('/getPosts', async (req, res) => {
     let results;
     if(Number.isInteger(req.pageNum) && Number.isInteger(req.postsPerPage)){
@@ -171,14 +174,18 @@ router.post('/getPosts', async (req, res) => {
 });
 
 
+// Endpoint for when the user wants to get all contents
+// of a post and all comments for the post
 router.get('/getPostContent', async (req, res) => {
     let post = db.searchPostById(req.postId);
     let comments = db.getComments(req.postId);
+    // check if the post exists
     if(post === null){
         res.status(404).json({
             message: 'Post not found'
         });
     }
+    // returns the object containing the post contents and all comments
     res.status(200).json({
         id: req.postId,
         author: post.author,
