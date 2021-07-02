@@ -512,6 +512,51 @@ const db = {
     /*
         params: 
             - username: String
+        returns:
+            nothing
+    */
+    getTags: async (username) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (u:user {UserName: $username})-[:HAS_TAG]->(t:tag) 
+                     RETURN t.TagName AS tagName`;
+        let params = {"username": username};
+        let result;
+        let tagSet = [];
+        try {
+            result = await session.run(query, params);
+            result.records.forEach(record => tagSet.push(record.get("tagName")));
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+        return tagSet;
+    },
+
+    /*
+        params: 
+            - username: String
+            - tagName: String
+        returns:
+            nothing
+    */
+    userHasTag: async (username, tagName) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (u:user {UserName: $username})-[ht:HAS_TAG]->(t:tag {TagName: $tagName}) 
+                     RETURN count(ht)`;
+        let params = {"username": username, "tagName": tagName};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+        return result.records[0].get(0) != 0;
+    },
+
+    /*
+        params: 
+            - username: String
             - postId: String, the postId of the post that user wants to follow
         returns:
             nothing
@@ -598,33 +643,7 @@ const db = {
         }
         session.close();
         return usernameSet;       
-    },
-
-
-    /*
-        params: 
-            - username: String
-        returns:
-            An object containing all of the tags that the user has.
-    */
-    getTags: async (username) => {
-        // TODO
-        session.close();
-    },
-
-
-    /*
-        params: 
-            - username: String
-            - tagName: String
-        returns:
-            true if the user has a 'HAS_TAG' relationship with the tag, false if the user does not.
-    */
-    userHasTag: async (username, tagName) => {
-        // TODO
-        session.close();
     }
-
 }; 
 
 module.exports = db; 
