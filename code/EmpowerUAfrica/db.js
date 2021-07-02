@@ -396,7 +396,7 @@ const db = {
         let skipNum = pageNum * postPerPage;
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {UserName: $username})  
-                           (u)-[:CREATE_POST]->(p)  
+                           (u)-[:CREATE_POST]->(p:post)  
                      RETURN p 
                      ORDER BY p.Time DESC 
                      SKIP $skipNum 
