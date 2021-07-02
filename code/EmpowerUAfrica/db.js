@@ -300,9 +300,11 @@ const db = {
     */
     deletePost: async (postId) => {
         let session = Neo4jDriver.wrappedSession();
+
         let query = `MATCH 
                         (r:reply)-[:REPLY_TO*0..]->(p:post {PostId: $postId})
                     DETACH DELETE r, p`;
+
         let params = {"postId": postId};
         try {
             await session.run(query, params);
@@ -320,9 +322,9 @@ const db = {
     */
     searchPostByTitle: async (title) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = "MATCH (p:post)"
-                    "WHERE p.Title =~'.*$title.*' "
-                    "RETURN p";
+        let query = `MATCH (p:post) 
+                     WHERE p.Title =~'.*$title.*'  
+                     RETURN p`;
         let params = {"title": title};
         let result;
         let postSet = [];
@@ -353,9 +355,9 @@ const db = {
     */
     searchPostById: async (postId) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = "MATCH (p:post)"
-                    "WHERE p.PostId =~'.*$postId.*' "
-                    "RETURN p";
+        let query = `MATCH (p:post) 
+                     WHERE p.PostId =~'.*$postId.*' 
+                     RETURN p`;
         let params = {"postId": postId};
         let result;
         let postSet = [];
@@ -386,9 +388,9 @@ const db = {
     */
     searchPostByUser: async (username) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = "MATCH (u:user {UserName: $username}) "
-                          "(u)-[:CREATE_POST]->(p) "
-                    "RETURN p";
+        let query = `MATCH (u:user {UserName: $username})  
+                           (u)-[:CREATE_POST]->(p)  
+                     RETURN p`;
         let params = {"username": username};
         let result;
         let postSet = [];
@@ -453,10 +455,12 @@ const db = {
     */
     deleteReply: async (replyId) => {
         let session = Neo4jDriver.wrappedSession();
+
         let query = `MATCH 
                         (r:reply {ReplyId: $replyId})
                     SET r: DELETED`;
         let params = {replyId};
+
         try {
             await session.run(query, params);
         } catch (err) {
@@ -474,8 +478,8 @@ const db = {
     */
     addTag: async (username, tagName) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = "MATCH (u:user {UserName: $username}) "
-                    "MERGE (u)-[:TAGGED]->(t:tag {TagName: $tagName})";
+        let query = `MATCH (u:user {UserName: $username}) 
+                     MERGE (u)-[:TAGGED]->(t:tag {TagName: $tagName})`;
         let params = {"username": username, "tagName": tagName};
         try {
             await session.run(query, params);
@@ -494,11 +498,11 @@ const db = {
     */
     deleteTag: async (username, tagName) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = "MATCH (u:user {UserName: $username})-[ht:HAS_TAG]->(t:tag {TagName: $tagName}) "
-                    "DELETE ht "
-                    "WITH t "
-                    "WHERE size(()-[:HAS_TAG]->(t)) = 0 "
-                    "DELETE t";
+        let query = `MATCH (u:user {UserName: $username})-[ht:HAS_TAG]->(t:tag {TagName: $tagName}) 
+                     DELETE ht 
+                     WITH t 
+                     WHERE size(()-[:HAS_TAG]->(t)) = 0 
+                     DELETE t`;
         let params = {"username": username, "tagName": tagName};
         try {
             await session.run(query, params);
@@ -559,9 +563,9 @@ const db = {
     getFollowedPostByUser: async (username) => {
         var postIdSet = [];
         let session = Neo4jDriver.wrappedSession();
-        let query = "MATCH (u:user {UserName: $username}), "
-                           "(u)-[:FOLLOW]->(p:post) "
-                    "RETURN p.PostId AS postId";
+        let query = `MATCH (u:user {UserName: $username}), 
+                           "(u)-[:FOLLOW]->(p:post) 
+                     RETURN p.PostId AS postId`;
         let params = {"username": username};
         let result;
         try {
@@ -584,9 +588,9 @@ const db = {
     getFollowingUserByPost: async (postId) => {
         var usernameSet = [];
         let session = Neo4jDriver.wrappedSession();
-        let query = "MATCH (p:post {PostId: $postId}), "
-                           "(u:user)-[:FOLLOW]->(p) "
-                    "RETURN u.UserName AS userName";
+        let query = `MATCH (p:post {PostId: $postId}), 
+                           (u:user)-[:FOLLOW]->(p) 
+                     RETURN u.UserName AS userName`;
         let params = {"postId": postId};
         let result;
         try {
