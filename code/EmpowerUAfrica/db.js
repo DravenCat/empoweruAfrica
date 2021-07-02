@@ -301,7 +301,7 @@ const db = {
     deletePost: async (postId) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH 
-                        (r:reply)-[rp:REPLY_TO]->(p:post {PostId: $postId})
+                        (r:reply)-[:REPLY_TO*0..]->(p:post {PostId: $postId})
                     DETACH DELETE r, p`;
         let params = {"postId": postId};
         try {
@@ -454,9 +454,8 @@ const db = {
     deleteReply: async (replyId) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH 
-                        (r:reply {ReplyId: $replyId}),
-                        (subr:reply)-[:REPLY_TO]->(r)
-                    DETACH DELETE r`;
+                        (r:reply {ReplyId: $replyId})
+                    SET r: DELETED`;
         let params = {replyId};
         try {
             await session.run(query, params);
