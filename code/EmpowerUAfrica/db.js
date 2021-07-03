@@ -318,18 +318,14 @@ const db = {
         params: 
             - title: String, part of the string of the title
         returns:
-            nothing
+            A set of objects where each object contains all the info of a post
     */
-    searchPostByTitle: async (title, pageNum, postPerPage) => {
-        let skipNum = pageNum * postPerPage;
+    searchPostByTitle: async (title) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (p:post) 
                      WHERE p.Title =~'.*$title.*'  
-                     RETURN p 
-                     ORDER BY p.Time DESC 
-                     SKIP $skipNum 
-                     LIMIT $postPerPage`;
-        let params = {"title": title, "skipNum": skipNum, "postPerPage": postPerPage};
+                     RETURN p`;
+        let params = {"title": title};
         let result;
         let postSet = [];
         try {
@@ -355,18 +351,14 @@ const db = {
         params: 
             - Id: Part of the target postId
         returns:
-            nothing
+            A set of objects where each object contains all the info of a post
     */
-    searchPostById: async (postId, pageNum, postPerPage) => {
-        let skipNum = pageNum * postPerPage;
+    searchPostById: async (postId) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (p:post) 
                      WHERE p.PostId =~'.*$postId.*' 
-                     RETURN p 
-                     ORDER BY p.Time DESC 
-                     SKIP $skipNum 
-                     LIMIT $postPerPage`;
-        let params = {"postId": postId, "skipNum": skipNum, "postPerPage": postPerPage};
+                     RETURN p`;
+        let params = {"postId": postId};
         let result;
         let postSet = [];
         try {
@@ -390,20 +382,53 @@ const db = {
 
     /*
         params: 
-            - Id: Part of the target postId
+            - username: String
         returns:
-            nothing
+            A set of objects where each object contains all the info of a post
     */
-    searchPostByUser: async (username, pageNum, postPerPage) => {
-        let skipNum = pageNum * postPerPage;
+    searchPostByUser: async (username) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {UserName: $username})  
                            (u)-[:CREATE_POST]->(p:post)  
+                     RETURN p`;
+        let params = {"username": username};
+        let result;
+        let postSet = [];
+        try {
+            result = await session.run(query, params);
+            let records = result.records;
+            for (let i = 0; i < records.length; i++) {
+                let post = records[i].get(0);
+                postSet.push({
+                    postId: post.properties.PostId,
+                    title: post.properties.Title,
+                    time: post.properties.Time,
+                    content: post.properties.Content
+                })
+            }
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+        return postSet;
+    },
+
+    /*
+        params: 
+            - pageNum: Int
+            - postPerPage: Int
+        returns:
+            A set of objects in time-descending order where each object contains all the info of a post
+    */
+    getPost: async(pageNum, postPerPage) => {
+        let skipNum = pageNum * postPerPage;
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (p:post)  
                      RETURN p 
                      ORDER BY p.Time DESC 
                      SKIP $skipNum 
                      LIMIT $postPerPage`;
-        let params = {"username": username, "skipNum": skipNum, "postPerPage": postPerPage};
+        let params = {"skipNum": skipNum, "postPerPage": postPerPage};
         let result;
         let postSet = [];
         try {
@@ -479,6 +504,37 @@ const db = {
             console.error(err);
         }
         session.close();
+    },
+
+    /*
+        params: 
+            - postId: The id of the original post
+        returns:
+            A set of objectswhere each object contains all the info of a reply
+    */
+    getComments: async(postId) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (r:reply)-[:REPLY_TO*0..]->(p:post {PostId: $postId}) 
+                     RETURN r`;
+        let params = {"postId": postId};
+        let result;
+        let replySet = [];
+        try {
+            result = await session.run(query, params);
+            let records = result.records;
+            for (let i = 0; i < records.length; i++) {
+                let reply = records[i].get(0);
+                replySet.push({
+                    replyId: reply.properties.ReplyId,
+                    time: reply.properties.Time,
+                    content: reply.properties.Content
+                })
+            }
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+        return replySet;
     },
 
     /*
