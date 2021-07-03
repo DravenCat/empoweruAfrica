@@ -318,16 +318,12 @@ const db = {
         returns:
             nothing
     */
-    searchPostByTitle: async (title, pageNum, postPerPage) => {
-        let skipNum = pageNum * postPerPage;
+    searchPostByTitle: async (title) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (p:post) 
                      WHERE p.Title =~'.*$title.*'  
-                     RETURN p 
-                     ORDER BY p.Time DESC 
-                     SKIP $skipNum 
-                     LIMIT $postPerPage`;
-        let params = {"title": title, "skipNum": skipNum, "postPerPage": postPerPage};
+                     RETURN p`;
+        let params = {"title": title};
         let result;
         let postSet = [];
         try {
@@ -355,16 +351,12 @@ const db = {
         returns:
             nothing
     */
-    searchPostById: async (postId, pageNum, postPerPage) => {
-        let skipNum = pageNum * postPerPage;
+    searchPostById: async (postId) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (p:post) 
                      WHERE p.PostId =~'.*$postId.*' 
-                     RETURN p 
-                     ORDER BY p.Time DESC 
-                     SKIP $skipNum 
-                     LIMIT $postPerPage`;
-        let params = {"postId": postId, "skipNum": skipNum, "postPerPage": postPerPage};
+                     RETURN p`;
+        let params = {"postId": postId};
         let result;
         let postSet = [];
         try {
@@ -392,16 +384,12 @@ const db = {
         returns:
             nothing
     */
-    searchPostByUser: async (username, pageNum, postPerPage) => {
-        let skipNum = pageNum * postPerPage;
+    searchPostByUser: async (username) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {UserName: $username})  
                            (u)-[:CREATE_POST]->(p:post)  
-                     RETURN p 
-                     ORDER BY p.Time DESC 
-                     SKIP $skipNum 
-                     LIMIT $postPerPage`;
-        let params = {"username": username, "skipNum": skipNum, "postPerPage": postPerPage};
+                     RETURN p`;
+        let params = {"username": username};
         let result;
         let postSet = [];
         try {
@@ -422,6 +410,8 @@ const db = {
         session.close();
         return postSet;
     },
+
+    getPost: async() => {},
 
     /*
         params: 
