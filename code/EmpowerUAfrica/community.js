@@ -167,7 +167,7 @@ router.get('/getPosts', async (req, res) => {
         return; 
     }
     if(results != null){
-        res.status(200).send(results);
+        res.status(200).json(results);
     }else{
         res.status(412).json({
             message: 'Requested number of posts exceeded total amount of posts'
