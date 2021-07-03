@@ -47,6 +47,7 @@ When building the profile page, we wrote each tag as a html element and this cau
 | Yuanqian Fang | 4 |
 | Jiayu Lu | 4 |
 
+With a team of 5, our team is able to dedicate 129 hours to this sprint to complete 38 points. 
 
-Participants: 
+## Participants: 
 Dezhi Ren, Jiayu Lu, Jiazheng Li, Siyang Chen, Yuanqian Fang
