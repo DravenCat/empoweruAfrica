@@ -64,10 +64,12 @@ export default class signin extends Component {
             <div className="signin-field">
 
                 <div className="signin-left">
+                    {/* Welcome message */}
                     <p className="signin-left-title">Welcome back</p>
                     <p className="signin-left-text">To keep connected with us please sign in with 
                         your personal information by email and password
                     </p>
+                    {/* link to signup page */}
                     <p className="signin-left-text2">Or create an account if you do not have one
                     </p>
                     <a id="direct-signup" href="/signup">Create your account</a>
@@ -78,12 +80,14 @@ export default class signin extends Component {
                 </div>
 
                 <div className="signin-midright">
+                    {/* sign in page title */}
                     <h2 className="signin-title">
                         Sign in
                     </h2> 
 
                     <div className="signin-form-field">
-
+                        
+                        {/* user name or email input */}
                         <div>
                             <div>
                                 Username/Email
@@ -91,7 +95,8 @@ export default class signin extends Component {
                             <input type="text" id="signin-username-input"/>
                         </div>
                         <br/>
-
+                        
+                        {/* password input */}
                         <div>
                             <div>
                                 Password
@@ -101,8 +106,10 @@ export default class signin extends Component {
 
                     </div>
                     
+                    {/* error message */}
                     <p className="errorMsg">{errMsg}</p>
 
+                    {/* login button */}
                     <div className="signin-button">
                         <button id="signin-button" onClick={this.sendSigninRequest}>
                             Login

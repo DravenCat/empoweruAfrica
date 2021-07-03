@@ -55,6 +55,7 @@ const db = {
             - true, if the credentials match
             - false o\w
             - null, if the username does not exist
+        Check if the password that user input is right
     */
     credentialsMatch: async (idtype, id, password) => {
         let sql = `SELECT password FROM Accounts WHERE ${idtype} = ?`; 
@@ -74,6 +75,7 @@ const db = {
         returns:
             - the username of user with email = email, if the user is found
             - null o\w 
+        Return the username with the given email
     */
     usernameForEmail: async (email) => {
 	    let sql = 'SELECT username FROM Accounts WHERE email = ?';
@@ -95,6 +97,7 @@ const db = {
             - newCredential: String, the new email or password, depending on type
         returns:
             nothing
+        Update user’s email/password with the new one
     */
     updateCredentials: async (type, username, newCredential) => {
         let sql = `UPDATE Accounts SET ${type} = ? WHERE username = ?`; 
@@ -108,6 +111,7 @@ const db = {
             - expirationTime: Number, int
         returns:
             nothing
+        Create a new row for a new user in Token database
    */
     addToken: async (token, username) => {
         let sql = `INSERT INTO Tokens(token, username, expiration_time) \
@@ -122,6 +126,7 @@ const db = {
             - token: String, the token to be deleted. 
         returns:
             nothing
+        Delete user’s token in the database
     */
     delToken: async (token) => {
         let sql = 'DELETE FROM Tokens WHERE token=?'; 
@@ -135,6 +140,7 @@ const db = {
         returns:
             - username: String, the username corresponding to the token. 
             - null if the token is not found in the database, or has expired. 
+        Return the username with the given token
     */
     getUsernameByToken: async (token) => {
         let sql = 'SELECT username FROM Tokens WHERE token = ? AND expiration_time > NOW()';
@@ -151,6 +157,7 @@ const db = {
             - username: String 
         returns:
             - nothing
+        Create a new row for a new user in Profile database
      */
     addUserProfile: async (username) => {
         let sql = "INSERT INTO Profile(username, name) VALUES(?, ?);";
@@ -163,6 +170,9 @@ const db = {
         params:
             - username: String
             - updates: Object, keys are fields to be updated, values are the new value for the said field
+        returns:
+            - nothing
+        Update user’s profile in the Profile database
     */
     updateProfile: async(username, updates) =>{
         let keys = Object.keys(updates);
@@ -187,6 +197,9 @@ const db = {
     /*
         params:
             - username: String
+        return:
+            - An object. Keys are each field. Values are the data in the database.
+        Return a JavaScript Object where each field contains user’s profile info in the database
      */
     getProfileByUsername: async (username) => {
         let profile;
@@ -217,6 +230,7 @@ const db = {
             - username: String
         returns:
             - A string indicating user's type
+        Return the type of the user
      */
     getUserType: async (username) => {
         let sql = "SELECT type FROM Accounts WHERE username=?";
@@ -237,6 +251,7 @@ const db = {
                 email: the user's email,
                 type: (int) the user's type
             }
+        Return the type and email of the user
     */
     getUserAbstract: async (username) => {
         let sql = "SELECT type, email FROM Accounts WHERE username=?"; 
@@ -255,6 +270,7 @@ const db = {
             - username: String 
         returns:
             nothing
+        Create a user node in the database
     */
     createUser: async (username) => {
         let session = Neo4jDriver.wrappedSession();
@@ -277,6 +293,7 @@ const db = {
             - time: the time that user makes the post
         returns:
             nothing
+        Create a postNode with given data and create ‘CREATE_POST’ relationship between user and post
     */
     makePost: async (username, content, title, postId, time) => {
         let session = Neo4jDriver.wrappedSession();
@@ -296,7 +313,7 @@ const db = {
             - postId: the postId of the post that user reply to
         returns:
             nothing
-        (warning: deletePost will not delete any reply to this post. If more methods are needed, please contact the developer)
+        Delete the post node and any relationship with this post node
     */
     deletePost: async (postId) => {
         let session = Neo4jDriver.wrappedSession();
@@ -319,6 +336,7 @@ const db = {
             - title: String, part of the string of the title
         returns:
             A set of objects where each object contains all the info of a post
+        Return a set of objects where each object contains postId, content, title and time
     */
     searchPostByTitle: async (title) => {
         let session = Neo4jDriver.wrappedSession();
@@ -352,6 +370,7 @@ const db = {
             - Id: Part of the target postId
         returns:
             A set of objects where each object contains all the info of a post
+        Return a set of objects where each object contains postId, content, title and time
     */
     searchPostById: async (postId) => {
         let session = Neo4jDriver.wrappedSession();
@@ -385,6 +404,8 @@ const db = {
             - username: String
         returns:
             A set of objects where each object contains all the info of a post
+        Return a set of objects where each object contains postId, content, title and time. 
+        Each object will be the post that user created
     */
     searchPostByUser: async (username) => {
         let session = Neo4jDriver.wrappedSession();
@@ -419,6 +440,8 @@ const db = {
             - postPerPage: Int
         returns:
             A set of objects in time-descending order where each object contains all the info of a post
+        Return a set of objects where each object contains postId, content, title
+        and time sorted by time, and returns posts numbers
     */
     getPost: async(pageNum, postPerPage) => {
         let skipNum = pageNum * postPerPage;
@@ -460,6 +483,8 @@ const db = {
             - type: the type of the target (should be "post" or "reply")
         returns:
             nothing
+        Create a reply node, ‘CREATE_REPLY’ relation between user and the reply 
+        and ‘REPLY_TO’ relation between the post/reply and the reply
     */
     makeReply: async (username, content, replyId, targetId, time, type) => {
         let session = Neo4jDriver.wrappedSession();
@@ -489,6 +514,7 @@ const db = {
             - replyId: the unique Id of the reply
         returns:
             nothing
+        Delete the reply, ‘CREATE_REPLY’ and any ‘REPLY_TO’ relation with this reply
     */
     deleteReply: async (replyId) => {
         let session = Neo4jDriver.wrappedSession();
@@ -511,6 +537,8 @@ const db = {
             - postId: The id of the original post
         returns:
             A set of objectswhere each object contains all the info of a reply
+        Return a set of objects that are comments of the original post where each 
+        object contains postId, title and time sorted by time
     */
     getComments: async(postId) => {
         let session = Neo4jDriver.wrappedSession();
@@ -543,6 +571,9 @@ const db = {
             - tagName: String
         returns:
             nothing
+        Create a tag and the ‘HAS_TAG’ relationship between the user and tag. 
+        If the tag exists in the database (has the same tagName), then only the 
+        “HAS_TAG” relationship will be created.
     */
     addTag: async (username, tagName) => {
         let session = Neo4jDriver.wrappedSession();
@@ -563,6 +594,8 @@ const db = {
             - tagName: String
         returns:
             nothing
+        Delete the relationship between the user and the tag, and the tag node if 
+        there are no relationships involving the tag
     */
     deleteTag: async (username, tagName) => {
         let session = Neo4jDriver.wrappedSession();
@@ -585,6 +618,7 @@ const db = {
             - username: String
         returns:
             nothing
+        Gets all the tags that a user has.
     */
     getTags: async (username) => {
         let session = Neo4jDriver.wrappedSession();
@@ -609,6 +643,7 @@ const db = {
             - tagName: String
         returns:
             nothing
+        Checks if the user has the given tag
     */
     userHasTag: async (username, tagName) => {
         let session = Neo4jDriver.wrappedSession();
@@ -631,6 +666,7 @@ const db = {
             - postId: String, the postId of the post that user wants to follow
         returns:
             nothing
+        Create ‘FOLLOW’ relationship between the user and the post
     */
     followPost: async (username, postId) => {
         let session = Neo4jDriver.wrappedSession();
@@ -652,6 +688,7 @@ const db = {
             - postId: String, the postId of the post that user wants to follow
         returns:
             nothing
+        Delete ‘FOLLOW’ relationship between the user and the post
     */
     unfollowPost: async (username, postId) => {
         let session = Neo4jDriver.wrappedSession();
@@ -672,6 +709,7 @@ const db = {
         returns:
             A set of postId that user follows
             Empty if user follows nothing
+        Return a set of postId where each post is followed by the user
     */
     getFollowedPostByUser: async (username) => {
         var postIdSet = [];
@@ -697,6 +735,7 @@ const db = {
         returns:
             A set of users that follow this post
             Empty if the post is not followed by any user
+        Return a set of username where each user is following this post
     */
     getFollowingUserByPost: async (postId) => {
         var usernameSet = [];
@@ -719,6 +758,9 @@ const db = {
         params:
             id: String, the id of the post / reply
             contentType: String, post | reply
+        return:
+            the author's username
+        Return the username of the author that makes the reply/post
     */
     getAuthorOfContent: async (id, contentType) => {
         const session = Neo4jDriver.wrappedSession(); 
