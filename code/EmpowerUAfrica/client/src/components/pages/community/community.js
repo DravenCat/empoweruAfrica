@@ -79,7 +79,11 @@ export default class community extends Component{
                 users.push(post.author); 
             }
         }
-        let usersAbstract = await Utils.getUsersAbstract(users); 
+        console.log(posts); 
+        let usersAbstract = {};
+        if (users.length === 0) {
+            usersAbstract = await Utils.getUsersAbstract(users); 
+        } 
         
         for (const post of posts) {
             post.author = usersAbstract[post.author]; 

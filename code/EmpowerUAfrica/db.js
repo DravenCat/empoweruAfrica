@@ -1,3 +1,5 @@
+const neo4j = require('neo4j-driver'); 
+
 const init = require('./db-init'); 
 const config = require('./config');
 
@@ -447,7 +449,7 @@ const db = {
         returns:
             A set of objects in time-descending order where each object contains all the info of a post
     */
-    getPost: async(pageNum, postPerPage) => {
+    getPosts: async(pageNum, postPerPage) => {
         let skipNum = pageNum * postPerPage;
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (p:post)  
@@ -455,7 +457,8 @@ const db = {
                      ORDER BY p.Time DESC 
                      SKIP $skipNum 
                      LIMIT $postPerPage`;
-        let params = {"skipNum": skipNum, "postPerPage": postPerPage};
+        let params = {"skipNum": neo4j.int(skipNum), "postPerPage": neo4j.int(postPerPage)};
+        console.log(params); 
         let result;
         let postSet = [];
         try {
