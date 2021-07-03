@@ -195,20 +195,26 @@ export default class postContent extends Component{
 
                 <div className="post-content-column">
                     <div className="postContent_post">
+                        {/* post information */}
                         <Post post={mainPost} in_post="true"/>
                     </div>
                     <div>
+                        {/* make comment activator and deactivator */}
                         <button onClick={this.activateMakeComment} id="makecomment_activator">Make Comment</button>
                         <button onClick={this.deactivateMakeComment} id="makecomment_deactivator">Cancel</button>
                     </div>
                     <div  className="postContent_makeComment">
+
+                        {/* make comment textarea */}
                         <textarea id="reply-input"></textarea>
+                        {/* submit comment button */}
                         <button id="makecomment_submit" onClick={this.submitComment}>Submit</button>
                     </div>
                     <div>
 
                     </div>
-                    
+
+                    {/* container for postReply */}
                     <div>
                         {replies}
                     </div>

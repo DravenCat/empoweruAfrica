@@ -63,15 +63,19 @@ export default class community extends Component{
                 </div>
 
                 <div className="makePost_center">
-                    <div className="makePost_title" >
+                    <div className="makePost_title">
+                        {/* post title */}
                         <h2>Title</h2>
                         <textarea id="makePost_title" ></textarea>
                     </div>
-                    <div className="makePost_content" >
+                    <div className="makePost_content">
+                        {/* post content */}
                         <h2>Content</h2>
                         <textarea id="makePost_content"></textarea>
                     </div>
-                    <button id="createPost" onClick={this.createPost}>Create Post</button>
+                    {/* submit the post */}
+                    <button id="createPost">Create Post</button>
+
                 </div>
 
                 <div>

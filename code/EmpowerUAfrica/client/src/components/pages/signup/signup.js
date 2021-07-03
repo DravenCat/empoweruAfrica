@@ -112,10 +112,12 @@ export default class signin extends Component {
                 <div className="signup-field">
 
                     <div className="signup-left">
+                        {/* welcome message */}
                         <p className="signup-left-title">Welcome to Our Community</p>
                         <p className="signup-left-text">To keep connected with us please sign up with 
                             your personal information by email and password
                         </p>
+                        {/* link to signin page */}
                         <p className="signup-left-text2">Or log into an account if you have one
                         </p>
                         <a id="direct-signin" href="/signin">Log into your account</a>
@@ -125,11 +127,13 @@ export default class signin extends Component {
 
                     </div>
 
+                    {/* signup page title */}
                     <div className="signup-midright">
                         <h2 className="signup-title">
                             Sign up 
                         </h2>   
 
+                        {/* account type selection */}
                         <div class="account-type">
                             <div>
                                 Account type
@@ -141,6 +145,7 @@ export default class signin extends Component {
                             </select>
                         </div>
 
+                        {/* user name input */}
                         <div className="signup-form-field">
                             <div>
                                 <div>
@@ -153,6 +158,7 @@ export default class signin extends Component {
                                     />
                             </div>
                             <br/>
+                            {/* email input */}
                             <div>
                                 <div>
                                     Email
@@ -165,6 +171,7 @@ export default class signin extends Component {
                                     />
                             </div>
                             <br/>
+                            {/* confirm email */}
                             <div>
                                 <div>
                                     Confirm Email
@@ -177,6 +184,7 @@ export default class signin extends Component {
                                     />
                             </div>
                             <br/>
+                            {/* password input */}
                             <div>
                                 <div>
                                     Password
@@ -188,6 +196,7 @@ export default class signin extends Component {
                                     />
                             </div>
                             <br/>
+                            {/* confirm password */}
                             <div>
                                 <div>
                                     Confirm password
@@ -200,9 +209,10 @@ export default class signin extends Component {
                             </div>
                         </div>
 
-
+                        {/* error message */}
                         <p className="errorMsg">{errMsg}</p>
-
+                        
+                        {/* create account button */}
                         <div className="signup-button">
                             <button id="signup-button" onClick={this.sendSignupRequest}>
                                 Create Account
