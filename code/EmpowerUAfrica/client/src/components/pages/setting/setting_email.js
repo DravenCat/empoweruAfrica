@@ -73,8 +73,10 @@ export default class setting_email extends Component {
     return(
       <div className="setting-ce">
         <div className="setting-ce-left">
+          {/* setting page title */}
           <h2 className="ce-sidenav-title">Account Setting</h2>
           <div className="ce-sidenav">
+              {/* side navbar */}
               <a id="ce-changepassword" href="/setting_password">Change Password</a>
               <a id="ce-changeemail" href="/setting_email">Change Email</a>
           </div>
@@ -86,14 +88,17 @@ export default class setting_email extends Component {
 
         <div className="setting-ce-midright">
           <div className="change-email-section">
+            {/* change email page title */}
             <h2 className="ce-form-field-title">Change Email</h2>
             <div className="ce-form-field">
+                {/* new email input */}
                 <div>
                   New Email
                 </div>
                 <input type="text" id="change-email-input"/>
                 <br></br><br></br><br></br>
- 
+
+                {/* confirm new email */}
                 <div>
                   Confrim Email
                 </div>
@@ -102,6 +107,7 @@ export default class setting_email extends Component {
                 <p className="errorMsg">{errorMsg}</p>
 
                 <div className="ce-button">
+                  {/* submit button */}
                   <button id="ce-button" onClick={this.sendUpdateRequest}>
                     Confirm
                   </button>
