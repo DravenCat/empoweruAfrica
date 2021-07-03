@@ -33,37 +33,6 @@ export default class postContent extends Component{
     }
 
     async getPostContent(postId) {
-        let postContent = {
-            "author": "test", 
-            "id": "Pla0JdAos3pVoiVI1neP95YHT8F6hkKH3h4uq7KgRceo=",
-                "post": {
-                    "post_time": Math.round(Date.now() / 1000),
-                    "title": "My Title",
-                    "content": "This is the full post content.",
-                },
-                "comments": [
-                {
-                    "id": "asdaasdfbdkfa",
-                    "author":  "test2", 
-                    "body": {
-                        "post_time": 168273691,
-                        "content": "This is my reply"
-                    },
-                    "comments": [
-                        {
-                            "reply_to": "reply_id",
-                            "id": "Caaaaaa",
-                            "author": "test",
-                            "body":{
-                                "post_time": 198274923,
-                                "content": "This is my reply to reply"
-                            }
-                        }, 
-                    ]
-                }, 
-            ]
-        }
-
         let res;
         let url = `${getPostContentURL}?post_id=${postId}`; 
         try {
@@ -94,7 +63,7 @@ export default class postContent extends Component{
             this.setState({error: body.message}); 
             return; 
         }
-        postContent = body; 
+        let postContent = body; 
 
         let users = [postContent.author];
         for (const comment of postContent.comments) {
@@ -102,10 +71,12 @@ export default class postContent extends Component{
             if (users.indexOf(comment.author) === -1) {
                 users.push(comment.author)
             }
-
-            for (const subcomment of comment.comments) {
-                if (users.indexOf(subcomment.author) === -1) {
-                    users.push(subcomment.author)
+            
+            if (comment.comments !== undefined) {
+                for (const subcomment of comment.comments) {
+                    if (users.indexOf(subcomment.author) === -1) {
+                        users.push(subcomment.author)
+                    }
                 }
             }
         }
@@ -117,11 +88,15 @@ export default class postContent extends Component{
         for (const comment of postContent.comments) {
             comment.author = usersAbstract[comment.author]; 
             comment.comment_count = 0; 
-            for (const subcomment of comment.comments) {
-                subcomment.author = usersAbstract[subcomment.author]; 
-                comment.comment_count ++; 
+
+            if (comment.comments !== undefined) {
+                for (const subcomment of comment.comments) {
+                    subcomment.author = usersAbstract[subcomment.author]; 
+                    comment.comment_count ++; 
+                }
             }
-            postContent.post.comment_count += comment.comment_count;
+            
+            postContent.post.comment_count += comment.comment_count + 1;
         }
         this.setState({postContent, postId}); 
         

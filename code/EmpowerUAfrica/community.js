@@ -216,22 +216,25 @@ router.get('/getPosts', async (req, res) => {
         postId: String
 */
 router.get('/getPostContent', async (req, res) => {
-    let post = db.searchPostById(req.postId);
-    let comments = db.getComments(req.postId);
+    let postId = req.query.post_id; 
+
+    let [postContent, comments] = await Promise.all([db.searchPostById(postId), db.getComments(postId)])
+
     // check if the post exists
-    if(post === null){
+    if(postContent === null){
         res.status(404).json({
             message: 'Post not found'
         });
     }
     // returns the object containing the post contents and all comments
+    // TODO: Order comments and subcomemnts as required in API doc. 
     res.status(200).json({
-        id: req.postId,
-        author: post.author,
+        id: postId,
+        author: postContent.author,
         post: {
-            post_time: post.timestamp,
-            title: post.title,
-            content: post.content
+            post_time: postContent.Time,
+            title: postContent.Title,
+            content: postContent.Content
         },
         comments: comments
     });

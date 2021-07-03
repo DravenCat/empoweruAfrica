@@ -103,7 +103,6 @@ const db = {
     addToken: async (token, username) => {
         let sql = `INSERT INTO Tokens(token, username, expiration_time) \
         VALUES(?, ?, NOW() + INTERVAL ${config.tokens.tokenExpirationTime});`;
-        console.log(sql);
         let data = [token, username]; 
         await MySQLConnection.execute(sql, data);
     }, 
@@ -140,7 +139,6 @@ const db = {
      */
     addUserProfile: async (username) => {
         let sql = "INSERT INTO Profile(username, name) VALUES(?, ?);";
-        console.log(sql);
         let data = [username, username];
         await MySQLConnection.execute(sql, data);
     },
@@ -162,9 +160,6 @@ const db = {
         let sql = `UPDATE Profile SET ${keys.map(key => key + '=?').join(', ')} 
                     WHERE username=?`;
         let data = keys.map(key => updates[key]);
-        console.log(sql);
-        console.log(keys);
-        console.log(data);
         data.push(username); 
 
         await MySQLConnection.execute(sql, data); 
@@ -360,28 +355,21 @@ const db = {
     searchPostById: async (postId) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (p:post) 
-                     WHERE p.PostId =~'.*$postId.*' 
+                     WHERE p.PostId = $postId 
                      RETURN p`;
-        let params = {"postId": postId};
-        let result;
-        let postSet = [];
+        let params = {postId};
+        let result, postContent;
         try {
             result = await session.run(query, params);
-            let records = result.records;
-            for (let i = 0; i < records.length; i++) {
-                let post = records[i].get(0);
-                postSet.push({
-                    postId: post.properties.PostId,
-                    title: post.properties.Title,
-                    time: post.properties.Time,
-                    content: post.properties.Content
-                })
-            }
         } catch (err) {
             console.error(err);
         }
+        if (result.records.length === 0) {
+            return null; 
+        }
+        postContent = result.records[0]._fields[0].properties; 
         session.close();
-        return postSet;
+        return postContent;
     },
 
     /**
@@ -523,7 +511,6 @@ const db = {
                      SKIP $skipNum 
                      LIMIT $postPerPage`;
         let params = {"skipNum": neo4j.int(skipNum), "postPerPage": neo4j.int(postPerPage)};
-        console.log(params); 
         let result;
         let postSet = [];
         try {
@@ -609,7 +596,7 @@ const db = {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (r:reply)-[:REPLY_TO*0..]->(p:post {PostId: $postId}) 
                      RETURN r`;
-        let params = {"postId": postId};
+        let params = {postId};
         let result;
         let replySet = [];
         try {

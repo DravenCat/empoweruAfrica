@@ -37,7 +37,7 @@ export default class post extends Component{
                         <p>{post.abbriv || post.content}</p>
                     </>:
                     <>
-                        <a className="inner" href={`community/post/${this.props.post.id}`}>
+                        <a className="inner" href={`community/post/${post.post_id}`}>
                         <h3>{post.title}</h3>
                         <p>{post.abbriv || post.content}</p>
                         </a>
