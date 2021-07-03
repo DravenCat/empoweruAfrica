@@ -1,3 +1,6 @@
+/*
+image in the index page
+*/
 .title-image {
   background-image: url('../../../resource/icons/wallup.png');
   background-size: cover;
@@ -5,6 +8,9 @@
   margin-top: 80px;
 }
 
+/*
+text in the index page
+*/
 .wallup-text {
   color: white;
   font-size: 100px;
@@ -13,7 +19,9 @@
   top: 250px;
 }
 
-
+/*
+index page body
+*/
 .mainpage-container {
   display: grid;
   grid-template-columns: 20% 40% 20%; 
@@ -37,6 +45,9 @@
   font-size: 20px;
 }
 
+/*
+learn more button
+*/
 .learnmore {
   margin-top: 20px;
   margin-bottom: 50px;

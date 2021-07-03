@@ -1,3 +1,6 @@
+/*
+post part while replying
+*/
 .post {
     background-color: white;
     border-radius: 10px;
@@ -5,12 +8,16 @@
     margin: 30px auto;
     padding: 20px;
 }
-
+/*
+link to "community/post_content"
+*/
 .inner {
     text-decoration: none;
     color: black;
 }
-
+/*
+post icon
+*/
 .post img{
     width: 35px;
     height: 35px;

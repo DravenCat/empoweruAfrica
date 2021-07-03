@@ -1,10 +1,15 @@
+/*
+page of seeing my posts
+*/
 .viewAllPosts {
     margin-top: 100px;
     min-height: 600px;
     background-image: url('../../../resource/icons/background_image.png');
     background-size: cover;
 }
-
+/*
+String "My posts"
+*/
 .title {
     background-color: white;
     margin: 30px 60px;
@@ -12,7 +17,9 @@
     border-radius: 10px;
     box-shadow: 0 0 3px gray;
 }
-
+/*
+posts are shown
+*/
 .postsection {
     margin: 40px 60px;
     padding: 20px 20px;
