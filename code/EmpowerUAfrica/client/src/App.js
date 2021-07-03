@@ -56,9 +56,6 @@ export default function App() {
         <Route exact path="/community" component={Community}>
         </Route>
 
-        <Route exact path="/community/:page" component={Community}>
-        </Route>
-
         <Route exact path="/view_all_posts">
           <ViewAllPost/>
         </Route>
@@ -68,6 +65,9 @@ export default function App() {
 
         <Route exact path="/community/make_post">
           <MakePost/>
+        </Route>
+
+        <Route exact path="/community/:page" component={Community}>
         </Route>
 
         <Route exact path="/profile/:username" component={Profile}>

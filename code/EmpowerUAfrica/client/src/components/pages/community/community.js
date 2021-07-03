@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './community.css';
 import Post from '../../components/post/post';
 import { UserAbstract } from '../../components/userAbstract/userAbstract';
+import Utils from '../../../utils';
 
 const getPostsURL = '/community/getPosts';
 const getUsersAbstractURL = '/profile/getUsersAbstract'; 
@@ -19,64 +20,9 @@ export default class community extends Component{
     async getPosts(page){
         let res;
         let url = `${getPostsURL}?post_per_page=${postPerPage}&page_number=${page}&filters={}`; 
-        // try {
-        //     res = await fetch(
-        //         url,
-        //         {
-        //             method: 'GET'
-        //         }
-        //     ); 
-        // }
-        // catch (err) {
-        //     console.error(err); 
-        //     this.setState({
-        //         error: 'Internet Failure: Failed to connect to server.'
-        //     })
-        //     return;
-        // }
-        let posts = [
-            {
-                author: "test", 
-                post: {
-                    post_time: Math.round(Date.now() / 1000),
-                    post_id: 'Pla0JdAos3pVoiVI1neP95YHT8F6hkKH3h4uq7KgRceo=', 
-                    title: 'My Title',
-                    abbriv: 'In this post, I...',
-                    comment_count: 23
-                }
-            },
-            {
-                author: "test2", 
-                post: {
-                    post_time: Math.round(Date.now() / 1000),
-                    post_id: 'Pla0JdAos3pVoiVI1neP95YHT8F6hkKH3h4uq7KgRceo=', 
-                    title: 'My Title',
-                    abbriv: 'In this post, I...',
-                    comment_count: 23
-                }
-            }
-        ];
-        let users = [];
-        // Filter unique usernames. 
-        for (const post of posts) {
-            if (users.indexOf(post.author) === -1) {
-                users.push(post.author); 
-            }
-        }
-        let usersAbstract = await this.getUsersAbstract(users); 
-        
-        for (const post of posts) {
-            post.author = usersAbstract[post.author]; 
-        }
-        this.setState({page, posts}); 
-    }
-
-    async getUsersAbstract(users) {
-        let res;
-        let URL = getUsersAbstractURL + '?' + users.map(username => `username=${username}`).join('&');
         try {
             res = await fetch(
-                URL,
+                url,
                 {
                     method: 'GET'
                 }
@@ -86,30 +32,62 @@ export default class community extends Component{
             console.error(err); 
             this.setState({
                 error: 'Internet Failure: Failed to connect to server.'
-            });
+            })
             return;
         }
-
-        let body;
+        let body; 
         try {
             body = await res.json();
         }
         catch (err) {
             console.error(err); 
-            this.setState({
-                error: 'Failed to parse response body as JSON. '
-            });
-            return;
+            return; 
         }
 
         if (!res.ok) {
-            this.setState({
-                error: body.message
-            }); 
+            this.setState({error: body.message}); 
             return; 
         }
-        return body; 
+        
+        let posts = [
+            {
+                author: "test", 
+                id: 'Pla0JdAos3pVoiVI1neP95YHT8F6hkKH3h4uq7KgRceo=', 
+                post: {
+                    post_time: Math.round(Date.now() / 1000),
+                    title: 'My Title',
+                    abbriv: 'In this post, I...',
+                    comment_count: 23
+                }
+            },
+            {
+                author: "test2", 
+                id: 'Pla0JdAos3pVoiVI1neP95YHT8F6hkKH3h4uq7KgRceo=', 
+                post: {
+                    post_time: Math.round(Date.now() / 1000),
+                    title: 'My Title',
+                    abbriv: 'In this post, I...',
+                    comment_count: 23
+                }
+            }
+        ];
+        posts = body; 
+        let users = [];
+        // Filter unique usernames. 
+        for (const post of posts) {
+            if (users.indexOf(post.author) === -1) {
+                users.push(post.author); 
+            }
+        }
+        let usersAbstract = await Utils.getUsersAbstract(users); 
+        
+        for (const post of posts) {
+            post.author = usersAbstract[post.author]; 
+        }
+        this.setState({page, posts}); 
     }
+
+    
 
     componentDidMount() {
         let page = this.props.match.page || 0;
@@ -121,7 +99,7 @@ export default class community extends Component{
         if (this.state.posts !== null) {
             posts = this.state.posts.map(
                 (postObj) => {
-                    return <Post post={postObj} />
+                    return <Post post={postObj} key={postObj.id}/>
                 }
             )
         }

@@ -4,6 +4,9 @@ import Post from '../../components/post/post';
 import PostReply from '../../components/postReply/postReply';
 import Utils from '../../../utils';
 
+const createCommentURL = '/community/createComment'; 
+const getPostContentURL = '/community/getPostContent'; 
+
 export default class postContent extends Component{
 
     activateMakeComment = ()=> {
@@ -25,15 +28,16 @@ export default class postContent extends Component{
     }
 
     state = {
-        postContent: null
+        postContent: null,
+        error: null
     }
 
     async getPostContent(postId) {
         let postContent = {
             "author": "test", 
+            "id": "Pla0JdAos3pVoiVI1neP95YHT8F6hkKH3h4uq7KgRceo=",
                 "post": {
                     "post_time": Math.round(Date.now() / 1000),
-                    "post_id": "ajsdnfsvjbzxkv",
                     "title": "My Title",
                     "content": "This is the full post content.",
                 },
@@ -48,6 +52,7 @@ export default class postContent extends Component{
                     "comments": [
                         {
                             "reply_to": "reply_id",
+                            "id": "Caaaaaa",
                             "author": "test",
                             "body":{
                                 "post_time": 198274923,
@@ -58,6 +63,39 @@ export default class postContent extends Component{
                 }, 
             ]
         }
+
+        let res;
+        let url = `${getPostContentURL}?post_id=${postId}`; 
+        try {
+            res = await fetch(
+                url,
+                {
+                    method: 'GET'
+                }
+            )
+        }
+        catch (err) {
+            console.error(err); 
+            this.setState({
+                error: 'Internet Failure: Failed to connect to server.'
+            })
+            return;
+        }
+        let body; 
+        try {
+            body = await res.json();
+        }
+        catch (err) {
+            console.error(err); 
+            return; 
+        }
+
+        if (!res.ok) {
+            this.setState({error: body.message}); 
+            return; 
+        }
+        postContent = body; 
+
         let users = [postContent.author];
         for (const comment of postContent.comments) {
 
@@ -75,18 +113,66 @@ export default class postContent extends Component{
         let usersAbstract = await Utils.getUsersAbstract(users); 
 
         postContent.author = usersAbstract[postContent.author]; 
+        postContent.post.comment_count = 0;
         for (const comment of postContent.comments) {
             comment.author = usersAbstract[comment.author]; 
+            comment.comment_count = 0; 
             for (const subcomment of comment.comments) {
                 subcomment.author = usersAbstract[subcomment.author]; 
+                comment.comment_count ++; 
             }
+            postContent.post.comment_count += comment.comment_count;
         }
         this.setState({postContent, postId}); 
-            
+        
+    }
+
+    submitComment= async () => {
+        let res;
+        let replyInput = document.getElementById('reply-input');
+        if (replyInput.value.length === 0) {
+            return; 
+        }
+        try {
+            res = await fetch(
+                createCommentURL,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        reply_to: this.state.postId,
+                        body: replyInput.value
+                    }),
+                    headers: {
+                        'content-type': 'application/json'
+                    }
+                }
+            )
+        }
+        catch (err) {
+            console.error(err); 
+            this.setState({
+                error: 'Internet Failure: Failed to connect to server.'
+            })
+            return;
+        }
+        let body; 
+        try {
+            body = await res.json();
+        }
+        catch (err) {
+            console.error(err); 
+            return; 
+        }
+
+        if (!res.ok) {
+            this.setState({error: body.message}); 
+            return; 
+        }
+        window.location.reload(); 
     }
 
     componentDidMount() {
-        const postId = this.props.match.postId; 
+        const postId = this.props.match.params.postId; 
         this.getPostContent(postId); 
     }
 
@@ -100,25 +186,24 @@ export default class postContent extends Component{
             author: postContent.author,
             post: postContent.post
         }
-        console.log(mainPost);
         return (
             <div className="post-content">
 
                 <div>
-
+                    <h3 className="warningMsg">{this.state.error}</h3>
                 </div>
 
                 <div className="post-content-column">
                     <div className="postContent_post">
-                        <Post post={mainPost} />
+                        <Post post={mainPost} in_post="true"/>
                     </div>
                     <div>
                         <button onClick={this.activateMakeComment} id="makecomment_activator">Make Comment</button>
                         <button onClick={this.deactivateMakeComment} id="makecomment_deactivator">Cancel</button>
                     </div>
                     <div  className="postContent_makeComment">
-                        <textarea></textarea>
-                        <button id="makecomment_submit">Submit</button>
+                        <textarea id="reply-input"></textarea>
+                        <button id="makecomment_submit" onClick={this.submitComment}>Submit</button>
                     </div>
                     <div>
 
