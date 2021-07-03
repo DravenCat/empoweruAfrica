@@ -20,8 +20,8 @@ export default class post extends Component{
     }
 
     render() {
-        let post = this.props.post.post;
-        let author = this.props.post.author;  
+        let post = this.props.post;
+        let author = this.props.post.authorInfo;  
         let in_post = this.props.in_post; 
         if (post === undefined) {
             return (<h2>Error: No Post Data</h2>); 

@@ -10,10 +10,11 @@ export class UserAbstract extends Component {
     
     render() {
         let user = this.props.user; 
-        let pfp_url = Utils.getProfilePictureURL(user.username, user.pfp_type);
+        
         if (user === undefined) {
             return (<h2 className="warningMsg">No data given to UserAbstract</h2>)
         }
+        let pfp_url = Utils.getProfilePictureURL(user.username, user.pfp_type);
 
         return(
             <div className="user-abstract">
@@ -49,7 +50,7 @@ export class UserAbstractSmall extends Component {
         }
         return (
             <div className="user-abstract-small">
-                
+
             </div>
         )
     }

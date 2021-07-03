@@ -1,7 +1,6 @@
 import React, { Component } from 'react'; 
 import './community.css';
 import Post from '../../components/post/post';
-import { UserAbstract } from '../../components/userAbstract/userAbstract';
 import Utils from '../../../utils';
 
 const getPostsURL = '/community/getPosts';
@@ -19,7 +18,7 @@ export default class community extends Component{
 
     async getPosts(page){
         let res;
-        let url = `${getPostsURL}?post_per_page=${postPerPage}&page_number=${page}&filters={}`; 
+        let url = `${getPostsURL}?page_number=${page}&post_per_page=${postPerPage}&filters={}`; 
         try {
             res = await fetch(
                 url,
@@ -35,43 +34,16 @@ export default class community extends Component{
             })
             return;
         }
-        let body; 
-        try {
-            body = await res.json();
-        }
-        catch (err) {
-            console.error(err); 
-            return; 
-        }
+        let posts; 
+
+        posts = await res.json();
+        console.log(posts);
 
         if (!res.ok) {
-            this.setState({error: body.message}); 
+            this.setState({error: posts.message}); 
             return; 
         }
         
-        let posts = [
-            {
-                author: "test", 
-                id: 'Pla0JdAos3pVoiVI1neP95YHT8F6hkKH3h4uq7KgRceo=', 
-                post: {
-                    post_time: Math.round(Date.now() / 1000),
-                    title: 'My Title',
-                    abbriv: 'In this post, I...',
-                    comment_count: 23
-                }
-            },
-            {
-                author: "test2", 
-                id: 'Pla0JdAos3pVoiVI1neP95YHT8F6hkKH3h4uq7KgRceo=', 
-                post: {
-                    post_time: Math.round(Date.now() / 1000),
-                    title: 'My Title',
-                    abbriv: 'In this post, I...',
-                    comment_count: 23
-                }
-            }
-        ];
-        posts = body; 
         let users = [];
         // Filter unique usernames. 
         for (const post of posts) {
@@ -79,10 +51,13 @@ export default class community extends Component{
                 users.push(post.author); 
             }
         }
-        let usersAbstract = await Utils.getUsersAbstract(users); 
+        let usersAbstract = {};
+        if (users.length !== 0) {
+            usersAbstract = await Utils.getUsersAbstract(users); 
+        } 
         
         for (const post of posts) {
-            post.author = usersAbstract[post.author]; 
+            post.authorInfo = usersAbstract[post.author]; 
         }
         this.setState({page, posts}); 
     }
@@ -99,7 +74,7 @@ export default class community extends Component{
         if (this.state.posts !== null) {
             posts = this.state.posts.map(
                 (postObj) => {
-                    return <Post post={postObj} key={postObj.id}/>
+                    return <Post post={postObj} key={postObj.post_id}/>
                 }
             )
         }

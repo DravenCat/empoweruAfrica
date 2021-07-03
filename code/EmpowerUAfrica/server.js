@@ -32,7 +32,7 @@ const expectedFields = {
     '/api/community/followPost': ['id', 'follow'],
     '/api/community/deleteContent': ['id'],
     '/api/proifle/getUsersAbstract': ['username'],
-    '/api/community/getPostList': ['post_per_page', 'page_number']
+    '/api/community/getPosts': ['post_per_page', 'page_number']
 };
 
 // parse the request body as json. 
@@ -44,7 +44,9 @@ app.use(fileUpload());
 app.use((req, res, next) => {
     console.log(`[server]: Request recieved. `);
     console.log(`${req.method} ${req.path}`);
-    console.log(req.body);
+    req.method === 'GET'? 
+        console.log(req.query):
+        console.log(req.body);
     // If the required field is not specified
     if (!(req.path in expectedFields)) {
         next();

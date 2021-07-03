@@ -1,3 +1,5 @@
+const neo4j = require('neo4j-driver'); 
+
 const init = require('./db-init'); 
 const config = require('./config');
 
@@ -415,6 +417,95 @@ const db = {
         return postSet;
     },
 
+
+    /*
+        params:
+            id: String, the id of the post / reply
+            contentType: String, post | reply
+    */
+    getAuthorOfContent: async (id, contentType) => {
+        const session = Neo4jDriver.wrappedSession(); 
+
+        let query;
+        let params = {id};  
+        if (contentType === 'post') {
+            query = `MATCH 
+                        (p:post {PostId: $id}), 
+                        (u:user)-[:CREATE_POST]->(p)
+                    RETURN 
+                        u.UserName AS username`;
+        }
+        else if (contentType === 'reply') {
+            query = `MATCH 
+                        (r:reply {ReplyId: $id}), 
+                        (u:user)-[:CREATE_REPLY]->(r)
+                    RETURN 
+                        u.UserName AS username`;
+        }
+        else {
+            return null; 
+        }
+
+        let result; 
+        try {
+            result = await session.run(query, params).then();
+        } catch (err) {
+            console.error(err);
+        }
+        
+        if (result.records.length === 0) {
+            return null;
+        }
+        const author = result.records[0].get('username');
+        session.close();
+        return author; 
+    },
+
+  /**
+     * Return the username of the author that makes the reply/post
+     * @param {*} id String, the id of the post / reply
+     * @param {*} contentType String, post | reply
+     * @returns the author's username
+     */
+    getAuthorOfContent: async (id, contentType) => {
+        const session = Neo4jDriver.wrappedSession(); 
+
+        let query;
+        let params = {id};  
+        if (contentType === 'post') {
+            query = `MATCH 
+                        (p:post {PostId: $id}), 
+                        (u:user)-[:CREATE_POST]->(p)
+                    RETURN 
+                        u.UserName AS username`;
+        }
+        else if (contentType === 'reply') {
+            query = `MATCH 
+                        (r:reply {ReplyId: $id}), 
+                        (u:user)-[:CREATE_REPLY]->(r)
+                    RETURN 
+                        u.UserName AS username`;
+        }
+        else {
+            return null; 
+        }
+
+        let result; 
+        try {
+            result = await session.run(query, params).then();
+        } catch (err) {
+            console.error(err);
+        }
+        
+        if (result.records.length === 0) {
+            return null;
+        }
+        const author = result.records[0].get('username');
+        session.close();
+        return author; 
+
+    },
+
     /**
      * Return a set of objects where each object contains postId, content, title
      * and time sorted by time, and returns posts numbers
@@ -422,7 +513,8 @@ const db = {
      * @param {*} postPerPage Int
      * @returns A set of objects in time-descending order where each object contains all the info of a post
      */
-    getPost: async(pageNum, postPerPage) => {
+    getPosts: async(pageNum, postPerPage) => {
+
         let skipNum = pageNum * postPerPage;
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (p:post)  
@@ -430,7 +522,8 @@ const db = {
                      ORDER BY p.Time DESC 
                      SKIP $skipNum 
                      LIMIT $postPerPage`;
-        let params = {"skipNum": skipNum, "postPerPage": postPerPage};
+        let params = {"skipNum": neo4j.int(skipNum), "postPerPage": neo4j.int(postPerPage)};
+        console.log(params); 
         let result;
         let postSet = [];
         try {
@@ -439,10 +532,11 @@ const db = {
             for (let i = 0; i < records.length; i++) {
                 let post = records[i].get(0);
                 postSet.push({
-                    postId: post.properties.PostId,
+                    author: await db.getAuthorOfContent(post.properties.PostId, 'post'),
+                    post_id: post.properties.PostId,
                     title: post.properties.Title,
-                    time: post.properties.Time,
-                    content: post.properties.Content
+                    post_time: post.properties.Time,
+                    abbriv: post.properties.Content
                 })
             }
         } catch (err) {
@@ -704,50 +798,7 @@ const db = {
         }
         session.close();
         return usernameSet;       
-    },
 
-    /**
-     * Return the username of the author that makes the reply/post
-     * @param {*} id String, the id of the post / reply
-     * @param {*} contentType String, post | reply
-     * @returns the author's username
-     */
-    getAuthorOfContent: async (id, contentType) => {
-        const session = Neo4jDriver.wrappedSession(); 
-
-        let query;
-        let params = {id};  
-        if (contentType === 'post') {
-            query = `MATCH 
-                        (p:post {PostId: $id}), 
-                        (u:user)-[:CREATE_POST]->(p)
-                    RETURN 
-                        u.UserName AS username`;
-        }
-        else if (contentType === 'reply') {
-            query = `MATCH 
-                        (r:reply {ReplyId: $id}), 
-                        (u:user)-[:CREATE_REPLY]->(r)
-                    RETURN 
-                        u.UserName AS username`;
-        }
-        else {
-            return null; 
-        }
-
-        let result; 
-        try {
-            result = await session.run(query, params).then();
-        } catch (err) {
-            console.error(err);
-        }
-        
-        if (result.records.length === 0) {
-            return null;
-        }
-        const author = result.records[0].get('username');
-        session.close();
-        return author; 
     }
 }; 
 

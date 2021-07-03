@@ -177,23 +177,29 @@ router.post('/deleteContent', async (req, res) => {
 });
 
 
+
+
 /* 
     Endpoint for when the user wants to get all posts for a certain page
     Request parameters:
         pageNum: int
         postsPerPage: int
 */
-router.post('/getPosts', async (req, res) => {
+router.get('/getPosts', async (req, res) => {
+
     let results;
-    if(Number.isInteger(req.pageNum) && Number.isInteger(req.postsPerPage)){
-        results = db.getPosts(req.pageNum, req.postsPerPage);
+    let pageNum = parseInt( req.query.page_number );
+    let postsPerPage = parseInt( req.query.post_per_page ); 
+    if(!isNaN(pageNum) && !isNaN(postsPerPage)){
+        results = await db.getPosts(parseInt(pageNum), parseInt(postsPerPage));
     }else{
         res.status(400).json({
             message: 'Inputs are not valid'
         });
+        return; 
     }
     if(results != null){
-        res.status(200).send(results);
+        res.status(200).json(results);
     }else{
         res.status(412).json({
             message: 'Requested number of posts exceeded total amount of posts'
