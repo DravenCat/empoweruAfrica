@@ -11,12 +11,14 @@ const Footer = (props) => {
 
                 <div className="footer-brand">
                     <a id="footer-home" href="/">
+                        {/* footer brand */}
                         EmpowerU Africa
                     </a>
                 </div>
 
                 <div className="footer-info">
                     <a id="footer-github" href="https://github.com/UTSCCSCC01/project-uoft-kings">
+                        {/* link to team github repo */}
                         Visit Our Github Repo
                     </a>
                 </div>
@@ -25,6 +27,7 @@ const Footer = (props) => {
 
             <div className="team-description">
                 <p className="team">
+                    {/* footer text */}
                     Team UOFT KINGS, CSCC01 project
                 </p>
             </div>

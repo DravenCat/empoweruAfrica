@@ -27,17 +27,13 @@ const removeExpiredTokens = async () => {
 
 const db = {
 /*=======================These method are for MySQL=========================== */
-    /*
-        params:
-            - username: String
-            - email: String
-            - password: String
-            - type: int
-        returns:
-            nothing
-        
-        Creates a new account eneity in the account table.
-    */
+    /**
+     * Create a new row for a new user in Accounts database
+     * @param {*} username String
+     * @param {*} email String 
+     * @param {*} password String
+     * @param {*} type String
+     */
     createNewAccount: async (username, email, password, type) => {
         let sql = 'INSERT INTO Accounts(username, email, password, type)\
         VALUES(?, ?, ?, ?);'; 
@@ -45,17 +41,16 @@ const db = {
         await MySQLConnection.execute(sql, data); 
     }, 
 
-    /*
-        params:
-            - idtype: "username" or "email", indicates the type of id.
-            - id: String, could be an email or a username, depends on idtype. 
-            - password: String
-        
-        returns:
-            - true, if the credentials match
-            - false o\w
-            - null, if the username does not exist
-    */
+
+    /**
+     * Check if the password that user input is right
+     * @param {*} idtype "username" or "email", indicates the type of id.
+     * @param {*} id String, could be an email or a username, depends on idtype. 
+     * @param {*} password String
+     * @returns True, if the credentials match.
+     *          False o\w.
+     *          Null, if the username does not exist
+     */
     credentialsMatch: async (idtype, id, password) => {
         let sql = `SELECT password FROM Accounts WHERE ${idtype} = ?`; 
         let data = [id]; 
@@ -68,13 +63,12 @@ const db = {
         return actualPasswd === password; 
     },
 
-    /*
-        params:
-            - email: String, the email to be searched for
-        returns:
-            - the username of user with email = email, if the user is found
-            - null o\w 
-    */
+    /**
+     * Return the username with the given email
+     * @param {*} email String, the email to be searched for
+     * @returns the username of user with email = email, if the user is found. 
+                Null o\w 
+     */
     usernameForEmail: async (email) => {
 	    let sql = 'SELECT username FROM Accounts WHERE email = ?';
         let data = [email];
@@ -88,27 +82,23 @@ const db = {
         }
     }, 
 
-    /*
-        params:
-            - type: String, either 'email' or 'password'
-            - username: String, the user who requested the update
-            - newCredential: String, the new email or password, depending on type
-        returns:
-            nothing
-    */
+    /**
+     * Update user’s email/password with the new one
+     * @param {*} type String, either 'email' or 'password'
+     * @param {*} username String, the user who requested the update
+     * @param {*} newCredential String, the new email or password, depending on type
+     */
     updateCredentials: async (type, username, newCredential) => {
         let sql = `UPDATE Accounts SET ${type} = ? WHERE username = ?`; 
         let data = [newCredential, username];
         await MySQLConnection.execute(sql, data);
-   },
-   /*
-        params:
-            - token: String, the user's token 
-            - username: String
-            - expirationTime: Number, int
-        returns:
-            nothing
-   */
+    },
+
+    /**
+     * Create a new row for a new user in Token database
+     * @param {*} token String, the user's token 
+     * @param {*} username String
+     */
     addToken: async (token, username) => {
         let sql = `INSERT INTO Tokens(token, username, expiration_time) \
         VALUES(?, ?, NOW() + INTERVAL ${config.tokens.tokenExpirationTime});`;
@@ -117,25 +107,22 @@ const db = {
         await MySQLConnection.execute(sql, data);
     }, 
    
-    /*
-        params: 
-            - token: String, the token to be deleted. 
-        returns:
-            nothing
-    */
+    /**
+     * Delete user’s token in the database
+     * @param {*} token String, the token to be deleted. 
+     */
     delToken: async (token) => {
         let sql = 'DELETE FROM Tokens WHERE token=?'; 
         let data = [token]; 
         await MySQLConnection.execute(sql, data);
     }, 
 
-    /*
-        params:
-            - token: String, the token to be queried. 
-        returns:
-            - username: String, the username corresponding to the token. 
-            - null if the token is not found in the database, or has expired. 
-    */
+    /**
+     * Return the username with the given token
+     * @param {*} token String, the token to be queried. 
+     * @returns the username corresponding to the token. 
+                Null if the token is not found in the database, or has expired.
+     */
     getUsernameByToken: async (token) => {
         let sql = 'SELECT username FROM Tokens WHERE token = ? AND expiration_time > NOW()';
         let data = [token]; 
@@ -146,11 +133,9 @@ const db = {
         return response[0][0].username; 
     }, 
 
-    /*
-        params:
-            - username: String 
-        returns:
-            - nothing
+    /**
+     * Create a new row for a new user in Profile database
+     * @param {*} username String 
      */
     addUserProfile: async (username) => {
         let sql = "INSERT INTO Profile(username, name) VALUES(?, ?);";
@@ -159,11 +144,11 @@ const db = {
         await MySQLConnection.execute(sql, data);
     },
 
-    /*
-        params:
-            - username: String
-            - updates: Object, keys are fields to be updated, values are the new value for the said field
-    */
+    /**
+     * Update user’s profile in the Profile database
+     * @param {*} username String
+     * @param {*} updates Object, keys are fields to be updated, values are the new value for the said field
+     */
     updateProfile: async(username, updates) =>{
         let keys = Object.keys(updates);
         // Remove all keys that are not column names of the Profile table. 
@@ -184,9 +169,10 @@ const db = {
         await MySQLConnection.execute(sql, data); 
     },
 
-    /*
-        params:
-            - username: String
+    /**
+     * Return a JavaScript Object where each field contains user’s profile info in the database
+     * @param {*} username String
+     * @returns An object. Keys are each field. Values are the data in the database.
      */
     getProfileByUsername: async (username) => {
         let profile;
@@ -212,11 +198,10 @@ const db = {
         return profile;
     },
 
-    /*
-        params:
-            - username: String
-        returns:
-            - A string indicating user's type
+    /**
+     * Return the type of the user
+     * @param {*} username String
+     * @returns A string indicating user's type
      */
     getUserType: async (username) => {
         let sql = "SELECT type FROM Accounts WHERE username=?";
@@ -228,12 +213,11 @@ const db = {
         return response[0][0].type; 
     },
 
-    /*
-        params:
-            - username: String
-        returns:
-            - null if the username specified does not exist
-            - {
+   /**
+    * Return the type and email of the user
+    * @param {*} username String
+    * @returns null if the username specified does not exist.
+            O/w, {
                 email: the user's email,
                 type: (int) the user's type
             }
@@ -250,12 +234,10 @@ const db = {
 
     /*====================================================================================*/
     /*These methods are for Neo4j database*/
-    /*
-        params:
-            - username: String 
-        returns:
-            nothing
-    */
+    /**
+     * Create a user node in the database
+     * @param {*} username String 
+     */
     createUser: async (username) => {
         let session = Neo4jDriver.wrappedSession();
         let query = "CREATE (u:user {UserName: $username})";
@@ -268,16 +250,14 @@ const db = {
         session.close();
     },
 
-    /*
-        params: 
-            - username: String
-            - content: String, the content of the post
-            - title: String, the title of the post
-            - postId: the unique postId of the post
-            - time: the time that user makes the post
-        returns:
-            nothing
-    */
+    /**
+     * Create a postNode with given data and create ‘CREATE_POST’ relationship between user and post
+     * @param {*} username String
+     * @param {*} content String, the content of the post
+     * @param {*} title String, the title of the post
+     * @param {*} postId the unique postId of the post
+     * @param {*} time the time that user makes the post
+     */
     makePost: async (username, content, title, postId, time) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {UserName: $username}) 
@@ -291,13 +271,10 @@ const db = {
         session.close();
     },
 
-    /*
-        params: 
-            - postId: the postId of the post that user reply to
-        returns:
-            nothing
-        (warning: deletePost will not delete any reply to this post. If more methods are needed, please contact the developer)
-    */
+    /**
+     * Delete the post node and any relationship with this post node
+     * @param {*} postId postId: the postId of the post that user reply to
+     */
     deletePost: async (postId) => {
         let session = Neo4jDriver.wrappedSession();
 
@@ -314,12 +291,11 @@ const db = {
         session.close();
     },
 
-    /*
-        params: 
-            - title: String, part of the string of the title
-        returns:
-            A set of objects where each object contains all the info of a post
-    */
+    /**
+     * Return a set of objects where each object contains postId, content, title and time
+     * @param {*} title String, part of the string of the title
+     * @returns A set of objects where each object contains all the info of a post
+     */
     searchPostByTitle: async (title) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (p:post) 
@@ -347,12 +323,11 @@ const db = {
         return postSet;
     },
 
-    /*
-        params: 
-            - Id: Part of the target postId
-        returns:
-            A set of objects where each object contains all the info of a post
-    */
+    /**
+     * Return a set of objects where each object contains postId, content, title and time
+     * @param {*} postId Part of the target postId
+     * @returns A set of objects where each object contains all the info of a post
+     */
     searchPostById: async (postId) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (p:post) 
@@ -380,12 +355,12 @@ const db = {
         return postSet;
     },
 
-    /*
-        params: 
-            - username: String
-        returns:
-            A set of objects where each object contains all the info of a post
-    */
+    /**
+     * Return a set of objects where each object contains postId, content, title and time. 
+     * Each object will be the post that user created
+     * @param {*} username String
+     * @returns A set of objects where each object contains all the info of a post
+     */
     searchPostByUser: async (username) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {UserName: $username})  
@@ -413,13 +388,13 @@ const db = {
         return postSet;
     },
 
-    /*
-        params: 
-            - pageNum: Int
-            - postPerPage: Int
-        returns:
-            A set of objects in time-descending order where each object contains all the info of a post
-    */
+    /**
+     * Return a set of objects where each object contains postId, content, title
+     * and time sorted by time, and returns posts numbers
+     * @param {*} pageNum Int
+     * @param {*} postPerPage Int
+     * @returns A set of objects in time-descending order where each object contains all the info of a post
+     */
     getPost: async(pageNum, postPerPage) => {
         let skipNum = pageNum * postPerPage;
         let session = Neo4jDriver.wrappedSession();
@@ -450,17 +425,16 @@ const db = {
         return postSet;
     },
 
-    /*
-        params: 
-            - username: String
-            - content: String, the content of the Reply
-            - replyId: the unique id of the reply
-            - targetId: the Id of the target that user reply to
-            - time: the time that user makes the reply
-            - type: the type of the target (should be "post" or "reply")
-        returns:
-            nothing
-    */
+    /**
+     * Create a reply node, ‘CREATE_REPLY’ relation between user and the reply 
+     *  and ‘REPLY_TO’ relation between the post/reply and the reply
+     * @param {*} username String
+     * @param {*} content String, the content of the Reply
+     * @param {*} replyId the unique id of the reply
+     * @param {*} targetId the Id of the target that user reply to
+     * @param {*} time the time that user makes the reply
+     * @param {*} type the type of the target (should be "post" or "reply")
+     */
     makeReply: async (username, content, replyId, targetId, time, type) => {
         let session = Neo4jDriver.wrappedSession();
         let query;
@@ -484,12 +458,10 @@ const db = {
         session.close();
     },   
 
-    /*
-        params: 
-            - replyId: the unique Id of the reply
-        returns:
-            nothing
-    */
+    /**
+     * Delete the reply, ‘CREATE_REPLY’ and any ‘REPLY_TO’ relation with this reply
+     * @param {*} replyId the unique Id of the reply
+     */
     deleteReply: async (replyId) => {
         let session = Neo4jDriver.wrappedSession();
 
@@ -506,12 +478,12 @@ const db = {
         session.close();
     },
 
-    /*
-        params: 
-            - postId: The id of the original post
-        returns:
-            A set of objectswhere each object contains all the info of a reply
-    */
+    /**
+     * Return a set of objects that are comments of the original post where each 
+     * object contains postId, title and time sorted by time
+     * @param {*} postId The id of the original post
+     * @returns A set of objectswhere each object contains all the info of a reply
+     */
     getComments: async(postId) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (r:reply)-[:REPLY_TO*0..]->(p:post {PostId: $postId}) 
@@ -537,13 +509,13 @@ const db = {
         return replySet;
     },
 
-    /*
-        params: 
-            - username: String
-            - tagName: String
-        returns:
-            nothing
-    */
+    /**
+     * Create a tag and the ‘HAS_TAG’ relationship between the user and tag. 
+     * If the tag exists in the database (has the same tagName), then only the 
+     * “HAS_TAG” relationship will be created.
+     * @param {*} username String
+     * @param {*} tagName String
+     */
     addTag: async (username, tagName) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {UserName: $username}) 
@@ -557,13 +529,12 @@ const db = {
         session.close();
     },
 
-    /*
-        params: 
-            - username: String
-            - tagName: String
-        returns:
-            nothing
-    */
+    /**
+     * Delete the relationship between the user and the tag, and the tag node if 
+     * there are no relationships involving the tag
+     * @param {*} username String
+     * @param {*} tagName String
+     */
     deleteTag: async (username, tagName) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {UserName: $username})-[ht:TAGGED]->(t:tag {TagName: $tagName}) 
@@ -580,12 +551,11 @@ const db = {
             session.close();
     },
 
-    /*
-        params: 
-            - username: String
-        returns:
-            nothing
-    */
+    /**
+     * Gets all the tags that a user has.
+     * @param {*} username String
+     * @returns A set of tagNames
+     */
     getTags: async (username) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {UserName: $username})-[:TAGGED]->(t:tag) 
@@ -603,13 +573,12 @@ const db = {
         return tagSet;
     },
 
-    /*
-        params: 
-            - username: String
-            - tagName: String
-        returns:
-            nothing
-    */
+    /**
+     * Checks if the user has the given tag
+     * @param {*} username String
+     * @param {*} tagName String
+     * @returns true/false
+     */
     userHasTag: async (username, tagName) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {UserName: $username})-[ht:TAGGED]->(t:tag {TagName: $tagName}) 
@@ -625,13 +594,11 @@ const db = {
         return result.records[0].get(0) != 0;
     },
 
-    /*
-        params: 
-            - username: String
-            - postId: String, the postId of the post that user wants to follow
-        returns:
-            nothing
-    */
+    /**
+     * Create ‘FOLLOW’ relationship between the user and the post
+     * @param {*} username String
+     * @param {*} postId String, the postId of the post that user wants to follow
+     */
     followPost: async (username, postId) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {UserName: $username}), 
@@ -646,13 +613,11 @@ const db = {
         session.close();
     },
 
-    /*
-        params: 
-            - username: String
-            - postId: String, the postId of the post that user wants to follow
-        returns:
-            nothing
-    */
+    /**
+     * Delete ‘FOLLOW’ relationship between the user and the post
+     * @param {*} username String
+     * @param {*} postId String, the postId of the post that user wants to follow
+     */
     unfollowPost: async (username, postId) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {UserName: $username})-[f:FOLLOW]->(p:post {PostId: $postId}) 
@@ -666,13 +631,12 @@ const db = {
         session.close();
     },
 
-    /*
-        params: 
-            - username: String
-        returns:
-            A set of postId that user follows
-            Empty if user follows nothing
-    */
+    /**
+     * Return a set of postId where each post is followed by the user
+     * @param {*} username String
+     * @returns A set of postId that user follows
+     *          Empty if user follows nothing
+     */
     getFollowedPostByUser: async (username) => {
         var postIdSet = [];
         let session = Neo4jDriver.wrappedSession();
@@ -691,13 +655,12 @@ const db = {
         return postIdSet;
     },
 
-    /*
-        params: 
-            - postId: String
-        returns:
-            A set of users that follow this post
-            Empty if the post is not followed by any user
-    */
+    /**
+     * Return a set of username where each user is following this post
+     * @param {*} postId String
+     * @returns A set of users that follow this post
+     *          Empty if the post is not followed by any user
+     */
     getFollowingUserByPost: async (postId) => {
         var usernameSet = [];
         let session = Neo4jDriver.wrappedSession();
@@ -715,11 +678,13 @@ const db = {
         session.close();
         return usernameSet;       
     },
-    /*
-        params:
-            id: String, the id of the post / reply
-            contentType: String, post | reply
-    */
+
+    /**
+     * Return the username of the author that makes the reply/post
+     * @param {*} id String, the id of the post / reply
+     * @param {*} contentType String, post | reply
+     * @returns the author's username
+     */
     getAuthorOfContent: async (id, contentType) => {
         const session = Neo4jDriver.wrappedSession(); 
 

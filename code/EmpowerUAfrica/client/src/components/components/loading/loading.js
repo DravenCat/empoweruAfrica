@@ -8,6 +8,7 @@ export default class Loading extends Component {
 
     render() {
         return (
+            /* loading text */
             <p className="loadingText">Loading...</p>
         );
     }

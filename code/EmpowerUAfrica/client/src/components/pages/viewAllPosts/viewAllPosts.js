@@ -30,10 +30,12 @@ export default class community extends Component{
         return (
             <div className="viewAllPosts">
                 &nbsp;
+                {/* viewAllPosts page title */}
                 <div className="title">
                     <h2>My Posts</h2>
                 </div>
-
+                
+                {/* container for all user's posts */}
                 <div className="postsection">
                     <Post post={postInfo[0]} />
                     <Post post={postInfo[1]} />

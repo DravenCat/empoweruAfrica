@@ -5,7 +5,14 @@ const validation = require('./validation');
 
 const router = express.Router(); 
 
-// The endpoint for when the user is signing up
+/* 
+    The endpoint for when the user is signing up
+    Request parameters:
+        username: String
+        email: String
+        password: String
+        type: int
+*/
 router.post('/signup', async (req, res) => {
     console.log('[account]: signup request recieved. ');
     let username = req.body.username; 
@@ -70,7 +77,12 @@ router.post('/signup', async (req, res) => {
 });
 
 
-// The endpoint for when the user is signing in
+/* 
+    The endpoint for when the user is signing in
+    Request parameters:
+        id: String
+        password: String
+*/
 router.post('/signin', async (req, res) => {
     let id = req.body.id; 
     let password = utils.hash( req.body.password ); 
@@ -131,7 +143,11 @@ router.post('/signin', async (req, res) => {
 });
 
 
-// The endpoint for when the user is signing out
+/* 
+    The endpoint for when the user is signing out
+    Request parameters:
+        token: String
+*/
 router.post('/signout', async (req, res) => {
     let token = req.cookies.token;
 
@@ -144,7 +160,14 @@ router.post('/signout', async (req, res) => {
 });
 
 
-// The endpoint for when the user is updating credentials
+
+/* 
+    The endpoint for when the user is updating credentials
+    Request parameters:
+        new: String
+        token: String
+        type: int
+*/
 router.post('/updateCredentials', async (req, res) => {
     let type = req.body.type;
     let newCredential = req.body.new;
