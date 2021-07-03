@@ -345,7 +345,7 @@ const db = {
         params: 
             - title: String, part of the string of the title
         returns:
-            nothing
+            A set of objects where each object contains all the info of a post
     */
     searchPostByTitle: async (title) => {
         let session = Neo4jDriver.wrappedSession();
@@ -378,7 +378,7 @@ const db = {
         params: 
             - Id: Part of the target postId
         returns:
-            nothing
+            A set of objects where each object contains all the info of a post
     */
     searchPostById: async (postId) => {
         let session = Neo4jDriver.wrappedSession();
@@ -409,16 +409,53 @@ const db = {
 
     /*
         params: 
-            - Id: Part of the target postId
+            - username: String
         returns:
-            nothing
+            A set of objects where each object contains all the info of a post
     */
     searchPostByUser: async (username) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {UserName: $username})  
-                           (u)-[:CREATE_POST]->(p)  
+                           (u)-[:CREATE_POST]->(p:post)  
                      RETURN p`;
         let params = {"username": username};
+        let result;
+        let postSet = [];
+        try {
+            result = await session.run(query, params);
+            let records = result.records;
+            for (let i = 0; i < records.length; i++) {
+                let post = records[i].get(0);
+                postSet.push({
+                    postId: post.properties.PostId,
+                    title: post.properties.Title,
+                    time: post.properties.Time,
+                    content: post.properties.Content
+                })
+            }
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+        return postSet;
+    },
+
+    /*
+        params: 
+            - pageNum: Int
+            - postPerPage: Int
+        returns:
+            A set of objects in time-descending order where each object contains all the info of a post
+    */
+    getPost: async(pageNum, postPerPage) => {
+        let skipNum = pageNum * postPerPage;
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (p:post)  
+                     RETURN p 
+                     ORDER BY p.Time DESC 
+                     SKIP $skipNum 
+                     LIMIT $postPerPage`;
+        let params = {"skipNum": skipNum, "postPerPage": postPerPage};
         let result;
         let postSet = [];
         try {
@@ -498,6 +535,37 @@ const db = {
 
     /*
         params: 
+            - postId: The id of the original post
+        returns:
+            A set of objectswhere each object contains all the info of a reply
+    */
+    getComments: async(postId) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (r:reply)-[:REPLY_TO*0..]->(p:post {PostId: $postId}) 
+                     RETURN r`;
+        let params = {"postId": postId};
+        let result;
+        let replySet = [];
+        try {
+            result = await session.run(query, params);
+            let records = result.records;
+            for (let i = 0; i < records.length; i++) {
+                let reply = records[i].get(0);
+                replySet.push({
+                    replyId: reply.properties.ReplyId,
+                    time: reply.properties.Time,
+                    content: reply.properties.Content
+                })
+            }
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+        return replySet;
+    },
+
+    /*
+        params: 
             - username: String
             - tagName: String
         returns:
@@ -525,10 +593,10 @@ const db = {
     */
     deleteTag: async (username, tagName) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (u:user {UserName: $username})-[ht:HAS_TAG]->(t:tag {TagName: $tagName}) 
+        let query = `MATCH (u:user {UserName: $username})-[ht:TAGGED]->(t:tag {TagName: $tagName}) 
                      DELETE ht 
                      WITH t 
-                     WHERE size(()-[:HAS_TAG]->(t)) = 0 
+                     WHERE size(()-[:TAGGED]->(t)) = 0 
                      DELETE t`;
         let params = {"username": username, "tagName": tagName};
         try {
@@ -537,6 +605,51 @@ const db = {
             console.log(err);
         }
             session.close();
+    },
+
+    /*
+        params: 
+            - username: String
+        returns:
+            nothing
+    */
+    getTags: async (username) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (u:user {UserName: $username})-[:TAGGED]->(t:tag) 
+                     RETURN t.TagName AS tagName`;
+        let params = {"username": username};
+        let result;
+        let tagSet = [];
+        try {
+            result = await session.run(query, params);
+            result.records.forEach(record => tagSet.push(record.get("tagName")));
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+        return tagSet;
+    },
+
+    /*
+        params: 
+            - username: String
+            - tagName: String
+        returns:
+            nothing
+    */
+    userHasTag: async (username, tagName) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (u:user {UserName: $username})-[ht:TAGGED]->(t:tag {TagName: $tagName}) 
+                     RETURN count(ht)`;
+        let params = {"username": username, "tagName": tagName};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+        return result.records[0].get(0) != 0;
     },
 
     /*
