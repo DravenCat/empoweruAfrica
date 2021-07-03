@@ -5,7 +5,7 @@
 ---
 
 ## Release Goal: 
- - For our release goal, we want to deliver on all user stories, have minimal bugs, be visually appealing, and stay consistent with our key principles.
+For the release goal, we want users to be able to display their skills in the profile page. Users should be able to see useful information and communicate with other individuals, partners and companies in the community and private message section. Users should also be able to learn professional knowledge about how to set up business in the E-learning part. Finally, we would like to have minimal bugs, have the user interface be intuitive and visually appealing, and stay consistent with our key principles.
 
 ---
 
