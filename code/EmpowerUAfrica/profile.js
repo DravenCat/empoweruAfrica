@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs').promises; 
 
 const db = require('./db'); 
+
 const utils = require('./utils');
 const validation = require('./validation');
 
@@ -29,6 +30,15 @@ router.get('/getProfile', async (req, res) => {
 
 });
 
+router.get('/getUsersAbstract', async (req, res) => {
+    let users = req.query.username; 
+    if (typeof users === 'string') {
+        users = new Array(users);
+    }
+
+    let userAbstracts = (await db.getUsersAbstract(users)) || {}; 
+    res.json(userAbstracts); 
+});
 
 // Endpoint to update all information without tags of a user
 router.post('/updateProfile', async (req, res) => {

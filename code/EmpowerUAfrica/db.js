@@ -1,6 +1,5 @@
 const init = require('./db-init'); 
 const config = require('./config');
-const { username } = require('./config');
 
 let MySQLConnection;
 let Neo4jDriver; 
@@ -248,6 +247,34 @@ const db = {
         return {email: response[0][0].email, type: response[0][0].type};
     },
 
+    getUsersAbstract: async (users) => {
+        let paramTemplate = [];
+        for (let i = 0; i < users.length; i++) {
+            paramTemplate.push('?');
+        }
+        paramTemplate = paramTemplate.join(', '); 
+        let sql = `
+            SELECT Accounts.username, Accounts.type, Profile.name, Profile.description
+                ,Profile.pfp_type
+            FROM Accounts
+            JOIN Profile ON Accounts.username = Profile.username
+            WHERE Accounts.username IN (${paramTemplate})
+            GROUP BY Accounts.username`;
+
+        let response = await MySQLConnection.execute(sql, users); 
+        if (response[0].length === 0) {
+            return null;
+        }
+        let userAbstracts = {};
+        for (const user of response[0]) {
+            userAbstracts[user.username] = user;
+            if (user.description.length >= 50) {
+                user.description = user.description.slice(0, 50) + '...';
+            }
+        }
+        return userAbstracts; 
+    
+    }, 
     /*====================================================================================*/
     /*These methods are for Neo4j database*/
     /*
