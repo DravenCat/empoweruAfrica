@@ -320,12 +320,16 @@ const db = {
         returns:
             nothing
     */
-    searchPostByTitle: async (title) => {
+    searchPostByTitle: async (title, pageNum, postPerPage) => {
+        let skipNum = pageNum * postPerPage;
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (p:post) 
                      WHERE p.Title =~'.*$title.*'  
-                     RETURN p`;
-        let params = {"title": title};
+                     RETURN p 
+                     ORDER BY p.Time DESC 
+                     SKIP $skipNum 
+                     LIMIT $postPerPage`;
+        let params = {"title": title, "skipNum": skipNum, "postPerPage": postPerPage};
         let result;
         let postSet = [];
         try {
@@ -353,12 +357,16 @@ const db = {
         returns:
             nothing
     */
-    searchPostById: async (postId) => {
+    searchPostById: async (postId, pageNum, postPerPage) => {
+        let skipNum = pageNum * postPerPage;
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (p:post) 
                      WHERE p.PostId =~'.*$postId.*' 
-                     RETURN p`;
-        let params = {"postId": postId};
+                     RETURN p 
+                     ORDER BY p.Time DESC 
+                     SKIP $skipNum 
+                     LIMIT $postPerPage`;
+        let params = {"postId": postId, "skipNum": skipNum, "postPerPage": postPerPage};
         let result;
         let postSet = [];
         try {
@@ -386,12 +394,16 @@ const db = {
         returns:
             nothing
     */
-    searchPostByUser: async (username) => {
+    searchPostByUser: async (username, pageNum, postPerPage) => {
+        let skipNum = pageNum * postPerPage;
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {UserName: $username})  
-                           (u)-[:CREATE_POST]->(p)  
-                     RETURN p`;
-        let params = {"username": username};
+                           (u)-[:CREATE_POST]->(p:post)  
+                     RETURN p 
+                     ORDER BY p.Time DESC 
+                     SKIP $skipNum 
+                     LIMIT $postPerPage`;
+        let params = {"username": username, "skipNum": skipNum, "postPerPage": postPerPage};
         let result;
         let postSet = [];
         try {
@@ -498,10 +510,10 @@ const db = {
     */
     deleteTag: async (username, tagName) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (u:user {UserName: $username})-[ht:HAS_TAG]->(t:tag {TagName: $tagName}) 
+        let query = `MATCH (u:user {UserName: $username})-[ht:TAGGED]->(t:tag {TagName: $tagName}) 
                      DELETE ht 
                      WITH t 
-                     WHERE size(()-[:HAS_TAG]->(t)) = 0 
+                     WHERE size(()-[:TAGGED]->(t)) = 0 
                      DELETE t`;
         let params = {"username": username, "tagName": tagName};
         try {
@@ -510,6 +522,51 @@ const db = {
             console.log(err);
         }
             session.close();
+    },
+
+    /*
+        params: 
+            - username: String
+        returns:
+            nothing
+    */
+    getTags: async (username) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (u:user {UserName: $username})-[:TAGGED]->(t:tag) 
+                     RETURN t.TagName AS tagName`;
+        let params = {"username": username};
+        let result;
+        let tagSet = [];
+        try {
+            result = await session.run(query, params);
+            result.records.forEach(record => tagSet.push(record.get("tagName")));
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+        return tagSet;
+    },
+
+    /*
+        params: 
+            - username: String
+            - tagName: String
+        returns:
+            nothing
+    */
+    userHasTag: async (username, tagName) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (u:user {UserName: $username})-[ht:TAGGED]->(t:tag {TagName: $tagName}) 
+                     RETURN count(ht)`;
+        let params = {"username": username, "tagName": tagName};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+        return result.records[0].get(0) != 0;
     },
 
     /*
