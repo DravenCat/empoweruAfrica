@@ -88,13 +88,19 @@ export default class community extends Component{
                 <div className="grid2">
 
                     <div className="grid2-topbar">
-                        <h2>Welcome to the community! </h2>
+                        {/* Community page title */}
+                        <h2>Welcome to the community</h2>
+                        {/* make new post button */}
+
                         <a id="direct-makepost" href="/community/make_post">Make Post</a><br></br>
+                        {/* search input text area */}
                         <input className="search_input" type="text" placeholder="search by title"></input>
+                        {/* search button */}
                         <button className="search_button" id="post_search">Search</button>
                     </div>
 
                     <div className="grid2-postsection">
+                        {/* container for all the posts */}
                         {posts}
                     </div>
 

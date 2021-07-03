@@ -8,7 +8,12 @@ const validation = require('./validation');
 
 const router = express.Router(); 
 
-// Endpoint to get all information without tags of a user
+
+/* 
+    Endpoint to get all information without tags of a user
+    Request parameters:
+        username: String
+*/
 router.get('/getProfile', async (req, res) => {
     let username = req.query.username; 
     let abstract = await db.getUserAbstract(username);
@@ -40,7 +45,12 @@ router.get('/getUsersAbstract', async (req, res) => {
     res.json(userAbstracts); 
 });
 
-// Endpoint to update all information without tags of a user
+/* 
+    Endpoint to update all information without tags of a user
+    Request parameters:
+        token: String
+        updates: Object
+*/
 router.post('/updateProfile', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
@@ -66,7 +76,12 @@ router.post('/updateProfile', async (req, res) => {
 }); 
 
 
-// Endpoint to add a tag to a user's profile
+/* 
+    Endpoint to add a tag to a user's profile
+    Request parameters:
+        token: String
+        tag: String
+*/
 router.post('/addTag', async (req, res) =>{
 
     let token = req.cookies.token; 
@@ -91,7 +106,12 @@ router.post('/addTag', async (req, res) =>{
 });
 
 
-// Endpoint to remove a tag from a user's profile
+/* 
+    Endpoint to remove a tag from a user's profile
+    Request parameters:
+        token: String
+        tag: String
+*/
 router.post('/removeTag', async (req, res) =>{
 
     let token = req.cookies.token; 
@@ -115,8 +135,12 @@ router.post('/removeTag', async (req, res) =>{
 });
 
 
-
-// Endpoint to update the profile picture of a user
+/* 
+    Endpoint to update the profile picture of a user
+    Request parameters:
+        token: String
+        tag: file
+*/
 router.post('/updateProfilePic', async (req, res) => {
 
     if (!req.files || Object.keys(req.files).length === 0) {

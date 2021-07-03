@@ -15,6 +15,10 @@ const tableStructDirPath = './db/Tables/';
 const port = '3306'; 
 const database = 'EmpowerUAfricaDB'; 
 
+/**
+ * Get the connection informaiton of the Neo4j database and MySQL database
+ * @returns the connection informaiton
+ */
 const getConnectionInfo = async () => {
 
     let connectionInfo = {
@@ -72,6 +76,11 @@ const getConnectionInfo = async () => {
     return connectionInfo; 
 }
 
+/**
+ * Create MySQL connection using the given info
+ * @param {*} connectionInfo the connection information of MySQL database
+ * @returns the MySQL database connection
+ */
 const getMySQLConnection = async (connectionInfo) => {
     let connection;
     try {
@@ -95,6 +104,12 @@ const getMySQLConnection = async (connectionInfo) => {
     return connection; 
 }
 
+/**
+ * Create a new database using given info
+ * @param {*} connectionInfo the connection information of Neo4j database
+ * @param {*} newDatabase the database that needed to be created
+ * @returns the connection of the database
+ */
 const createMySQLDatabase = async (connectionInfo, newDatabase ) => {
     // Make a clone of connectionInfo, remove the database field. 
     connectionInfo = Object.assign({}, connectionInfo); 
@@ -112,6 +127,10 @@ const createMySQLDatabase = async (connectionInfo, newDatabase ) => {
     return connection; 
 }
 
+/**
+ * Check if the table is created correctly
+ * @param {*} connection the connection to the database
+ */
 const checkTables = async (connection) => {
     let result = await connection.execute(`SHOW TABLES FROM ${database}`); 
     let tables = result[0].map((row) => {return Object.values(row)[0]});
@@ -137,6 +156,11 @@ const checkTables = async (connection) => {
     }
 }
 
+/**
+ * Return a Neo4j driver with the given info
+ * @param {*} driverInfo the info of the driver
+ * @returns a Neo4j driver
+ */
 const getNeo4jDriver = async (driverInfo) => {
     let driver; 
     const uri = driverInfo.uri; 
@@ -170,6 +194,10 @@ const getNeo4jDriver = async (driverInfo) => {
     return driver; 
 }
 
+/**
+ * Initialize the connection info and get the connection to MySQL and Neo4j database
+ * @returns an object that contains the MySQLConnection and Neo4jDriver
+ */
 const init = async () => {
     const connectionInfo = await getConnectionInfo(); 
     const MySQLPromise = getMySQLConnection(connectionInfo.MySQL);

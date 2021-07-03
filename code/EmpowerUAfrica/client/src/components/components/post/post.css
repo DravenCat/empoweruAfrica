@@ -1,3 +1,6 @@
+/*
+post page.
+*/
 .post {
     background-color: white;
     border-radius: 10px;
@@ -5,28 +8,39 @@
     margin: 30px auto;
     padding: 20px;
 }
-
+/*
+The link to community/post_content.
+*/
 .inner {
     text-decoration: none;
     color: black;
 }
+/*
+post icon
+*/
+.post img{
 
-img.post{
     width: 35px;
     height: 35px;
 }
-
+/*
+post part and post button
+*/
 .post .post_button{
     padding: 3px 8px;
     margin: 0 10px;
     background-color: yellowgreen;
 }
-
+/*
+Share icon
+*/
 .share_img {
     height: 10px;
     width: 10px;
 }
-
+/*
+share part
+*/
 .share{
     background-image: url('../../../resource/icons/share.png');
     background-repeat: no-repeat;
@@ -35,11 +49,16 @@ img.post{
     font-weight: 200;
     color: black;
 }
+/*
+The share part and string of "Share"
+*/
+.share #share_text {
 
-.share > #share_text {
     margin-left: 20px;
 }
-
+/*
+The footer of post page
+*/
 .post_footer {
     display: grid;
     grid-template-columns: 80% 20%;

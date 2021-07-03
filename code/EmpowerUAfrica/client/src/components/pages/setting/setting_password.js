@@ -77,8 +77,10 @@ export default class setting_password extends Component {
       <div className="setting-cp">
 
         <div className="setting-cp-left">
+          {/* setting page title */}
           <h2 className="cp-sidenav-title">Account Setting</h2>
           <div className="cp-sidenav">
+              {/* side navbar */}
               <a id="changepassword" href="/setting_password">Change Password</a>
               <a id="changeemail" href="/setting_email">Change Email</a>
           </div>
@@ -89,15 +91,18 @@ export default class setting_password extends Component {
         </div>
 
         <div className="setting-cp-midright">
+          {/* change password title */}
           <h2 className="cp-form-field-title">Change Password</h2>
           <div className="cp-form-field">
             <div>
+              {/* new password input */}
               <div>
                 New Password
               </div>
                 <input type="password" id="change-password-input"/>
               </div>
               <br></br><br></br>
+              {/* confirm new password */}
               <div>
                 <div>
                   Confrim Password
@@ -106,8 +111,10 @@ export default class setting_password extends Component {
                 </div>
               </div>
 
+              {/* error message */}
               <p className="errorMsg">{errorMsg}</p>
 
+              {/* submit button */}
               <div className="cp-button">
                 <button id="cp-button" onClick={this.sendUpdateRequest}>
                   Confirm

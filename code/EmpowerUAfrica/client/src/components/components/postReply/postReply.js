@@ -11,6 +11,7 @@ export default class post extends Component{
         let reply = this.props.reply;
                 return (
             <div className="post">
+
                 <UserAbstract user={reply.author}/>
                 <p>{reply.body.content}</p>
                 <p style={{"text-align": "right"}}>Post at: {Utils.timeStampToTime(reply.body.post_time)}</p>

@@ -53,6 +53,7 @@ export default class post extends Component{
                     <p>Post at: {Utils.timeStampToTime(post.post_time)}</p>
                     
                     <div>
+                        {/* post share link */}
                         <a href="#" className="share" onClick={this.copyURL}>
                             <span id="share_text">Share</span>
                         </a>
