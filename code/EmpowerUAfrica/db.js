@@ -467,6 +467,7 @@ const db = {
             for (let i = 0; i < records.length; i++) {
                 let post = records[i].get(0);
                 postSet.push({
+                    author: this.getAuthorOfContent(post.properties.PostId),
                     postId: post.properties.PostId,
                     title: post.properties.Title,
                     time: post.properties.Time,
