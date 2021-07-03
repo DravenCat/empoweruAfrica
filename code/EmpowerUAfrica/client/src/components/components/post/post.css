@@ -19,6 +19,7 @@ The link to community/post_content.
 post icon
 */
 .post img{
+
     width: 35px;
     height: 35px;
 }
@@ -44,11 +45,15 @@ share part
     background-image: url('../../../resource/icons/share.png');
     background-repeat: no-repeat;
     background-size: contain;
+    text-decoration: none;
+    font-weight: 200;
+    color: black;
 }
 /*
 The share part and string of "Share"
 */
 .share #share_text {
+
     margin-left: 20px;
 }
 /*
