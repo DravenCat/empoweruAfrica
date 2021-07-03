@@ -7,6 +7,7 @@ const validation = require('./validation');
 
 const router = express.Router(); 
 
+// Endpoint to get all information without tags of a user
 router.get('/getProfile', async (req, res) => {
     let username = req.query.username; 
     let abstract = await db.getUserAbstract(username);
@@ -29,6 +30,7 @@ router.get('/getProfile', async (req, res) => {
 });
 
 
+// Endpoint to update all information without tags of a user
 router.post('/updateProfile', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
@@ -51,11 +53,10 @@ router.post('/updateProfile', async (req, res) => {
     }else{
         res.status(404).json({message: "User does not exist"});
     }
-
-    
-    
 }); 
 
+
+// Endpoint to add a tag to a user's profile
 router.post('/addTag', async (req, res) =>{
 
     let token = req.cookies.token; 
@@ -80,6 +81,7 @@ router.post('/addTag', async (req, res) =>{
 });
 
 
+// Endpoint to remove a tag from a user's profile
 router.post('/removeTag', async (req, res) =>{
 
     let token = req.cookies.token; 
@@ -104,7 +106,7 @@ router.post('/removeTag', async (req, res) =>{
 
 
 
-
+// Endpoint to update the profile picture of a user
 router.post('/updateProfilePic', async (req, res) => {
 
     if (!req.files || Object.keys(req.files).length === 0) {
