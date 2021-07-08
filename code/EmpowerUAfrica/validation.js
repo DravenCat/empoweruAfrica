@@ -19,7 +19,11 @@ module.exports = {
             return 1; 
         }
         for (let char of username) {
-            if ( !(char >= 'a' && char <= 'z') && !(char >= 'A' && char <= 'Z') && !(char >= '0' && char <= '9') && !(char in config.username.specialChars)) {
+            if ( 
+                !(char >= 'a' && char <= 'z') && 
+                !(char >= 'A' && char <= 'Z') && 
+                !(char >= '0' && char <= '9') && 
+                (config.username.specialChars.indexOf(char) === -1)) {
                 return 2;
             }
         }

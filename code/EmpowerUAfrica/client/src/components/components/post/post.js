@@ -21,43 +21,50 @@ export default class post extends Component{
 
     render() {
         let post = this.props.post;
-        let author = this.props.post.authorInfo;  
+        let author = this.props.post.authorAbstract;  
         let in_post = this.props.in_post; 
+        console.log(post); 
         if (post === undefined) {
             return (<h2>Error: No Post Data</h2>); 
         }
 
         return (
             <div className="post">
-                <UserAbstract user={author}></UserAbstract>
+                <div className="post-user-abstract">
+                    <UserAbstract user={author}></UserAbstract>
+                </div>
+                
+                <div className="post-abstract">
                 {
                     in_post? 
                     <>
-                        <h3>{post.title}</h3>
+                        <h2>{post.title}</h2>
                         <p>{post.abbriv || post.content}</p>
                     </>:
                     <>
-                        <a className="inner" href={`community/post/${post.post_id}`}>
-                        <h3>{post.title}</h3>
+                        <a className="link-to-post" href={`community/post/${post.id}`}>
+                        <h2>{post.title}</h2>
                         <p>{post.abbriv || post.content}</p>
                         </a>
                     </>
                 }
-                
+                </div>
 
-                <div className="post_footer">
+                <div className="post-footer">
                     <div>
-                        <span className="post_button">Comments {post.comment_count}</span>  
+                        <img src="/icons/chat.png" alt="comments" className="post-icon"></img>
+                        <span>{post.comment_count}</span>  
                     </div>
 
-                    <p>Post at: {Utils.timeStampToTime(post.post_time)}</p>
-                    
                     <div>
                         {/* post share link */}
-                        <a href="#" className="share" onClick={this.copyURL}>
-                            <span id="share_text">Share</span>
-                        </a>
+                        <img src="/icons/share.png" alt="share" className="post-icon share-icon" onClick={this.copyURL}></img>
                     </div>
+
+                    <div>
+                        <span>Posted at: {Utils.timeStampToTime(post.post_time)}</span>
+                    </div>
+
                 </div>
 
             </div>

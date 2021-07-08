@@ -57,7 +57,7 @@ export default class community extends Component{
         } 
         
         for (const post of posts) {
-            post.authorInfo = usersAbstract[post.author]; 
+            post.authorAbstract = usersAbstract[post.author]; 
         }
         this.setState({page, posts}); 
     }

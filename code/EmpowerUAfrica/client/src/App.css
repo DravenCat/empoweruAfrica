@@ -7,6 +7,11 @@
   pointer-events: none;
 }
 
+:root {
+  --link-hover-color: rgb(0, 143, 141);
+  font-family: sans-serif;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

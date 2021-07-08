@@ -1,7 +1,7 @@
 import React, { Component } from 'react'; 
 import './postContent.css';
 import Post from '../../components/post/post';
-import PostReply from '../../components/postReply/postReply';
+import {Reply} from '../../components/postReply/postReply';
 import Utils from '../../../utils';
 
 const createCommentURL = '/community/createComment'; 
@@ -82,23 +82,24 @@ export default class postContent extends Component{
         }
 
         let usersAbstract = await Utils.getUsersAbstract(users); 
+        console.log(usersAbstract); 
 
-        postContent.author = usersAbstract[postContent.author]; 
-        postContent.post.comment_count = 0;
+        postContent.authorAbstract = usersAbstract[postContent.author]; 
+        postContent.comment_count = 0;
         for (const comment of postContent.comments) {
-            comment.author = usersAbstract[comment.author]; 
+            comment.authorAbstract = usersAbstract[comment.author]; 
             comment.comment_count = 0; 
 
             if (comment.comments !== undefined) {
                 for (const subcomment of comment.comments) {
-                    subcomment.author = usersAbstract[subcomment.author]; 
+                    subcomment.authorAbstract = usersAbstract[subcomment.author]; 
                     comment.comment_count ++; 
                 }
             }
             
-            postContent.post.comment_count += comment.comment_count + 1;
+            postContent.comment_count += comment.comment_count + 1;
         }
-        this.setState({postContent, postId}); 
+        this.setState({postContent, postId, usersAbstract}); 
         
     }
 
@@ -156,11 +157,10 @@ export default class postContent extends Component{
         if (postContent === null) {
             return(<></>); 
         }
-        let replies = postContent.comments.map(comment => <PostReply reply={comment} key={comment.id}/>)
-        const mainPost = {
-            author: postContent.author,
-            post: postContent.post
-        }
+        let replies = postContent.comments.map(
+            comment => <Reply reply={comment} key={comment.id}/>
+        )
+        console.log(postContent); 
         return (
             <div className="post-content">
 
@@ -171,7 +171,7 @@ export default class postContent extends Component{
                 <div className="post-content-column">
                     <div className="postContent_post">
                         {/* post information */}
-                        <Post post={mainPost} in_post="true"/>
+                        <Post post={postContent} in_post="true"/>
                     </div>
                     <div>
                         {/* make comment activator and deactivator */}

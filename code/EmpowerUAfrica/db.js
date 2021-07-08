@@ -279,14 +279,14 @@ const db = {
      * @param {*} username String
      * @param {*} content String, the content of the post
      * @param {*} title String, the title of the post
-     * @param {*} postId the unique postId of the post
+     * @param {*} id the unique id of the post
      * @param {*} time the time that user makes the post
      */
-    makePost: async (username, content, title, postId, time) => {
+    makePost: async (username, content, title, id, time) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {UserName: $username}) 
-                    CREATE (u)-[:CREATE_POST]->(p:post {Title: $title, Content: $content, Time: $time, PostId: $postId}) `;
-        let params = {"username":username, "content": content, "title": title, "time": time, "postId": postId};
+                    CREATE (u)-[:CREATE_POST]->(p:post {Title: $title, Content: $content, Time: $time, id: $id}) `;
+        let params = {"username":username, "content": content, "title": title, "time": time, "id": id};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -297,16 +297,16 @@ const db = {
 
     /**
      * Delete the post node and any relationship with this post node
-     * @param {*} postId postId: the postId of the post that user reply to
+     * @param {*} id id: the id of the post that user reply to
      */
-    deletePost: async (postId) => {
+    deletePost: async (id) => {
         let session = Neo4jDriver.wrappedSession();
 
-        let query = `MATCH 
-                        (r:reply)-[:REPLY_TO*0..]->(p:post {PostId: $postId})
+        let query = `MATCH (p: post {id: $id})
+                    OPTIONAL MATCH (r:reply)-[:REPLY_TO*0..]->(p)
                     DETACH DELETE r, p`;
 
-        let params = {"postId": postId};
+        let params = {"id": id};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -316,7 +316,7 @@ const db = {
     },
 
     /**
-     * Return a set of objects where each object contains postId, content, title and time
+     * Return a set of objects where each object contains id, content, title and time
      * @param {*} title String, part of the string of the title
      * @returns A set of objects where each object contains all the info of a post
      */
@@ -334,7 +334,7 @@ const db = {
             for (let i = 0; i < records.length; i++) {
                 let post = records[i].get(0);
                 postSet.push({
-                    postId: post.properties.PostId,
+                    id: post.properties.id,
                     title: post.properties.Title,
                     time: post.properties.Time,
                     content: post.properties.Content
@@ -348,16 +348,18 @@ const db = {
     },
 
     /**
-     * Return a set of objects where each object contains postId, content, title and time
-     * @param {*} postId Part of the target postId
+     * Return a set of objects where each object contains id, content, title and time
+     * @param {*} id Part of the target id
      * @returns A set of objects where each object contains all the info of a post
      */
-    searchPostById: async (postId) => {
+    searchPostById: async (id) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (p:post) 
-                     WHERE p.PostId = $postId 
-                     RETURN p`;
-        let params = {postId};
+        let query = `MATCH 
+                        (p:post), 
+                        (author:user)-[:CREATE_POST]->(p)
+                     WHERE p.id = $id 
+                     RETURN p, author.UserName AS author`;
+        let params = {id};
         let result, postContent;
         try {
             result = await session.run(query, params);
@@ -367,13 +369,14 @@ const db = {
         if (result.records.length === 0) {
             return null; 
         }
-        postContent = result.records[0]._fields[0].properties; 
+        postContent = result.records[0].get('p').properties; 
+        postContent.author = result.records[0].get('author'); 
         session.close();
         return postContent;
     },
 
     /**
-     * Return a set of objects where each object contains postId, content, title and time. 
+     * Return a set of objects where each object contains id, content, title and time. 
      * Each object will be the post that user created
      * @param {*} username String
      * @returns A set of objects where each object contains all the info of a post
@@ -392,7 +395,7 @@ const db = {
             for (let i = 0; i < records.length; i++) {
                 let post = records[i].get(0);
                 postSet.push({
-                    postId: post.properties.PostId,
+                    id: post.properties.id,
                     title: post.properties.Title,
                     time: post.properties.Time,
                     content: post.properties.Content
@@ -418,14 +421,14 @@ const db = {
         let params = {id};  
         if (contentType === 'post') {
             query = `MATCH 
-                        (p:post {PostId: $id}), 
+                        (p:post {id: $id}), 
                         (u:user)-[:CREATE_POST]->(p)
                     RETURN 
                         u.UserName AS username`;
         }
         else if (contentType === 'reply') {
             query = `MATCH 
-                        (r:reply {ReplyId: $id}), 
+                        (r:reply {id: $id}), 
                         (u:user)-[:CREATE_REPLY]->(r)
                     RETURN 
                         u.UserName AS username`;
@@ -462,14 +465,14 @@ const db = {
         let params = {id};  
         if (contentType === 'post') {
             query = `MATCH 
-                        (p:post {PostId: $id}), 
+                        (p:post {id: $id}), 
                         (u:user)-[:CREATE_POST]->(p)
                     RETURN 
                         u.UserName AS username`;
         }
         else if (contentType === 'reply') {
             query = `MATCH 
-                        (r:reply {ReplyId: $id}), 
+                        (r:reply {id: $id}), 
                         (u:user)-[:CREATE_REPLY]->(r)
                     RETURN 
                         u.UserName AS username`;
@@ -495,7 +498,7 @@ const db = {
     },
 
     /**
-     * Return a set of objects where each object contains postId, content, title
+     * Return a set of objects where each object contains id, content, title
      * and time sorted by time, and returns posts numbers
      * @param {*} pageNum Int
      * @param {*} postPerPage Int
@@ -505,8 +508,12 @@ const db = {
 
         let skipNum = pageNum * postPerPage;
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (p:post)  
-                     RETURN p 
+        let query = `MATCH 
+                        (p:post),
+                        (author:user)-[:CREATE_POST]->(p)
+                     OPTIONAL MATCH
+                        (r:reply)-[:REPLY_TO*1..]->(p)
+                     RETURN p, author.UserName AS author, count(r) AS comment_count
                      ORDER BY p.Time DESC 
                      SKIP $skipNum 
                      LIMIT $postPerPage`;
@@ -515,19 +522,25 @@ const db = {
         let postSet = [];
         try {
             result = await session.run(query, params);
-            let records = result.records;
-            for (let i = 0; i < records.length; i++) {
-                let post = records[i].get(0);
-                postSet.push({
-                    author: await db.getAuthorOfContent(post.properties.PostId, 'post'),
-                    post_id: post.properties.PostId,
-                    title: post.properties.Title,
-                    post_time: post.properties.Time,
-                    abbriv: post.properties.Content
-                })
-            }
+            
         } catch (err) {
             console.log(err);
+        }
+        let records = result.records;
+
+        for (const record of records) {
+            let post = record.get('p'); 
+            let author = record.get('author'); 
+            let comment_count = record.get('comment_count').low;
+            let content = post.properties.Content;
+            postSet.push({
+                author,
+                comment_count,
+                id: post.properties.id,
+                title: post.properties.Title,
+                post_time: post.properties.Time,
+                abbriv: content.length > 100? content.slice(100) + '...': content
+            })
         }
         session.close();
         return postSet;
@@ -538,25 +551,25 @@ const db = {
      *  and ‘REPLY_TO’ relation between the post/reply and the reply
      * @param {*} username String
      * @param {*} content String, the content of the Reply
-     * @param {*} replyId the unique id of the reply
+     * @param {*} id the unique id of the reply
      * @param {*} targetId the Id of the target that user reply to
      * @param {*} time the time that user makes the reply
      * @param {*} type the type of the target (should be "post" or "reply")
      */
-    makeReply: async (username, content, replyId, targetId, time, type) => {
+    makeReply: async (username, content, id, targetId, time, type) => {
         let session = Neo4jDriver.wrappedSession();
         let query;
         let params;
         if (type === "post") {
-            query = `MATCH (u:user {UserName: $username}), (p:post {PostId: $targetId}) 
-                    CREATE (u)-[:CREATE_REPLY]->(r:reply {Content: $content, Time: $time, ReplyId: $replyId})
+            query = `MATCH (u:user {UserName: $username}), (p:post {id: $targetId}) 
+                    CREATE (u)-[:CREATE_REPLY]->(r:reply {Content: $content, Time: $time, id: $id})
                     CREATE (r)-[:REPLY_TO]->(p)`;
-            params = {"username": username, "targetId": targetId, "content": content, "time": time, "replyId": replyId};
+            params = {"username": username, "targetId": targetId, "content": content, "time": time, "id": id};
         }else if (type === "reply") {
-            query = `MATCH (u:user {UserName: $username}), (rp:reply {ReplyId: $targetId})
-                    CREATE (u)-[:CREATE_REPLY]->(r:reply {Content: $content, Time: $time, ReplyId: $replyId}) 
+            query = `MATCH (u:user {UserName: $username}), (rp:reply {id: $targetId})
+                    CREATE (u)-[:CREATE_REPLY]->(r:reply {Content: $content, Time: $time, id: $id}) 
                     CREATE (r)-[:REPLY_TO]->(rp)`;
-            params = {"username": username, "targetId": targetId, "content": content, "time": time, "replyId": replyId};
+            params = {"username": username, "targetId": targetId, "content": content, "time": time, "id": id};
         }
         try {
             await session.run(query, params);
@@ -568,15 +581,15 @@ const db = {
 
     /**
      * Delete the reply, ‘CREATE_REPLY’ and any ‘REPLY_TO’ relation with this reply
-     * @param {*} replyId the unique Id of the reply
+     * @param {*} id the unique Id of the reply
      */
-    deleteReply: async (replyId) => {
+    deleteReply: async (id) => {
         let session = Neo4jDriver.wrappedSession();
 
         let query = `MATCH 
-                        (r:reply {ReplyId: $replyId})
+                        (r:reply {id: $id})
                     SET r: DELETED`;
-        let params = {replyId};
+        let params = {id};
 
         try {
             await session.run(query, params);
@@ -588,33 +601,65 @@ const db = {
 
     /**
      * Return a set of objects that are comments of the original post where each 
-     * object contains postId, title and time sorted by time
-     * @param {*} postId The id of the original post
-     * @returns A set of objectswhere each object contains all the info of a reply
+     * object contains id, title and time sorted by time
+     * @param {*} id The id of the original post
+     * @returns A set of objects where each object contains all the info of a reply
      */
-    getComments: async(postId) => {
+    getComments: async(id) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (r:reply)-[:REPLY_TO*0..]->(p:post {PostId: $postId}) 
-                     RETURN r`;
-        let params = {postId};
+        let query = `MATCH 
+                        (r:reply)-[:REPLY_TO*1..]->(p:post {id: $id}),
+                        (u:user)-[:CREATE_REPLY]->(r:reply)
+                    OPTIONAL MATCH (r:reply)-[:REPLY_TO]->(upper)
+                    RETURN r, upper.id AS reply_to, u.UserName AS author ORDER BY r.Time`;
+        let params = {id};
         let result;
-        let replySet = [];
+        let replies = [];
         try {
             result = await session.run(query, params);
-            let records = result.records;
-            for (let i = 0; i < records.length; i++) {
-                let reply = records[i].get(0);
-                replySet.push({
-                    replyId: reply.properties.ReplyId,
-                    time: reply.properties.Time,
-                    content: reply.properties.Content
-                })
-            }
         } catch (err) {
             console.log(err);
         }
+
+        let records = result.records; 
+        for (const record of records) {
+            let author = record.get('author'); 
+            let r = record.get('r');
+            let reply_to = record.get('reply_to');
+            // Populate the replies array
+            // Group the sub-comments inside the comments field of first level comments
+            let firstLevelReply; 
+            let isFirstLevel = true;
+            let replyObj = {
+                id: r.properties.id,
+                reply_to,
+                author,
+                post_time: r.properties.Time,
+                content: r.properties.Content,
+                comments: []
+            }
+            for (firstLevelReply of replies) {
+                if (firstLevelReply.__ids.indexOf(reply_to) !== -1) {
+                    // If the comment of this record belongs to this first level comment
+                    isFirstLevel = false;
+                    break; 
+                }
+            }
+            if (isFirstLevel) {
+                replyObj.__ids= [replyObj.id], // Temp, will be deleted before returning. 
+                replies.push(replyObj);
+            }
+            else {
+                firstLevelReply.comments.push(replyObj);
+                firstLevelReply.__ids.push(replyObj.id); 
+            }
+        }
+        for (const reply of replies) {
+            delete reply.__ids; 
+        }
+
         session.close();
-        return replySet;
+        return replies;
     },
 
     /**
@@ -705,14 +750,14 @@ const db = {
     /**
      * Create ‘FOLLOW’ relationship between the user and the post
      * @param {*} username String
-     * @param {*} postId String, the postId of the post that user wants to follow
+     * @param {*} id String, the id of the post that user wants to follow
      */
-    followPost: async (username, postId) => {
+    followPost: async (username, id) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {UserName: $username}), 
-                           (p:post {PostId: $postId}) 
+                           (p:post {id: $id}) 
                     CREATE (u)-[:FOLLOW]->(p)`;
-        let params = {"username": username, "postId": postId};
+        let params = {"username": username, "id": id};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -724,13 +769,13 @@ const db = {
     /**
      * Delete ‘FOLLOW’ relationship between the user and the post
      * @param {*} username String
-     * @param {*} postId String, the postId of the post that user wants to follow
+     * @param {*} id String, the id of the post that user wants to follow
      */
-    unfollowPost: async (username, postId) => {
+    unfollowPost: async (username, id) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (u:user {UserName: $username})-[f:FOLLOW]->(p:post {PostId: $postId}) 
+        let query = `MATCH (u:user {UserName: $username})-[f:FOLLOW]->(p:post {id: $id}) 
                     DELETE f`;
-        let params = {"username": username, "postId": postId};
+        let params = {"username": username, "id": id};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -740,46 +785,46 @@ const db = {
     },
 
     /**
-     * Return a set of postId where each post is followed by the user
+     * Return a set of id where each post is followed by the user
      * @param {*} username String
-     * @returns A set of postId that user follows
+     * @returns A set of id that user follows
      *          Empty if user follows nothing
      */
     getFollowedPostByUser: async (username) => {
-        var postIdSet = [];
+        var idSet = [];
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {UserName: $username}), 
                            "(u)-[:FOLLOW]->(p:post) 
-                     RETURN p.PostId AS postId`;
+                     RETURN p.id AS id`;
         let params = {"username": username};
         let result;
         try {
             result = await session.run(query, params).then();
-            result.records.forEach(record => postIdSet.push(record.get("postId")));
+            result.records.forEach(record => idSet.push(record.get("id")));
         } catch (err) {
             console.log(err);
         }
         session.close();
-        return postIdSet;
+        return idSet;
     },
 
     /**
      * Return a set of username where each user is following this post
-     * @param {*} postId String
+     * @param {*} id String
      * @returns A set of users that follow this post
      *          Empty if the post is not followed by any user
      */
-    getFollowingUserByPost: async (postId) => {
+    getFollowingUserByPost: async (id) => {
         var usernameSet = [];
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (p:post {PostId: $postId}), 
+        let query = `MATCH (p:post {id: $id}), 
                            (u:user)-[:FOLLOW]->(p) 
                      RETURN u.UserName AS userName`;
-        let params = {"postId": postId};
+        let params = {"id": id};
         let result;
         try {
             result = await session.run(query, params).then();
-            result.records.forEach(record => postIdSet.push(record.get("userName")));
+            result.records.forEach(record => idSet.push(record.get("userName")));
         } catch (err) {
             console.error(err);
         }

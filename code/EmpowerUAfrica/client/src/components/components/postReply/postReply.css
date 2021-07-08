@@ -1,12 +1,14 @@
 /*
 post part while replying
 */
-.post {
+.post-reply {
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 0 3px gray;
     margin: 30px auto;
     padding: 20px;
+    display: grid;
+    grid-template-columns: 10% 90%;
 }
 /*
 link to "community/post_content"
@@ -18,10 +20,32 @@ link to "community/post_content"
 /*
 post icon
 */
-.post img{
+.post > img{
 
     width: 35px;
     height: 35px;
 }
 
+.reply-content-block {
+    grid-row: 1;
+    grid-column: 1/3;
+}
 
+.subreplies-block {
+    grid-row: 2;
+    grid-column: 2;
+}
+
+.reply-to-reply {    
+    padding-left: 1em;
+    padding-bottom: 0.25em;
+    padding-right: 0.25em;
+    margin-top: 1em;
+    border-radius: 7px;
+    background-color: rgb(240, 240, 240);
+    box-shadow: 0 0 3px gray;
+}
+
+.post-time {
+    text-align: right;
+}

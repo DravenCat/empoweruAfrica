@@ -30,7 +30,7 @@ router.post('/createPost', async (req, res) => {
     const title = req.body.title;
     const content  = req.body.body; 
     const timestamp = utils.timestamp(); 
-    const postId = 'P' + utils.hash(username + title + timestamp.toString()); 
+    const postId = 'P' + utils.URLSafe(utils.hash(username + title + timestamp.toString())); 
 
     let errCode = 0; 
     if ((errCode = validation.validatePostTitle(title)) !== 0
@@ -69,7 +69,7 @@ router.post('/createComment', async (req, res) => {
 
     const content = req.body.body; 
     const timestamp = utils.timestamp();
-    const replyId = 'C' + utils.hash(username + content.slice(0, 10) + timestamp.toString()); 
+    const replyId = 'C' + utils.URLSafe(utils.hash(username + content.slice(0, 10) + timestamp.toString())); 
     const targetId = req.body.reply_to;
     let type = utils.typeOfId(targetId); 
     if (type === null) {
@@ -231,11 +231,9 @@ router.get('/getPostContent', async (req, res) => {
     res.status(200).json({
         id: postId,
         author: postContent.author,
-        post: {
-            post_time: postContent.Time,
-            title: postContent.Title,
-            content: postContent.Content
-        },
+        post_time: postContent.Time,
+        title: postContent.Title,
+        content: postContent.Content,
         comments: comments
     });
 }); 
