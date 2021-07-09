@@ -228,10 +228,19 @@ Tracking on Jira Total Mark: 24 / 24
     - 8 marks = features presented work flawlessly
     - 1 mark removed for each error or missing records on Jira
 
-  Your Mark: __ / 10
+  Your Mark: 10 / 10
+
+  - Community
+    - Posts Thead 
+    - Comments
+    - Delete
+  - Share URL
+  - Profile
+    - Profile Display
+    - Profile Editing
 
 ---
 
 ## Total Mark
 
-79 / 89
+89 / 89
