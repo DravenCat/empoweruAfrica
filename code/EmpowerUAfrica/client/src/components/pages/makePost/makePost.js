@@ -45,7 +45,7 @@ export default class community extends Component{
         }
 
         if (!res.ok) {
-            this.setState({error: body.message}); 
+            alert(body.message); 
             return; 
         }
 

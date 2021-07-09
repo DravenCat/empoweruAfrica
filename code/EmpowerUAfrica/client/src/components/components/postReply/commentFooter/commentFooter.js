@@ -1,14 +1,19 @@
-import React, { Component } from 'react'; 
-import './post.css';
-import profile from '../../../resource/icons/profile.png'
-import share from '../../../resource/icons/share.png'
-import { UserAbstract } from '../userAbstract/userAbstract';
-import Utils from '../../../utils';
-import MakeComment from '../makeComment/makeComment';
+import React, {Component} from 'react'; 
+import './commentFooter.css'; 
+import Utils from '../../../../utils'; 
+import MakeComment from '../../makeComment/makeComment';
+
+// Comments | share | delete | Post at
+
+/*
+    -props: 
+        - reply
+*/
 
 const deleteContentURL = "/community/deleteContent"
 
-export default class post extends Component{
+export default class CommentFooter extends Component {
+
     state = {
         commentInput: false
     }
@@ -20,18 +25,20 @@ export default class post extends Component{
         this.setState({commentInput: false});
     }
 
-    copyURL = ()=> {
-        var inputc = document.body.appendChild(document.createElement("input"));
-        inputc.value = `/community/post/${this.props.post.id}`;
+    copyURL = () => {
+        let inputc = document.body.appendChild(document.createElement("input"));
+        let commentURL = window.location.href + `#${this.props.reply.id}`;
+        inputc.value = commentURL;
+        // inputc.focus();
         inputc.select();
         document.execCommand('copy');
         inputc.parentNode.removeChild(inputc);
         alert("URL Copied.");
     }
 
-    deletePost = async () => {
+    deleteComment = async () => {
         // Confirm
-        if (!window.confirm('Are you sure you want to delete this post? ')) {
+        if (!window.confirm('Are you sure you want to delete this comment? ')) {
             return; 
         }
 
@@ -42,7 +49,7 @@ export default class post extends Component{
                 {
                     method: 'POST',
                     body: JSON.stringify({
-                        id: this.props.post.id
+                        id: this.props.reply.id
                     }),
                     headers: {
                         'Content-Type': 'application/json'
@@ -56,12 +63,7 @@ export default class post extends Component{
         }
         
         if (res.ok) {
-            if (this.props.in_post) {
-                window.location.replace('/community');
-            }
-            else {
-                window.location.reload(); 
-            }
+            window.location.reload(); 
         }
         else {
             let body = await res.json(); 
@@ -70,45 +72,14 @@ export default class post extends Component{
     }
 
     render() {
-        let post = this.props.post;
-        let author = this.props.post.authorAbstract;  
-        let in_post = this.props.in_post; 
-        console.log(post); 
-        if (post === undefined) {
-            return (<h2>Error: No Post Data</h2>); 
-        }
+
+        const reply = this.props.reply; 
         let canDelete = (
-            localStorage.getItem('username') === post.author
+            localStorage.getItem('username') === reply.author
         ) || (localStorage.getItem('isAdmin') === 'true');
-        let makeComment = <></>;
-        if (this.state.commentInput) {
-            makeComment = <MakeComment reply_to={post.id} discard={this.hideCommentInput}/>
-
-        }
-
         return (
-            <div className="post">
-                <div className="post-user-abstract">
-                    <UserAbstract user={author}></UserAbstract>
-                </div>
-                
-                <div className="post-abstract">
-                {
-                    in_post? 
-                    <>
-                        <h2>{post.title}</h2>
-                        <p>{post.abbriv || post.content}</p>
-                    </>:
-                    <>
-                        <a className="link-to-post" href={`community/post/${post.id}`}>
-                        <h2>{post.title}</h2>
-                        <p>{post.abbriv || post.content}</p>
-                        </a>
-                    </>
-                }
-                </div>
-
-                <table className="comment-footer-table">
+        <div>
+            <table className="comment-footer-table">
                 <colgroup>
                     <col style={{width:'10%'}} />
                     <col style={{width:'10%'}} />
@@ -122,7 +93,8 @@ export default class post extends Component{
                             src="/icons/chat.png" 
                             alt="reply" 
                             className="comment-footer-icon"
-                            onClick={this.showCommentInput}></img>
+                            onClick={this.showCommentInput}
+                            ></img>
                         </td>
                         <td>
                             <img 
@@ -138,20 +110,22 @@ export default class post extends Component{
                                 <img src="/icons/garbage.png" 
                                 alt="delete" 
                                 className="comment-footer-icon"
-                                onClick={this.deletePost}></img>:
+                                onClick={this.deleteComment}></img>:
                                 <></>
                         }
                         </td>
                         <td style={{textAlign: 'right'}}>
-                            <span>Posted at: {Utils.timeStampToTime(post.post_time)}</span>
+                            <span>Posted at: {Utils.timeStampToTime(reply.post_time)}</span>
                         </td>
                     </tr>
                 </tbody>
             </table>
-
-            {makeComment}
-
-            </div>
+            {
+                this.state.commentInput? 
+                <MakeComment reply_to={reply.id} discard={this.hideCommentInput}/>:
+                <></>
+            }
+        </div>
         )
     }
 }

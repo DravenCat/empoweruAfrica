@@ -130,7 +130,7 @@ repositive
 }
 
 #discard-btn {
-    background-color: rgb(252, 57, 45);
+    background-color: var(--btn-cancel-color);
 }
 #discard-btn:hover{
     background-color: rgb(202, 7, 0);

@@ -26,6 +26,13 @@ post icon
     height: 35px;
 }
 
+.reply-body {
+    padding: 2em 1em;
+    border-radius: .4em;
+    font-size: 1.2em;
+    background-color: rgb(240, 240, 240);
+}
+
 .reply-content-block {
     grid-row: 1;
     grid-column: 1/3;
@@ -44,6 +51,14 @@ post icon
     border-radius: 7px;
     background-color: rgb(240, 240, 240);
     box-shadow: 0 0 3px gray;
+}
+
+.reply-highlight {
+    background-color: wheat;
+}
+
+.reply-to-highlight {
+    background-color: antiquewhite;
 }
 
 .post-time {

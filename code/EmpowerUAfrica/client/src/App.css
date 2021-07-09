@@ -9,6 +9,10 @@
 
 :root {
   --link-hover-color: rgb(0, 143, 141);
+  --btn-confirm-color: yellowgreen; 
+  --btn-cancel-color: rgb(252, 57, 45); 
+  --btn-confirm-hover-color: rgb(102, 145, 16);
+  --btn-cancel-hover-color: rgb(255, 97, 85); 
   font-family: sans-serif;
 }
 

@@ -89,9 +89,16 @@ export default class postContent extends Component{
         for (const comment of postContent.comments) {
             comment.authorAbstract = usersAbstract[comment.author]; 
             comment.comment_count = 0; 
-
+            let __idToCommentObj = {}; 
             if (comment.comments !== undefined) {
                 for (const subcomment of comment.comments) {
+                    __idToCommentObj[subcomment.id] = subcomment; 
+
+                    subcomment.reply_to_obj = null; 
+                    if (subcomment.reply_to !== comment.id) {
+                        subcomment.reply_to_obj = __idToCommentObj[subcomment.reply_to]; 
+                    }
+
                     subcomment.authorAbstract = usersAbstract[subcomment.author]; 
                     comment.comment_count ++; 
                 }
@@ -101,50 +108,6 @@ export default class postContent extends Component{
         }
         this.setState({postContent, postId, usersAbstract}); 
         
-    }
-
-    submitComment= async () => {
-        let res;
-        let replyInput = document.getElementById('reply-input');
-        if (replyInput.value.length === 0) {
-            return; 
-        }
-        try {
-            res = await fetch(
-                createCommentURL,
-                {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        reply_to: this.state.postId,
-                        body: replyInput.value
-                    }),
-                    headers: {
-                        'content-type': 'application/json'
-                    }
-                }
-            )
-        }
-        catch (err) {
-            console.error(err); 
-            this.setState({
-                error: 'Internet Failure: Failed to connect to server.'
-            })
-            return;
-        }
-        let body; 
-        try {
-            body = await res.json();
-        }
-        catch (err) {
-            console.error(err); 
-            return; 
-        }
-
-        if (!res.ok) {
-            this.setState({error: body.message}); 
-            return; 
-        }
-        window.location.reload(); 
     }
 
     componentDidMount() {
@@ -172,18 +135,6 @@ export default class postContent extends Component{
                     <div className="postContent_post">
                         {/* post information */}
                         <Post post={postContent} in_post="true"/>
-                    </div>
-                    <div>
-                        {/* make comment activator and deactivator */}
-                        <button onClick={this.activateMakeComment} id="makecomment_activator">Make Comment</button>
-                        <button onClick={this.deactivateMakeComment} id="makecomment_deactivator">Cancel</button>
-                    </div>
-                    <div  className="postContent_makeComment">
-
-                        {/* make comment textarea */}
-                        <textarea id="reply-input"></textarea>
-                        {/* submit comment button */}
-                        <button id="makecomment_submit" onClick={this.submitComment}>Submit</button>
                     </div>
                     <div>
 

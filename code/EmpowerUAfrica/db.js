@@ -496,7 +496,16 @@ const db = {
         return author; 
 
     },
-
+    getPostCount: async(criteria) => {
+        const session = Neo4jDriver.wrappedSession(); 
+        // TODO: make the query suitable for applying different criteria. 
+        let query = `MATCH (p:post) RETURN count(p) AS post_count`; 
+        const result = await session.run(query); 
+        let post_count = result.records[0].get('post_count').low; 
+        session.close();
+        return post_count;
+    }
+    ,
     /**
      * Return a set of objects where each object contains id, content, title
      * and time sorted by time, and returns posts numbers
@@ -504,7 +513,7 @@ const db = {
      * @param {*} postPerPage Int
      * @returns A set of objects in time-descending order where each object contains all the info of a post
      */
-    getPosts: async(pageNum, postPerPage) => {
+    getPosts: async(pageNum, postPerPage, criteria) => {
 
         let skipNum = pageNum * postPerPage;
         let session = Neo4jDriver.wrappedSession();
@@ -520,8 +529,15 @@ const db = {
         let params = {"skipNum": neo4j.int(skipNum), "postPerPage": neo4j.int(postPerPage)};
         let result;
         let postSet = [];
+        let posts = {
+            post_count: 0, 
+            posts: []
+        }
         try {
-            result = await session.run(query, params);
+            [result, posts.post_count] = await Promise.all([
+                session.run(query, params),
+                db.getPostCount(criteria)
+            ]);
             
         } catch (err) {
             console.log(err);
@@ -533,7 +549,7 @@ const db = {
             let author = record.get('author'); 
             let comment_count = record.get('comment_count').low;
             let content = post.properties.Content;
-            postSet.push({
+            posts.posts.push({
                 author,
                 comment_count,
                 id: post.properties.id,
@@ -543,7 +559,7 @@ const db = {
             })
         }
         session.close();
-        return postSet;
+        return posts;
     },
 
     /**
@@ -635,7 +651,7 @@ const db = {
                 reply_to,
                 author,
                 post_time: r.properties.Time,
-                content: r.properties.Content,
+                content: r.labels.indexOf('DELETED') === -1? r.properties.Content: '[DELETED]',
                 comments: []
             }
             for (firstLevelReply of replies) {
