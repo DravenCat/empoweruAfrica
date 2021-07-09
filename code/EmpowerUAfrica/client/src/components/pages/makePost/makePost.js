@@ -45,7 +45,7 @@ export default class community extends Component{
         }
 
         if (!res.ok) {
-            this.setState({error: body.message}); 
+            alert(body.message); 
             return; 
         }
 
@@ -74,7 +74,7 @@ export default class community extends Component{
                         <textarea id="makePost_content"></textarea>
                     </div>
                     {/* submit the post */}
-                    <button id="createPost">Create Post</button>
+                    <button id="createPost" onClick={this.createPost}>Create Post</button>
 
                 </div>
 

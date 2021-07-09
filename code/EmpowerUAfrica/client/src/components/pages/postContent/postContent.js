@@ -1,7 +1,7 @@
 import React, { Component } from 'react'; 
 import './postContent.css';
 import Post from '../../components/post/post';
-import PostReply from '../../components/postReply/postReply';
+import {Reply} from '../../components/postReply/postReply';
 import Utils from '../../../utils';
 
 const createCommentURL = '/community/createComment'; 
@@ -33,37 +33,6 @@ export default class postContent extends Component{
     }
 
     async getPostContent(postId) {
-        let postContent = {
-            "author": "test", 
-            "id": "Pla0JdAos3pVoiVI1neP95YHT8F6hkKH3h4uq7KgRceo=",
-                "post": {
-                    "post_time": Math.round(Date.now() / 1000),
-                    "title": "My Title",
-                    "content": "This is the full post content.",
-                },
-                "comments": [
-                {
-                    "id": "asdaasdfbdkfa",
-                    "author":  "test2", 
-                    "body": {
-                        "post_time": 168273691,
-                        "content": "This is my reply"
-                    },
-                    "comments": [
-                        {
-                            "reply_to": "reply_id",
-                            "id": "Caaaaaa",
-                            "author": "test",
-                            "body":{
-                                "post_time": 198274923,
-                                "content": "This is my reply to reply"
-                            }
-                        }, 
-                    ]
-                }, 
-            ]
-        }
-
         let res;
         let url = `${getPostContentURL}?post_id=${postId}`; 
         try {
@@ -94,7 +63,7 @@ export default class postContent extends Component{
             this.setState({error: body.message}); 
             return; 
         }
-        postContent = body; 
+        let postContent = body; 
 
         let users = [postContent.author];
         for (const comment of postContent.comments) {
@@ -102,73 +71,43 @@ export default class postContent extends Component{
             if (users.indexOf(comment.author) === -1) {
                 users.push(comment.author)
             }
-
-            for (const subcomment of comment.comments) {
-                if (users.indexOf(subcomment.author) === -1) {
-                    users.push(subcomment.author)
+            
+            if (comment.comments !== undefined) {
+                for (const subcomment of comment.comments) {
+                    if (users.indexOf(subcomment.author) === -1) {
+                        users.push(subcomment.author)
+                    }
                 }
             }
         }
 
         let usersAbstract = await Utils.getUsersAbstract(users); 
+        console.log(usersAbstract); 
 
-        postContent.author = usersAbstract[postContent.author]; 
-        postContent.post.comment_count = 0;
+        postContent.authorAbstract = usersAbstract[postContent.author]; 
+        postContent.comment_count = 0;
         for (const comment of postContent.comments) {
-            comment.author = usersAbstract[comment.author]; 
+            comment.authorAbstract = usersAbstract[comment.author]; 
             comment.comment_count = 0; 
-            for (const subcomment of comment.comments) {
-                subcomment.author = usersAbstract[subcomment.author]; 
-                comment.comment_count ++; 
-            }
-            postContent.post.comment_count += comment.comment_count;
-        }
-        this.setState({postContent, postId}); 
-        
-    }
+            let __idToCommentObj = {}; 
+            if (comment.comments !== undefined) {
+                for (const subcomment of comment.comments) {
+                    __idToCommentObj[subcomment.id] = subcomment; 
 
-    submitComment= async () => {
-        let res;
-        let replyInput = document.getElementById('reply-input');
-        if (replyInput.value.length === 0) {
-            return; 
-        }
-        try {
-            res = await fetch(
-                createCommentURL,
-                {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        reply_to: this.state.postId,
-                        body: replyInput.value
-                    }),
-                    headers: {
-                        'content-type': 'application/json'
+                    subcomment.reply_to_obj = null; 
+                    if (subcomment.reply_to !== comment.id) {
+                        subcomment.reply_to_obj = __idToCommentObj[subcomment.reply_to]; 
                     }
-                }
-            )
-        }
-        catch (err) {
-            console.error(err); 
-            this.setState({
-                error: 'Internet Failure: Failed to connect to server.'
-            })
-            return;
-        }
-        let body; 
-        try {
-            body = await res.json();
-        }
-        catch (err) {
-            console.error(err); 
-            return; 
-        }
 
-        if (!res.ok) {
-            this.setState({error: body.message}); 
-            return; 
+                    subcomment.authorAbstract = usersAbstract[subcomment.author]; 
+                    comment.comment_count ++; 
+                }
+            }
+            
+            postContent.comment_count += comment.comment_count + 1;
         }
-        window.location.reload(); 
+        this.setState({postContent, postId, usersAbstract}); 
+        
     }
 
     componentDidMount() {
@@ -181,11 +120,10 @@ export default class postContent extends Component{
         if (postContent === null) {
             return(<></>); 
         }
-        let replies = postContent.comments.map(comment => <PostReply reply={comment} key={comment.id}/>)
-        const mainPost = {
-            author: postContent.author,
-            post: postContent.post
-        }
+        let replies = postContent.comments.map(
+            comment => <Reply reply={comment} key={comment.id}/>
+        )
+        console.log(postContent); 
         return (
             <div className="post-content">
 
@@ -196,19 +134,7 @@ export default class postContent extends Component{
                 <div className="post-content-column">
                     <div className="postContent_post">
                         {/* post information */}
-                        <Post post={mainPost} in_post="true"/>
-                    </div>
-                    <div>
-                        {/* make comment activator and deactivator */}
-                        <button onClick={this.activateMakeComment} id="makecomment_activator">Make Comment</button>
-                        <button onClick={this.deactivateMakeComment} id="makecomment_deactivator">Cancel</button>
-                    </div>
-                    <div  className="postContent_makeComment">
-
-                        {/* make comment textarea */}
-                        <textarea id="reply-input"></textarea>
-                        {/* submit comment button */}
-                        <button id="makecomment_submit" onClick={this.submitComment}>Submit</button>
+                        <Post post={postContent} in_post="true"/>
                     </div>
                     <div>
 

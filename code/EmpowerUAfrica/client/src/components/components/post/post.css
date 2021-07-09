@@ -7,67 +7,68 @@ post page.
     box-shadow: 0 0 3px gray;
     margin: 30px auto;
     padding: 20px;
+
+    display: grid;
+}
+
+.post-user-abstract {
+    grid-row: 1;
+}
+.post-abstract {
+    grid-row: 2;
+}
+/*
+The footer of post page
+*/
+.post-footer {
+    grid-row: 3;
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr 1fr 1fr;
 }
 /*
 The link to community/post_content.
 */
-.inner {
+.link-to-post {
     text-decoration: none;
     color: black;
+}
+.link-to-post:hover {
+    color: var(--link-hover-color); 
 }
 /*
 post icon
 */
-.post img{
+.post > img{
 
     width: 35px;
     height: 35px;
 }
 /*
-post part and post button
-*/
-.post .post_button{
-    padding: 3px 8px;
-    margin: 0 10px;
-    background-color: yellowgreen;
-}
-/*
 Share icon
 */
-.share_img {
-    height: 10px;
-    width: 10px;
+.post-icon {
+    height: 1.5em;
+    width: 1.5em;
+}
+.share-icon:hover {
+    cursor: pointer;
 }
 /*
 share part
 */
 .share{
-    background-image: url('../../../resource/icons/share.png');
-    background-repeat: no-repeat;
-    background-size: contain;
     text-decoration: none;
     font-weight: 200;
     color: black;
+    font-size: 20px;
 }
-/*
-The share part and string of "Share"
-*/
-.share #share_text {
-
-    margin-left: 20px;
-}
-/*
-The footer of post page
-*/
-.post_footer {
-    display: grid;
-    grid-template-columns: 80% 20%;
-    justify-content: space-between;
+.share:hover {
+    cursor: pointer;
+    color: var(--link-hover-color); 
 }
 
-
-
-
-
-
-
+.share > .share-icon {
+    height: 20px;
+    width: 20px;
+}
