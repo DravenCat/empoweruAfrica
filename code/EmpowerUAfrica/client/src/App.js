@@ -17,6 +17,9 @@ import MakePost from './components/pages/makePost/makePost';
 import ViewAllPost from './components/pages/viewAllPosts/viewAllPosts'; 
 
 import Profile from './components/pages/profile/profile'; 
+import StartToLearn from './components/pages/startToLearn/startToLearn';
+import Video from './components/pages/video/video';
+
 // import EditProfile from './components/pages/profile_edit/profile_edit'; 
 
 
@@ -72,6 +75,14 @@ export default function App() {
 
         <Route exact path="/profile/:username" component={Profile}>
 
+        </Route>
+
+        <Route exact path="/start_to_learn">
+          <StartToLearn/>
+        </Route>
+
+        <Route exact path="/start_to_learn/video">
+          <Video/>
         </Route>
         
       </Switch>

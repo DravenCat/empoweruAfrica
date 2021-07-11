@@ -69,7 +69,7 @@ export default class header extends Component {
 
                         {/* Website navbar learn link*/}
                         <div className="navbar-learn">
-                            <a id="learn" href="/learn">
+                            <a id="learn" href="/start_to_learn">
                                 Start to Learn
                             </a>
                         </div>
