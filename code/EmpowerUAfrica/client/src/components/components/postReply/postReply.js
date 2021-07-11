@@ -1,10 +1,7 @@
-import React, { Component, useImperativeHandle } from 'react'; 
+import React, { Component } from 'react'; 
 import { UserAbstract, UserAbstractSmall } from '../userAbstract/userAbstract';
 import CommentFooter from './commentFooter/commentFooter';
 import './postReply.css';
-import profile from '../../../resource/icons/profile.png'
-
-import Utils from '../../../utils';
 
 
 export class Reply extends Component{

@@ -4,7 +4,6 @@ import Post from '../../components/post/post';
 import {Reply} from '../../components/postReply/postReply';
 import Utils from '../../../utils';
 
-const createCommentURL = '/community/createComment'; 
 const getPostContentURL = '/community/getPostContent'; 
 
 export default class postContent extends Component{

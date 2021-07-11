@@ -2,9 +2,11 @@
 image in the index page
 */
 .title-image {
-  background-image: url('../../../resource/icons/wallup.png');
-  background-size: cover;
+  background-image: url('http://localhost:3000/bg.jpg');
+  background-size:contain;
   padding-bottom: 300px;
+  height: 41%;
+  background-repeat: no-repeat;
   margin-top: 80px;
 }
 

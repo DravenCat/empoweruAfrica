@@ -1,7 +1,5 @@
 import React, { Component } from 'react'; 
 import './post.css';
-import profile from '../../../resource/icons/profile.png'
-import share from '../../../resource/icons/share.png'
 import { UserAbstract } from '../userAbstract/userAbstract';
 import Utils from '../../../utils';
 import MakeComment from '../makeComment/makeComment';
@@ -22,7 +20,7 @@ export default class post extends Component{
 
     copyURL = ()=> {
         var inputc = document.body.appendChild(document.createElement("input"));
-        inputc.value = `/community/post/${this.props.post.id}`;
+        inputc.value = window.location.href.split('/').slice(0, 3).join('/') + '/community/post/' + this.props.post.id;
         inputc.select();
         document.execCommand('copy');
         inputc.parentNode.removeChild(inputc);

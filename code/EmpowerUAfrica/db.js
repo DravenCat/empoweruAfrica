@@ -249,6 +249,9 @@ const db = {
         let userAbstracts = {};
         for (const user of response[0]) {
             userAbstracts[user.username] = user;
+            if (user.description === null) {
+                user.description = ''; 
+            }
             if (user.description.length >= 50) {
                 user.description = user.description.slice(0, 50) + '...';
             }

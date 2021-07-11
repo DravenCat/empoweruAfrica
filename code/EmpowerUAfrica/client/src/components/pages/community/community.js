@@ -5,7 +5,6 @@ import Utils from '../../../utils';
 import PageSelect from '../../components/pageSelect/pageSelect';
 
 const getPostsURL = '/community/getPosts';
-const getUsersAbstractURL = '/profile/getUsersAbstract'; 
 const postPerPage = 20; 
 
 export default class community extends Component{
