@@ -78,6 +78,18 @@ module.exports = {
         }
         return 0;
     },
+    validateDeliverableName: (title) => {
+        if (title.length < config.deliverableName.minlen || title.length > config.deliverableName.maxlen) {
+            return 8;
+        }
+        return 0;
+    },
+    validateDeliverableDesc: (body) => {
+        if (body.length < config.deliverableDesc.minlen || body.length > config.deliverableDesc.maxlen) {
+            return 9;
+        }
+        return 0;
+    },
     errMsgs : [
         '',
         `Username should be between ${config.username.minlen} and ${config.username.maxlen} characters.`,
@@ -86,6 +98,9 @@ module.exports = {
         'Email not in correct format. Valid email example: example@site.com',
         `Passwords should be between ${config.password.minlen} and ${config.password.maxlen} characters.`,
         `Post title should be between ${config.postTitle.minlen} and ${config.postTitle.maxlen} characters.`,
-        `Post body should be between ${config.postBody.minlen} and ${config.postBody.maxlen} characters.`
+        `Post body should be between ${config.postBody.minlen} and ${config.postBody.maxlen} characters.`,
+        `Deliverable name should be between ${config.deliverableName.minlen} and ${config.deliverableName.maxlen} characters.`,
+        `Deliverable description should be between ${config.deliverableDesc.minlen} and ${config.deliverableDesc.maxlen} characters.`
+        
     ]
 }
