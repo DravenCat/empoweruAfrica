@@ -28,5 +28,30 @@ router.get('/getCourses', async (req, res) => {
 
 });
 
+/* 
+    Endpoint for when the user wants to get all contents of a course and all comments for the course
+    Request parameters:
+        courseId: String
+*/
+router.get('/getcourseContent', async (req, res) => {
+    let courseId = req.query.course_id; 
+
+    let courseContent = await db.searchcourseById(courseId);
+
+    // check if the course exists
+    if(courseContent === null){
+        res.status(404).json({
+            message: 'Course not found'
+        });
+    }
+    // returns the object containing the course contents and all comments
+    res.status(200).json({
+        id: courseId,
+        author: courseContent.author,
+        title: courseContent.Title,
+        content: courseContent.Content,
+    });
+}); 
+
 
 module.exports = router; 
