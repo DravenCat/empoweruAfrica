@@ -107,4 +107,34 @@ router.course('/createCourse', async (req, res) => {
 
 
 
+/* 
+    Endpoint for when the user wants to delete a course
+    Request parameters:
+        courseId: String
+        token: String
+*/
+router.post('/deleteCourse', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            message: 'You have to sign in before deleting course. '
+        });
+        return;
+    }
+
+    //TODO: Check if user is admin
+
+
+    await db.deleteCourse(req.courseId);
+
+    res.json({
+        message: 'success'
+    });
+});
+
+
+
 module.exports = router; 
