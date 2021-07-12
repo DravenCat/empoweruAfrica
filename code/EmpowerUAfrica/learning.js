@@ -54,4 +54,57 @@ router.get('/getcourseContent', async (req, res) => {
 }); 
 
 
+/* 
+    Endpoint for when the user wants to create a course
+    Request parameters:
+        name: String
+        instructor: String
+        description: String
+        token: String
+*/
+router.course('/createCourse', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            message: 'You have to sign in before making a course. '
+        });
+        return;
+    }
+
+    //TODO: Check if user is admin
+
+    const name = req.body.title;
+    const instructor  = req.body.body; 
+    const description = utils.timestamp(); 
+    const courseId = utils.URLSafe(utils.hash(username + title + timestamp.toString()));
+    
+    // checks if instructor username exists
+    let abstract = await db.getUserAbstract(instructor);
+    if(abstract == null){
+        res.status(404).json({message: "User does not exist"});
+        return; 
+    }
+
+    let errCode = 0; 
+
+    // TODO: add the validate functions and error messages in validation and config after pulling
+    if ((errCode = validation.validateCourseName(name)) !== 0
+        || (errCode = validation.validateCourseDesc(description)) !== 0) {
+        res.status(400).json({
+            message: validation.errMsgs[errCode]
+        }); 
+        return; 
+    }
+
+    await db.createCourse(name, instructor, description, courseId); 
+    res.json({
+        message: 'Success'
+    });
+}); 
+
+
+
 module.exports = router; 
