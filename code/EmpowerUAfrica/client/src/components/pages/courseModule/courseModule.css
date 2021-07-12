@@ -1,0 +1,18 @@
+.courseModule {
+    margin-top: 150px;
+}
+
+.courseModule_create_module {
+    width: 30%;
+    margin: 0 auto;
+}
+
+.courseModule_create_module button{
+    float: right;
+    padding: 5px 10px;
+}
+
+.courseModule_create_module input{
+    padding: 5px 10px;
+    min-width: 50%;
+}

@@ -1,0 +1,33 @@
+.courseOverview {
+    float: left;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    background: -webkit-linear-gradient(right, rgb(102, 235, 212), rgb(88, 185, 214));
+    min-width: 40%;
+    padding: 10px 20px;
+    margin-left: 5%;
+    margin-bottom: 20px;
+}
+
+.courseOverview a {
+    color: black !important;
+    text-decoration: none;
+}
+
+.courseOverview div:nth-child(1) {
+    border-bottom: 1px solid black;
+}
+
+.courseOverview div:nth-child(1) h3 {
+    display: inline-block;
+}
+
+.courseOverview div:nth-child(1) button {
+    float: right;
+    margin-top: 15px;
+    color: #eee;
+    background: rgb(32, 74, 94);
+    padding: 5px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}

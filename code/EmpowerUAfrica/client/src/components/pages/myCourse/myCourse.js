@@ -1,5 +1,5 @@
 import React, { Component} from 'react'; 
-import './startToLearn.css';
+import './myCourse.css';
 import CourseOverview from '../../components/courseOverview/courseOverview';
 
 
@@ -9,15 +9,12 @@ export default class startToLearn extends Component{
     render() {
 
         return (
-            <div className="start_to_learn">
+            <div className="myCourse">
                 
                 <div>
                     <h2>
-                        All Courses
+                        My Courses
                     </h2>
-                    <a href='/start_to_learn/my_course'>
-                        See my courses
-                    </a>
                 </div>
 
                 <div className='course_enrol clearfix'>

@@ -19,6 +19,9 @@ import ViewAllPost from './components/pages/viewAllPosts/viewAllPosts';
 import Profile from './components/pages/profile/profile'; 
 import StartToLearn from './components/pages/startToLearn/startToLearn';
 import Video from './components/pages/video/video';
+import MyCourse from './components/pages/myCourse/myCourse';
+import CourseModule from './components/pages/courseModule/courseModule';
+import AddDeliver from './components/pages/addDeliver/addDeliver';
 
 // import EditProfile from './components/pages/profile_edit/profile_edit'; 
 
@@ -83,6 +86,18 @@ export default function App() {
 
         <Route exact path="/start_to_learn/video">
           <Video/>
+        </Route>
+
+        <Route exact path="/start_to_learn/my_course">
+          <MyCourse/>
+        </Route>
+
+        <Route exact path="/courseModule">
+          <CourseModule/>
+        </Route>
+
+        <Route exact path="/courseModule/add_deliver">
+          <AddDeliver/>
         </Route>
         
       </Switch>

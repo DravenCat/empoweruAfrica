@@ -1,0 +1,35 @@
+.addDeliver {
+    margin-top: 150px;
+}
+
+.addDeliver>div {
+    width: 50%;
+    margin: 0 auto;
+}
+
+.addDeliver>div>h2 {
+    display: inline-block;
+    margin-right: 10%;
+}
+
+.addDeliver>div:nth-child(1) input {
+    width: 40%;
+}
+
+.addDeliver>div:nth-child(2) input {
+    margin-right: 10%;
+}
+
+.addDeliver>div:nth-child(4) textarea {
+    resize: none;
+    width: 80%;
+    min-height: 200px;
+}
+
+.addDeliver>div:nth-child(5) {
+    margin-top: 30px;
+}
+
+.addDeliver>div:nth-child(5) button:nth-child(2) {
+    margin-left: 64%;
+}
