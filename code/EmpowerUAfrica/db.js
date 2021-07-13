@@ -863,7 +863,44 @@ const db = {
      */
     createDeliverable: async (name, description, deliverableId, timestamp, moduleId) =>{
 
+    },
+
+    /**
+     * Update a course
+     * @param {*} courseName String
+     * @param {*} updates Object
+     */
+    updateCourse: async (courseName, updates) =>{
+
+    },
+
+    /**
+     * Get all course
+     * @returns All course information
+     */
+    getCourses: async () =>{
+
+    },
+
+    /**
+     * Get a course
+     * @param {*} courseName String
+     * @returns All course information
+     */
+    searchCourseByName: async (courseName) =>{
+
+    },
+
+    /**
+     * Create a course
+     * @param {*} courseName String
+     * @param {*} instructor String
+     * @param {*} description String
+     */
+    createCourse: async (courseName, instructor, description) =>{
+
     }
+
 
 
 }; 

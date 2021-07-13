@@ -89,6 +89,18 @@ module.exports = {
             return 9;
         }
         return 0;
+    },    
+    validateCourseName: (title) => {
+        if (title.length < config.courseName.minlen || title.length > config.courseName.maxlen) {
+            return 10;
+        }
+        return 0;
+    },
+    validateCourseDesc: (body) => {
+        if (body.length < config.courseDesc.minlen || body.length > config.courseDesc.maxlen) {
+            return 11;
+        }
+        return 0;
     },
     errMsgs : [
         '',
@@ -100,7 +112,8 @@ module.exports = {
         `Post title should be between ${config.postTitle.minlen} and ${config.postTitle.maxlen} characters.`,
         `Post body should be between ${config.postBody.minlen} and ${config.postBody.maxlen} characters.`,
         `Deliverable name should be between ${config.deliverableName.minlen} and ${config.deliverableName.maxlen} characters.`,
-        `Deliverable description should be between ${config.deliverableDesc.minlen} and ${config.deliverableDesc.maxlen} characters.`
-        
+        `Deliverable description should be between ${config.deliverableDesc.minlen} and ${config.deliverableDesc.maxlen} characters.`,
+        `Course name should be between ${config.courseName.minlen} and ${config.courseName.maxlen} characters.`,
+        `Course description should be between ${config.courseDesc.minlen} and ${config.courseDesc.maxlen} characters.`
     ]
 }
