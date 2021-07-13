@@ -259,6 +259,83 @@ const db = {
         return userAbstracts; 
     
     }, 
+
+    /**
+     * Create the video in the database
+     * @param {*} id the id of the video
+     * @param {*} name the name of the video
+     * @param {*} description the description of the video
+     * @param {*} url the url of the video
+     */
+    createVideo: async (id, name, description, url) => {
+        let sql = `INSERT INTO Video(id, name, description, url)
+        VALUES(?, ?, ?, ?)`; 
+        let data = [id, name, description, url]; 
+        await MySQLConnection.execute(sql, data); 
+    },
+
+    /**
+     * Edit the description and url for the video
+     * @param {*} id the id of the video
+     * @param {*} description the new description
+     * @param {*} url the new url
+     */
+    editVideo: async (id, description, url) => {
+        let sql = `UPDATE Video 
+                   SET description = ?, url = ? 
+                   WHERE id = ?`;
+        let data = [id, description, url]; 
+        await MySQLConnection.execute(sql, data); 
+    },
+
+    /**
+     * Delete the video in the table
+     * @param {*} id the id of the video
+     */
+    deleteVideo: async (id) => {
+        let sql = 'DELETE FROM Video WHERE id=?'; 
+        let data = [id]; 
+        await MySQLConnection.execute(sql, data);
+    },
+
+    /**
+     * Create the reading in the database
+     * @param {*} id the id of the reading
+     * @param {*} name the name of the reading
+     * @param {*} description the description of the reading
+     * @param {*} url the url of the reading
+     */
+    createReading: async (id, name, description) => {
+        let sql = `INSERT INTO Reading(id, name, description)
+        VALUES(?, ?, ?, ?)`; 
+        let data = [id, name, description]; 
+        await MySQLConnection.execute(sql, data); 
+    },
+
+    /**
+     * Edit the description and name for the video
+     * @param {*} id the id of the reading
+     * @param {*} name the new name
+     * @param {*} description the new description
+     */
+    editReading: async (id, name, description) => {
+        let sql = `UPDATE Video 
+                   SET name = ?, description = ? 
+                   WHERE id = ?`;
+        let data = [id, name, description]; 
+        await MySQLConnection.execute(sql, data); 
+    },
+  
+    /**
+     * Delete the reading in the table
+     * @param {*} id the id of the reading
+     */
+    deleteReading: async (id) => {
+        let sql = 'DELETE FROM Reading WHERE id=?'; 
+        let data = [id]; 
+        await MySQLConnection.execute(sql, data);
+    },
+
     /*====================================================================================*/
     /*These methods are for Neo4j database*/
     /**
@@ -808,8 +885,7 @@ const db = {
 
     },
 
-    /**
-     * Store the assignment info in the database. If the assignment does not have due, it will be set to -1
+   /** Store the assignment info in the database. If the assignment does not have due, it will be set to -1
      * @param {*} id the id of the assignment
      * @param {*} title the title of the assignment
      * @param {*} media assignment media
@@ -827,10 +903,11 @@ const db = {
             await session.run(query, params);
         } catch (err) {
             console.error(err);
+
         }
         session.close();
     },
-
+  
     /**
      * Set the assignment to new due. If missing the second paramaters, it will be set to -1
      * @param {*} id the id of the assignment
@@ -848,7 +925,7 @@ const db = {
         }
         session.close();
     },
-
+  
     /**
      * Delete the assignment and all related submission
      * @param {*} id the id of the assignment
@@ -865,7 +942,7 @@ const db = {
         }
         session.close();
     },
-
+  
     /**
      * Get all the in-time submission id that related to the assignment
      * @param {*} id the assignment id
@@ -955,7 +1032,7 @@ const db = {
         }
         session.close();
     },
-
+  
     /**
      * Get the grade of the submission
      * @param {*} id the submission id
@@ -975,8 +1052,261 @@ const db = {
         let grade = result.records[0].get('grade');
         session.close();
         return grade;
-    }
+    },
 
+    /**
+     * Create the course in the database and its relation to the instructor
+     * @param {*} name the unique name of the course
+     * @param {*} instructor a set of username of the instructors
+     * @param {*} description description of the course
+     */
+    createCourse: async (name, instructor, description) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `CREATE (c:course {Name: $name, Instructor: $instructor, Description: $description}) 
+                     WITH c, $instructorSet AS instructorSet  
+                     UNWIND instructorSet AS teacher 
+                     MERGE (u:user {Username: teacher})-[:CREATE_COURSE]->(c)`;
+        let params = {"name": name, "instructor": instructor, "description": description, "instructorSet": instructor};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+                  }
+        session.close();
+    },
+  
+    /**
+     * Edit the course description
+     * @param {*} name the name of the course
+     * @param {*} description the new description
+     */
+    editCourse: async (name, description) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (c:course {Name: $name}) 
+                     SET c.Description = $description`;
+        let params = {"name": name, "description": description};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+    },
+
+    /**
+     * Create a ENROL relationship between the user and the course
+     * @param {*} name the name of the course
+     * @param {*} username the name of the user
+     */
+    enrolCourse: async (name, username) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MERGE (:user {Username: $username})-[:ENROL]->(:course {Name: $name})`;
+        let params = {"username": username, "name": name};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+    },
+
+    /**
+     * DELETE the ENROL relationship between the user and the course
+     * @param {*} name the name of the course
+     * @param {*} username the name of the user
+     */
+    dropCourse: async (name, username) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (:user {Username: $username})-[e:ENROL]->(:course {Name: $name}) 
+                     DELETE e`;
+        let params = {"username": username, "name": name};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+    },
+
+    /**
+     * Delete all the module in the course
+     * @param {*} course the name of the course
+     */
+    deleteAllModule: async (course) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (c:course {Name: $course}), 
+                           (c)-[h:HAS_MODULE]->(m:module) 
+                     DELETE h, m`;
+        let params = {"course": course};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+    },
+
+    /**
+     * DELETE the course
+     * @param {*} name the name of the course
+     */
+    deleteCourse: async (name) => {
+        this.deleteAllModule(name);
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (c:course {Name: $name}), 
+                           (:user)-[e:ENROL]->(c),
+                           (:user)-[cc:CREATE_COURSE]->(c) 
+                     DELETE cc, e, c`;
+        let params = {"name": name};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+    },
+
+    /**
+     * Search the course by its name and return an object containing its feature
+     * Null o/w
+     * @param {*} name the name of the course
+     * @returns return an object containing its name, instructor and description
+     */
+    searchCourseByName: async (name) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (c:course {Name: $name}) 
+                     RETURN c`;
+        let params = {"name": name};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        var course;
+        if (result.records.length == 0) {
+            return null;
+        }else {
+            course = {
+                name: result.records[0].get(0).properties.Name,
+                instructor: result.records[0].get(0).properties.Instructor,
+                description: result.records[0].get(0).properties.Description
+            }
+        }
+        session.close();
+        return course;
+    },
+
+    /**
+     * Return a set of courses that the instructor create
+     * @param {*} instructor the username of the instructor
+     * @returns a set of courses that the instructor create
+     */
+    searchCourseByInstructor: async (instructor) => {
+        var courseSet= [];
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (u:user {Username: $instructor})-[:CREATE_COURSE]->(c:course) 
+                     RETURN c.Name AS name`;
+        let params = {"instructor": instructor};
+        let result;
+        try {
+            result = await session.run(query, params);
+            result.records.forEach(record => courseSet.push(record.get("name")));
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+        return courseSet;
+    },
+    
+    /**
+     * Create a module of a course and a relationship between the course and the module
+     * @param {*} course the name of the course
+     * @param {*} id the module id
+     * @param {*} name the name of the id
+     */
+    createModule: async (course, id, name) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (c:course {Name: $courseName}) 
+                     MERGE (c)-[:HAS_MODULE]->(:module {Course: $course, Id: $id, Name: $name})`;
+        let params = {"courseName": course, "course": course, "id": id, "name": name};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+    },
+
+    /**
+     * Get all the modules that the course has. 
+     * Null if the course does not have any modules
+     * @param {*} course the name of the course
+     * @returns a set where each object contains id and name of the module
+     */
+    getAllModules: async (course) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (m:module {Course: $course}), 
+                     RETURN m`;
+        let params = {"course": course};
+        let result;
+        try {
+            result = await session.run(query, params);
+            records = result.records;
+        } catch (err) {
+            console.log(err);
+        }
+        var moduleSet = [];
+        if (records.length == 0) {
+            return null;
+        }else {
+            for (let i = 0; i < records.length; i++) {
+                let module = records[i].get(0);
+                moduleSet.push({
+                    id: module.properties.Id,
+                    name: module.properties.Name
+                })
+            }
+        }
+        session.close();
+        return moduleSet;
+    },
+
+    /**
+     * Edit the module with the new name
+     * @param {*} id the id of the module
+     * @param {*} name the new name of the module
+     */
+    editModule: async (id, name) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (m:module {Id: $id}) 
+                     SET m.Name = $name`;
+        let params = {"id": id, "name": name};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+    },
+
+    /**
+     * Delete the module and any relationship with the module
+     * @param {*} id the id of the module
+     */
+    deleteModule: async (id) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (m:module {Id: $id}), 
+                           (:course)-[h:HAS_MODULE]->(m) 
+                     DELETE h, m`;
+        let params = {"id": id};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+    }
 
 }; 
 
