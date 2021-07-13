@@ -260,8 +260,19 @@ const db = {
     
     }, 
 
-    /*=====================sprint3================*/
-
+    /**
+     * Create the video in the database
+     * @param {*} id the id of the video
+     * @param {*} name the name of the video
+     * @param {*} description the description of the video
+     * @param {*} url the url of the video
+     */
+    createVideo: async (id, name, description, url) => {
+        let sql = `INSERT INTO Video(id, name, description, url)
+        VALUES(?, ?, ?, ?)`; 
+        let data = [id, name, description, url]; 
+        await MySQLConnection.execute(sql, data); 
+    },
     /*====================================================================================*/
     /*These methods are for Neo4j database*/
     /**
