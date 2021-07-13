@@ -30,7 +30,7 @@ router.post('/createPost', async (req, res) => {
     const title = req.body.title;
     const content  = req.body.body; 
     const timestamp = utils.timestamp(); 
-    const postId = 'P' + utils.hash(username + title + timestamp.toString()); 
+    const postId = 'P' + utils.URLSafe(utils.hash(username + title + timestamp.toString())); 
 
     let errCode = 0; 
     if ((errCode = validation.validatePostTitle(title)) !== 0
@@ -69,7 +69,7 @@ router.post('/createComment', async (req, res) => {
 
     const content = req.body.body; 
     const timestamp = utils.timestamp();
-    const replyId = 'C' + utils.hash(username + content.slice(0, 10) + timestamp.toString()); 
+    const replyId = 'C' + utils.URLSafe(utils.hash(username + content.slice(0, 10) + timestamp.toString())); 
     const targetId = req.body.reply_to;
     let type = utils.typeOfId(targetId); 
     if (type === null) {
@@ -216,23 +216,24 @@ router.get('/getPosts', async (req, res) => {
         postId: String
 */
 router.get('/getPostContent', async (req, res) => {
-    let post = db.searchPostById(req.postId);
-    let comments = db.getComments(req.postId);
+    let postId = req.query.post_id; 
+
+    let [postContent, comments] = await Promise.all([db.searchPostById(postId), db.getComments(postId)])
+
     // check if the post exists
-    if(post === null){
+    if(postContent === null){
         res.status(404).json({
             message: 'Post not found'
         });
     }
     // returns the object containing the post contents and all comments
+    // TODO: Order comments and subcomemnts as required in API doc. 
     res.status(200).json({
-        id: req.postId,
-        author: post.author,
-        post: {
-            post_time: post.timestamp,
-            title: post.title,
-            content: post.content
-        },
+        id: postId,
+        author: postContent.author,
+        post_time: postContent.Time,
+        title: postContent.Title,
+        content: postContent.Content,
         comments: comments
     });
 }); 

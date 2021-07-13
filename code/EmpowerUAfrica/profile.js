@@ -5,6 +5,7 @@ const db = require('./db');
 
 const utils = require('./utils');
 const validation = require('./validation');
+const admin = require('./admin'); 
 
 const router = express.Router(); 
 
@@ -40,9 +41,22 @@ router.get('/getUsersAbstract', async (req, res) => {
     if (typeof users === 'string') {
         users = new Array(users);
     }
-
-    let userAbstracts = (await db.getUsersAbstract(users)) || {}; 
-    res.json(userAbstracts); 
+    let isAdminListPromise = (async (users) => {
+        let isAdmin = []; 
+        for (const user of users) {
+            isAdmin[user] = false; 
+        }
+        return isAdmin; 
+    })(users);  // TODO: Replace this with actual query / file read to 
+           // verify whether each user is an admin or not. 
+    let usersAbstractsPromise = db.getUsersAbstract(users); 
+    
+    let [isAdminList, usersAbstract] = await Promise.all([isAdminListPromise, usersAbstractsPromise]);
+    
+    for (const user in usersAbstract) {
+        usersAbstract[user].isAdmin = isAdminList[user]; 
+    }
+    res.json(usersAbstract); 
 });
 
 /* 

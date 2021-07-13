@@ -31,6 +31,7 @@ export class UserAbstract extends Component {
                     <a href={`/profile/${user.username}`} className="user-name" target="/">
                         <span>{user.name}</span>
                     </a>
+                    <span className="user-username">@{user.username}</span>
                     <span className="user-type">{userTypes[user.type]}</span>
                 </div>
                 <div className="ua-grid-3">
@@ -44,13 +45,15 @@ export class UserAbstract extends Component {
 export class UserAbstractSmall extends Component {
     render() {
         let user = this.props.user; 
-        let pfp_url = Utils.getProfilePictureURL(user.username, user.pfp_type);
         if (user === undefined) {
             return (<h2 className="warningMsg">No data given to UserAbstract</h2>)
         }
         return (
             <div className="user-abstract-small">
-
+                <a href={`/profile/${user.username}`} className="user-name-small" target="/">
+                    <p>{user.name}<span className="user-username">@{user.username}</span></p>
+                    
+                </a>
             </div>
         )
     }

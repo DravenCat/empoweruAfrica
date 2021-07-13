@@ -55,6 +55,29 @@ let Utils = {
             default: 
                 return null;
         }
+    },
+    /*
+        params: 
+            - str: String, the string to be cleaned. 
+        returns
+            str after replacing all URL unsafe characters. 
+    */
+    URLSafe: (str) => {
+        let safeStr = '';
+        const URLSafeChars = ['-', '_', '~', ]
+        for (const char of str) {
+            if (!(char >= 'a' && char <= 'z') && 
+                !(char >= 'A' && char <= 'Z') && 
+                !(char >= '0' && char <= '9') && 
+                (URLSafeChars.indexOf(char) === -1)) {
+                
+                safeStr += (char.charCodeAt(0) % 10).toString(); 
+            }
+            else {
+                safeStr += char; 
+            }
+        }
+        return safeStr; 
     }
 
 

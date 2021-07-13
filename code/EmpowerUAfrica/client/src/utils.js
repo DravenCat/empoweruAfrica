@@ -52,6 +52,9 @@ const Utils = {
             console.log(body.message);
             return; 
         }
+        for (const username in body) {
+            body[username].username = username; 
+        }
         return body; 
     }
 }

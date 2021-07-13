@@ -1,11 +1,9 @@
 .user-abstract {
     display: grid;
-    grid-template-columns: 1fr 6fr;
+    grid-template-columns: 1fr 8fr;
+    column-gap: 10px;
 }
 
-.user-abstract > div {
-    /* border: 1px black solid; */
-}
 
 .ua-grid-1 { 
     grid-column: 1;
@@ -37,6 +35,14 @@
     text-decoration: none;
 }
 
+.user-username {
+    padding-left: .25em;
+    color: gray;
+}
+.user-name:hover {
+    color: var(--link-hover-color); 
+}
+
 .user-type {
     margin-left: 20px;
     background-color: rgb(236, 236, 236);
@@ -47,4 +53,28 @@
 
 .user-description {
     color: rgb(128, 128, 128); 
+}
+
+.user-abstract-small {
+    
+}
+
+.user-name-small {
+    font-family: sans-serif;
+    font-size: 1em;
+    color: black;
+    text-decoration: none;
+    vertical-align: middle;
+    align-items: center;
+    height: 1em;
+}
+
+.user-name-small:hover {
+    color: var(--link-hover-color); 
+}
+
+.profile-pic-small {
+    width: 45px;
+    height: 45px;
+    border-radius: 5px;
 }

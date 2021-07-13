@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import './community.css';
 import Post from '../../components/post/post';
 import Utils from '../../../utils';
+import PageSelect from '../../components/pageSelect/pageSelect';
 
 const getPostsURL = '/community/getPosts';
-const getUsersAbstractURL = '/profile/getUsersAbstract'; 
 const postPerPage = 20; 
 
 export default class community extends Component{
@@ -34,9 +34,9 @@ export default class community extends Component{
             })
             return;
         }
-        let posts; 
+        let posts, post_count; 
 
-        posts = await res.json();
+        ({posts, post_count} = await res.json());
         console.log(posts);
 
         if (!res.ok) {
@@ -57,15 +57,15 @@ export default class community extends Component{
         } 
         
         for (const post of posts) {
-            post.authorInfo = usersAbstract[post.author]; 
+            post.authorAbstract = usersAbstract[post.author]; 
         }
-        this.setState({page, posts}); 
+        this.setState({page, posts, post_count}); 
     }
 
     
 
     componentDidMount() {
-        let page = this.props.match.page || 0;
+        let page = this.props.match.params.page || 0;
         this.getPosts(page); 
     }
 
@@ -78,6 +78,8 @@ export default class community extends Component{
                 }
             )
         }
+        let page = this.state.page;
+        let maxPage = Math.floor( this.state.post_count / postPerPage );
         return (
             <div className="community">
 
@@ -87,6 +89,7 @@ export default class community extends Component{
 
                 <div className="grid2">
 
+                    {/* <PageSelect page={page} maxPage={maxPage} baseUrl="/community/"/> */}
                     <div className="grid2-topbar">
                         {/* Community page title */}
                         <h2>Welcome to the community</h2>

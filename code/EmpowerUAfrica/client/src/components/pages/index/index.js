@@ -1,6 +1,5 @@
 import React, { Component } from 'react'; 
 import "./index.css"
-import wallup from '../../../resource/icons/wallup.png'
 
 
 export default class index extends Component {
@@ -25,10 +24,10 @@ export default class index extends Component {
           <h1>Helping Africa’s brightest minds go from idea to MVP to market</h1>
       </div>
 
-      <div class="mainpage-container title-area2">
+      <div className="mainpage-container title-area2">
         
-        <div class="left">Initiatives</div>
-        <div class="middle">
+        <div className="left">Initiatives</div>
+        <div className="middle">
           {/* text content */}
           <p>
             The goal of the African Impact Challenge is to build the Africa we want to see, 
@@ -47,7 +46,7 @@ export default class index extends Component {
             {/* link to africanimpact site */}
             <a id="learnmore" href="https://www.africanimpact.ca/the-african-impact-challenge">Learn More About Africa Impact Chanllenge</a>
         </div>  
-        <div class="right"></div>
+        <div className="right"></div>
         
       </div>
     </div>

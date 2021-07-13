@@ -1,0 +1,79 @@
+.start_to_learn {
+    margin: 0;
+    padding: 1px;
+    box-sizing: border-box;
+    margin-top: 100px;
+}
+
+.clearfix:after,
+.clearfix:before {
+    content: "";
+    display: table;
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+.spliter {
+    margin: 50px auto;
+    background-image: url('../../../resource/icons/background-image.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 500px;
+    width: 100%;
+    padding-left: 30%;
+    padding-top: 50px;
+    text-align: center;
+    perspective: 300px;
+}
+
+.reading,
+.video {
+    background-color: #6ea6f0;
+    float: left;
+    min-height: 200px;
+    width: 300px;
+    font-size: 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 2px 2px gray;
+}
+
+.video {
+    margin-right: 100px;
+    transition: all 0.5s;
+    transition-timing-function: ease-in-out;
+}
+
+.reading {
+    transition: all 0.5s;
+}
+
+.video a {
+    display: inline-block;
+}
+
+.video:hover {
+    transform: translateY(-20px) scale(1.1) rotate(5deg);
+    background-color: #24bd54;
+}
+
+.reading:hover {
+    transform: translateY(-20px) scale(1.1) rotate(5deg);
+    background-color: #24bd54;
+}
+
+.video img,
+.reading img {
+    height: 300px;
+    width: 300px;
+}
+
+.reading a {
+    display: inline-block;
+}

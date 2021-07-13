@@ -4,7 +4,7 @@
   "description": "see README.md",
   "main": "server.js",
   "scripts": {
-    "server": "nodemon server.js",
+    "server": "nodemon --ignore ./client/ server.js",
     "client-install": "cd client && npm install",
     "install-all": "npm install && npm run client-install",
     "client": "cd client && npm start",
