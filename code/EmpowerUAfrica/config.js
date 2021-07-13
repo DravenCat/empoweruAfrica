@@ -29,5 +29,14 @@ module.exports = {
     postBody: {
         minlen: 1,
         maxlen: 8192
+    },
+    deliverableName: {
+        minlen: 1,
+        maxlen: 256
+    },
+    deliverableDesc: {
+        minlen: 1,
+        maxlen: 16384
     }
+
 }

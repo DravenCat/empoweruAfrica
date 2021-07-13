@@ -850,7 +850,22 @@ const db = {
         session.close();
         return usernameSet;       
 
+    },
+
+
+    /**
+     * Create a deliverable 
+     * @param {*} name String
+     * @param {*} description String
+     * @param {*} deliverableId String
+     * @param {*} timestamp String
+     * @param {*} moduleId String
+     */
+    createDeliverable: async (name, description, deliverableId, timestamp, moduleId) =>{
+
     }
+
+
 }; 
 
 module.exports = db; 
