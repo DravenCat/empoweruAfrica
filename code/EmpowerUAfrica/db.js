@@ -411,50 +411,6 @@ const db = {
         return postSet;
     },
 
-
-    /*
-        params:
-            id: String, the id of the post / reply
-            contentType: String, post | reply
-    */
-    getAuthorOfContent: async (id, contentType) => {
-        const session = Neo4jDriver.wrappedSession(); 
-
-        let query;
-        let params = {id};  
-        if (contentType === 'post') {
-            query = `MATCH 
-                        (p:post {id: $id}), 
-                        (u:user)-[:CREATE_POST]->(p)
-                    RETURN 
-                        u.UserName AS username`;
-        }
-        else if (contentType === 'reply') {
-            query = `MATCH 
-                        (r:reply {id: $id}), 
-                        (u:user)-[:CREATE_REPLY]->(r)
-                    RETURN 
-                        u.UserName AS username`;
-        }
-        else {
-            return null; 
-        }
-
-        let result; 
-        try {
-            result = await session.run(query, params).then();
-        } catch (err) {
-            console.error(err);
-        }
-        
-        if (result.records.length === 0) {
-            return null;
-        }
-        const author = result.records[0].get('username');
-        session.close();
-        return author; 
-    },
-
   /**
      * Return the username of the author that makes the reply/post
      * @param {*} id String, the id of the post / reply
@@ -852,17 +808,173 @@ const db = {
 
     },
 
+    /**
+     * Store the assignment info in the database. If the assignment does not have due, it will be set to -1
+     * @param {*} id the id of the assignment
+     * @param {*} title the title of the assignment
+     * @param {*} media assignment media
+     * @param {*} content assignment content
+     * @param {*} posted_timestamp the date when the assignment is posted
+     * @param {*} due_timestamp the date when the assignment will due
+     */
+    createAssignment: async (id, title, media, content, posted_timestamp, due_timestamp = -1) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `CREATE (a:assignment 
+                            {Id: $id, Title: $title, Media: $media, Content: $content, Posted_time: $posted, Due_time: $due})`;
+        let params = {"id": id, "title": title, "media": media, "content": content,
+                      "posted": neo4j.int(posted_timestamp), "due": neo4j.int(due_timestamp)};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.error(err);
+        }
+        session.close();
+    },
 
     /**
-     * Create a deliverable 
-     * @param {*} name String
-     * @param {*} description String
-     * @param {*} deliverableId String
-     * @param {*} timestamp String
-     * @param {*} moduleId String
+     * Set the assignment to new due. If missing the second paramaters, it will be set to -1
+     * @param {*} id the id of the assignment
+     * @param {*} due the new due of the assignment
      */
-    createDeliverable: async (name, description, deliverableId, timestamp, moduleId) =>{
+    setAssignmentDue: async (id, due = -1) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (a:assignment {Id: $id}) 
+                     SET a.Due_time = $due`;
+        let params = {"id": id, "due": neo4j.int(due)};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.error(err);
+        }
+        session.close();
+    },
 
+    /**
+     * Delete the assignment and all related submission
+     * @param {*} id the id of the assignment
+     */
+    deleteAssignment: async (id) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (s:submission)-[:SUBMIT_TO]->(a:assignment {Id: $id}) 
+                     DETACH DELETE s, a`;
+        let params = {"id": id};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.error(err);
+        }
+        session.close();
+    },
+
+    /**
+     * Get all the in-time submission id that related to the assignment
+     * @param {*} id the assignment id
+     * @returns a set that contains all the id of in-time submission
+     */
+    getInTimeSubmission: async (id) => {
+        let submissionSet = [];
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (s:submission)-[:SUBMIT_TO]->(a:assignment {Id: $id}) 
+                     WHERE s.Posted_time <= a.Due_time
+                     RETURN s.Id AS submissionId`;
+        let params = {"id": id};
+        let result;
+        try {
+            result = await session.run(query, params);
+            result.records.forEach(record => submissionSet.push(record.get("submissionId")));
+        } catch (err) {
+            console.error(err);
+        }
+        session.close();
+        return submissionSet;
+    },
+
+    /**
+     * Get all the late submission id that related to the assignment
+     * @param {*} id the assignment id
+     * @returns a set that contains all the id of late submission
+     */
+    getLateSubmission: async (id) => {
+        let submissionSet = [];
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (s:submission)-[:SUBMIT_TO]->(a:assignment {Id: $id}) 
+                     WHERE s.Posted_time > a.Due_time 
+                     RETURN s.Id AS submissionId`;
+        let params = {"id": id};
+        let result;
+        try {
+            result = await session.run(query, params);
+            result.records.forEach(record => submissionSet.push(record.get("submissionId")));
+        } catch (err) {
+            console.error(err);
+        }
+        session.close();
+        return submissionSet;
+    },
+
+    /**
+     * Create a submission, a CREATE_SUBMISSION relationship with the user
+     * and a SUBMIT_TO relationship with the assignment
+     * @param {*} username the username of the user
+     * @param {*} assignmentId the id of the assignment
+     * @param {*} id the unique id of the submission
+     * @param {*} content the content of the submission
+     * @param {*} media the submission media
+     * @param {*} posted_timestamp the date when the assignment is posted
+     */
+    createSubmission: async (username, assignmentId, submissionId, content, media, posted_timestamp) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (u:user {UserName: $username}), (a:assignment {Id: $assignmentId}) 
+                     CREATE (u)-[:CREATE_SUBMISSION]->(s:submission 
+                            {Id: $submissionId, Content: $content, Media: $media, Posted_time: $posted, Grade: -1}) 
+                     CREATE (s)-[:SUBMIT_TO]->(a)`;
+        let params = {"username": username, "assignmentId": assignmentId, "submissionId": submissionId, "content": content, 
+                      "media": media, "posted": neo4j.int(posted_timestamp)};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.error(err);
+        }
+        session.close();
+    },
+
+    /**
+     * Set the grade of the submission to the new grade. If missing the second paramaters, it will be set to 0
+     * @param {*} id the id of the submission
+     * @param {*} grade the grade of the submission
+     */
+    gradeSubmission: async (id, grade = -1) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (s:submission {Id: $id}) 
+                     SET s.Grade = $grade`;
+        let params = {"id": id, "grade": neo4j.int(grade)};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.error(err);
+        }
+        session.close();
+    },
+
+    /**
+     * Get the grade of the submission
+     * @param {*} id the submission id
+     * @returns the grade of the submission
+     */
+    getSubMissionGrade: async (id) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (s:submission {Id: $id}) 
+                     RETURN s.Grade AS grade`;
+        let params = {"id": id};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.error(err);
+        }
+        let grade = result.records[0].get('grade');
+        session.close();
+        return grade;
     }
 
 
