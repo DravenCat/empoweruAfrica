@@ -13,10 +13,12 @@ const router = express.Router();
     Request parameters:
         name: String
         description: String
+        moduleId: String
 */
-router.post('/createPost', async (req, res) => {
+router.post('/createDeliverable', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
+    let moduleId = req.moduleId;
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
@@ -26,8 +28,12 @@ router.post('/createPost', async (req, res) => {
         return;
     }
 
-    // TODO: Check if user is authorized to create a deliverable.
-    //if()
+    if(!admin.isAdmin(username)){
+        res.status(403).json({
+            message: 'You have to be an admin to do this. '
+        });
+        return;
+    }
 
     const name = req.body.name;
     const description  = req.body.description; 
@@ -43,7 +49,11 @@ router.post('/createPost', async (req, res) => {
         return; 
     }
 
-    await db.createDeliverable(name, description, deliverableId, timestamp); 
+    if(getModule(moduleId) === null){
+
+    }
+
+    await db.createDeliverable(name, description, deliverableId, timestamp, moduleId); 
     res.json({
         message: 'Success'
     });
