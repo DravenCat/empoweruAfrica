@@ -273,6 +273,69 @@ const db = {
         let data = [id, name, description, url]; 
         await MySQLConnection.execute(sql, data); 
     },
+
+    /**
+     * Edit the description and url for the video
+     * @param {*} id the id of the video
+     * @param {*} description the new description
+     * @param {*} url the new url
+     */
+    editVideo: async (id, description, url) => {
+        let sql = `UPDATE Video 
+                   SET description = ?, url = ? 
+                   WHERE id = ?`;
+        let data = [id, description, url]; 
+        await MySQLConnection.execute(sql, data); 
+    },
+
+    /**
+     * Delete the video in the table
+     * @param {*} id the id of the video
+     */
+    deleteVideo: async (id) => {
+        let sql = 'DELETE FROM Video WHERE id=?'; 
+        let data = [id]; 
+        await MySQLConnection.execute(sql, data);
+    },
+
+    /**
+     * Create the reading in the database
+     * @param {*} id the id of the reading
+     * @param {*} name the name of the reading
+     * @param {*} description the description of the reading
+     * @param {*} url the url of the reading
+     */
+    createReading: async (id, name, description) => {
+        let sql = `INSERT INTO Reading(id, name, description)
+        VALUES(?, ?, ?, ?)`; 
+        let data = [id, name, description]; 
+        await MySQLConnection.execute(sql, data); 
+    },
+
+    /**
+     * Edit the description and name for the video
+     * @param {*} id the id of the reading
+     * @param {*} name the new name
+     * @param {*} description the new description
+     */
+    editReading: async (id, name, description) => {
+        let sql = `UPDATE Video 
+                   SET name = ?, description = ? 
+                   WHERE id = ?`;
+        let data = [id, name, description]; 
+        await MySQLConnection.execute(sql, data); 
+    },
+  
+    /**
+     * Delete the reading in the table
+     * @param {*} id the id of the reading
+     */
+    deleteReading: async (id) => {
+        let sql = 'DELETE FROM Reading WHERE id=?'; 
+        let data = [id]; 
+        await MySQLConnection.execute(sql, data);
+    },
+
     /*====================================================================================*/
     /*These methods are for Neo4j database*/
     /**
