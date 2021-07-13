@@ -1218,6 +1218,32 @@ const db = {
         session.close();
         return courseSet;
     },
+
+    /**
+     * Return all the course that user enrols in
+     * @param {*} username the username
+     * @returns a set of object that contains name, instructor and description of a course
+     */
+    getEnroledCourse: async (username) => {
+        var courseSet = [];
+        let courseNameSet = [];
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (u:user {Username: $username})-[:ENROL]->(c:course) 
+                     RETURN c.Name AS name`;
+        let params = {"username": username};
+        let result;
+        try {
+            result = await session.run(query, params);
+            result.records.forEach(record => courseNameSet.push(record.get("name")));
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+        for (let i = 0; i < courseNameSet.length; i++) {
+            courseSet.push(this.searchCourseByName(courseNameSet[i]));
+        }
+        return courseSet;
+    },
     
     /**
      * Create a module of a course and a relationship between the course and the module
