@@ -1503,6 +1503,7 @@ const db = {
         session.close();
     },
 
+
     
     /**
      * Delete all the module in the course
@@ -1563,6 +1564,7 @@ const db = {
         };
         return courseContent;
     }
+
 
 }; 
 

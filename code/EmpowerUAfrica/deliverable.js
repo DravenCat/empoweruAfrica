@@ -50,7 +50,9 @@ router.post('/createDeliverable', async (req, res) => {
     }
 
     if(getModule(moduleId) === null){
-
+        res.status(404).json({
+            message: 'Module not found'
+        });
     }
 
     await db.createDeliverable(name, description, deliverableId, timestamp, moduleId); 
