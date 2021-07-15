@@ -64,7 +64,7 @@ router.post('/createDeliverable', async (req, res) => {
         });
     }
 
-    await db.createDeliverable(deliverableId, name, media, description, timestamp, dueDate, moduleId); 
+    await db.createDeliverable(deliverableId, name, description, timestamp, dueDate, moduleId); 
     res.json({
         message: 'Success'
     });

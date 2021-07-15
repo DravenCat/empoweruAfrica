@@ -812,18 +812,17 @@ const db = {
     /** Store the deliverable info in the database. If the deliverable does not have due, it will be set to -1
      * @param {*} id the id of the deliverable
      * @param {*} title the title of the deliverable
-     * @param {*} media deliverable media
      * @param {*} content deliverable content
      * @param {*} posted_timestamp the date when the deliverable is posted
      * @param {*} due_timestamp the date when the deliverable will due
      * @param {*} moduleId the module that the deliverable is under
      */
-    createDeliverable: async (id, title, media, content, posted_timestamp, due_timestamp = -1, moduleId) => {
+    createDeliverable: async (id, title, content, posted_timestamp, due_timestamp = -1, moduleId) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `CREATE (a:deliverable 
-                            {Id: $id, Title: $title, Media: $media, Content: $content, Posted_time: $posted, Due_time: $due})
-                     MERGE (a)-[:HAS_CONTENT]->(m:module {Id: $id})`;
-        let params = {"id": id, "title": title, "media": media, "content": content,
+                            {Id: $id, Title: $title, Content: $content, Posted_time: $posted, Due_time: $due})
+                     MERGE (a)-[:HAS_MODULE]->(m:module {Id: $id})`;
+        let params = {"id": id, "title": title, "content": content,
                       "posted": neo4j.int(posted_timestamp), "due": neo4j.int(due_timestamp), "id": moduleId};
         try {
             await session.run(query, params);
