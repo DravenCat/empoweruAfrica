@@ -1033,11 +1033,16 @@ const db = {
      * @param {*} description the new description
      * @param {*} instructor the new instructor
      */
-    editCourse: async (name, description) => {
+     editCourse: async (name, description, instructor) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (c:course {Name: $name}) 
-                     SET c.Description = $description`;
-        let params = {"name": name, "description": description};
+        let query = `MATCH (:user)-[cc:CREATE_COURSE]->(c:course {Name: $name}) 
+                     DELETE cc 
+                     SET c.Description = $description, 
+                         c.Instructor = $instructor 
+                     WITH c, $instructorSet AS instructorSet 
+                     UNWIND instructorSet AS teacher 
+                     MERGE (u:user {Username: teacher})-[:CREATE_COURSE]->(c)`;
+        let params = {"name": name, "description": description, "instructor": instructor, "instructorSet": instructor};
         try {
             await session.run(query, params);
         } catch (err) {
