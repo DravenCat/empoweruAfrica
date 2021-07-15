@@ -1,79 +1,47 @@
 .start_to_learn {
-    margin: 0;
-    padding: 1px;
-    box-sizing: border-box;
-    margin-top: 100px;
+    padding-top: 150px;
+    min-height: 100%;
+    background: url('../../../resource/images/start_to_learn_bg.jpg');
+    background-position: top center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
-.clearfix:after,
-.clearfix:before {
-    content: "";
+.clearfix:before,
+.clearfix:after {
     display: table;
+    content: "";
 }
 
 .clearfix:after {
     clear: both;
 }
 
-a {
-    text-decoration: none;
+.start_to_learn>div:nth-child(1)>h2{
+    display: inline-block;
+    margin-top: 30px;
+    margin-left: 40px;
+    margin-right: 40px;
+    padding: 8px 12px;
+    border-radius: 10px;
     color: black;
+    background: -webkit-linear-gradient(135deg, #a6db43 0%,#d8c627 50%);
 }
 
-.spliter {
-    margin: 50px auto;
-    background-image: url('../../../resource/icons/background-image.png');
-    background-repeat: no-repeat;
-    background-size: cover;
-    min-height: 500px;
-    width: 100%;
-    padding-left: 30%;
-    padding-top: 50px;
-    text-align: center;
-    perspective: 300px;
-}
-
-.reading,
-.video {
-    background-color: #6ea6f0;
-    float: left;
-    min-height: 200px;
-    width: 300px;
-    font-size: 30px;
-    border-radius: 20px;
-    box-shadow: 0 0 2px 2px gray;
-}
-
-.video {
-    margin-right: 100px;
-    transition: all 0.5s;
-    transition-timing-function: ease-in-out;
-}
-
-.reading {
-    transition: all 0.5s;
-}
-
-.video a {
+.start_to_learn>div:nth-child(1) a{
+    text-decoration: none;
     display: inline-block;
+    color: black;
+    background: yellowgreen;
+    padding: 5px 10px;
+    border-radius: 10px;
+    border: 2px solid #eee;
+    cursor: pointer;
+    transition: all .5s;
 }
 
-.video:hover {
-    transform: translateY(-20px) scale(1.1) rotate(5deg);
-    background-color: #24bd54;
-}
-
-.reading:hover {
-    transform: translateY(-20px) scale(1.1) rotate(5deg);
-    background-color: #24bd54;
-}
-
-.video img,
-.reading img {
-    height: 300px;
-    width: 300px;
-}
-
-.reading a {
-    display: inline-block;
+.start_to_learn>div:nth-child(1) a:hover{
+    background: black;
+    color: white;
 }
