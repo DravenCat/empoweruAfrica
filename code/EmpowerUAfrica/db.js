@@ -988,7 +988,7 @@ const db = {
                      RETURN c`;
         let result;
         try {
-            result = await session.run(query, params);
+            result = await session.run(query);
             let records = result.records;
             for (let i = 0; i < records.length; i++) {
                 let course = records[i].get(0);
@@ -1365,7 +1365,7 @@ const db = {
         let result;
         try {
             result = await session.run(query, params);
-            records = result.records;
+            let records = result.records;
             for (let i = 0; i < records.length; i++) {
                 let assignment = records[i].get(0);
                 assignmentSet.push({
@@ -1397,7 +1397,7 @@ const db = {
         let result;
         try {
             result = await session.run(query, params);
-            records = result.records;
+            let records = result.records;
             for (let i = 0; i < records.length; i++) {
                 let video = records[i].get(0);
                 videoSet.push({
@@ -1428,7 +1428,7 @@ const db = {
         let result;
         try {
             result = await session.run(query, params);
-            records = result.records;
+            let records = result.records;
             for (let i = 0; i < records.length; i++) {
                 let reading = records[i].get(0);
                 readingSet.push({
@@ -1475,7 +1475,7 @@ const db = {
         let result;
         try {
             result = await session.run(query, params);
-            records = result.records;
+            let records = result.records;
         } catch (err) {
             console.log(err);
         }
