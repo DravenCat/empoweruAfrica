@@ -979,6 +979,34 @@ const db = {
     },
 
     /**
+     * Get all courses
+     */
+    getCourses:  async() =>{
+        var courseSet = [];
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (c:course)
+                     RETURN c`;
+        let result;
+        try {
+            result = await session.run(query);
+            let records = result.records;
+            for (let i = 0; i < records.length; i++) {
+                let course = records[i].get(0);
+                courseSet.push({
+                    name: course.properties.Name,
+                    description: course.properties.Description,
+                    instructor: course.properties.Instructor
+                })
+            }
+        } catch (err) {
+            console.log(err);
+        }
+
+        session.close();
+        return courseSet;
+    },
+
+    /**
      * Create the course in the database and its relation to the instructor
      * @param {*} name the unique name of the course
      * @param {*} instructor a set of username of the instructors
@@ -995,7 +1023,7 @@ const db = {
             await session.run(query, params);
         } catch (err) {
             console.log(err);
-                  }
+        }
         session.close();
     },
   
@@ -1003,12 +1031,18 @@ const db = {
      * Edit the course description
      * @param {*} name the name of the course
      * @param {*} description the new description
+     * @param {*} instructor the new instructor
      */
-    editCourse: async (name, description) => {
+     editCourse: async (name, description, instructor) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (c:course {Name: $name}) 
-                     SET c.Description = $description`;
-        let params = {"name": name, "description": description};
+        let query = `MATCH (:user)-[cc:CREATE_COURSE]->(c:course {Name: $name}) 
+                     DELETE cc 
+                     SET c.Description = $description, 
+                         c.Instructor = $instructor 
+                     WITH c, $instructorSet AS instructorSet 
+                     UNWIND instructorSet AS teacher 
+                     MERGE (u:user {Username: teacher})-[:CREATE_COURSE]->(c)`;
+        let params = {"name": name, "description": description, "instructor": instructor, "instructorSet": instructor};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1336,7 +1370,7 @@ const db = {
         let result;
         try {
             result = await session.run(query, params);
-            records = result.records;
+            let records = result.records;
             for (let i = 0; i < records.length; i++) {
                 let assignment = records[i].get(0);
                 assignmentSet.push({
@@ -1368,7 +1402,7 @@ const db = {
         let result;
         try {
             result = await session.run(query, params);
-            records = result.records;
+            let records = result.records;
             for (let i = 0; i < records.length; i++) {
                 let video = records[i].get(0);
                 videoSet.push({
@@ -1399,7 +1433,7 @@ const db = {
         let result;
         try {
             result = await session.run(query, params);
-            records = result.records;
+            let records = result.records;
             for (let i = 0; i < records.length; i++) {
                 let reading = records[i].get(0);
                 readingSet.push({
@@ -1446,7 +1480,7 @@ const db = {
         let result;
         try {
             result = await session.run(query, params);
-            records = result.records;
+            let records = result.records;
         } catch (err) {
             console.log(err);
         }
