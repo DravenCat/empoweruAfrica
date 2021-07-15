@@ -14,6 +14,7 @@ const router = express.Router();
         name: String
         description: String
         moduleId: String
+        dueDate: int
 */
 router.post('/createDeliverable', async (req, res) => {
     let token = req.cookies.token; 
@@ -39,8 +40,16 @@ router.post('/createDeliverable', async (req, res) => {
     const description  = req.body.description; 
     const timestamp = utils.timestamp(); 
     const deliverableId = 'D' + utils.URLSafe(utils.hash(title + timestamp.toString())); 
+    const dueDate = req.dueDate;
 
-    let errCode = 0; 
+    let errCode = 0;
+
+    if(timestamp - dueDate <= 0){
+        res.status(400).json({
+            message: 'Your due date is in the past!'
+        });
+    }
+
     if ((errCode = validation.validateDeliverableName(name)) !== 0
         || (errCode = validation.validateDeliverableDesc(description)) !== 0) {
         res.status(400).json({
@@ -55,12 +64,11 @@ router.post('/createDeliverable', async (req, res) => {
         });
     }
 
-    await db.createDeliverable(name, description, deliverableId, timestamp, moduleId); 
+    await db.createDeliverable(deliverableId, name, media, description, timestamp, dueDate, moduleId); 
     res.json({
         message: 'Success'
     });
 }); 
-
 
 
 
