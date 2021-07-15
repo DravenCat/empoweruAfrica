@@ -35,3 +35,10 @@
     text-decoration: none;
 }
 
+.toggle-expand-btn {
+    border: 0;
+    cursor: pointer;
+    padding: .4em;
+    float: right;
+    background: none;
+}

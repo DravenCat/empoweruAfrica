@@ -51,3 +51,22 @@
   font-weight: bold;
   margin: 0; 
 }
+
+.triangle-down {
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 12px solid cadetblue;
+}
+.triangle-left {
+  width: 0;
+  height: 0;
+  border-top: 7px solid transparent;
+  border-right: 12px solid cadetblue;
+  border-bottom: 7px solid transparent;
+}
+
+.page {
+  min-height: 70%;
+}

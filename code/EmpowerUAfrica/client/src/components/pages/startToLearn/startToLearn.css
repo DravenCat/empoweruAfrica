@@ -1,5 +1,6 @@
 .start_to_learn {
-    margin-top: 150px;
+    padding-top: 150px;
+    min-height: 100%;
 }
 
 .clearfix:before,

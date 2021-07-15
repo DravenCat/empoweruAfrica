@@ -8,6 +8,10 @@
     margin-left: 5%;
     margin-bottom: 20px;
 }
+.courseOverview:hover {
+    box-shadow: 0 0 7px gray;
+    cursor: pointer;
+}
 
 .courseOverview a {
     color: black !important;
@@ -26,8 +30,22 @@
     float: right;
     margin-top: 15px;
     color: #eee;
-    background: rgb(32, 74, 94);
-    padding: 5px 10px;
+    font-weight: bold;
+    padding: .6em 1.2em;
     border-radius: 10px;
     cursor: pointer;
+    z-index: 2;
+    transition: background-color 200ms ease-out;
+    border-style:unset;
+}
+
+.courseOverview div:nth-child(1) button:hover {
+    background-color: black;
+}
+
+.enrol-btn {
+    background-color: rgb(32, 74, 94);
+}
+.drop-btn {
+    background-color: rgb(224, 74, 5);
 }

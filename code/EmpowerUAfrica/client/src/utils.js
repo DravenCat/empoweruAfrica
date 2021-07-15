@@ -56,6 +56,14 @@ const Utils = {
             body[username].username = username; 
         }
         return body; 
+    },
+    trimString(str, maxLen) {
+        return str.length > maxLen? 
+            str.slice(0, maxLen) + '...':
+            str;
+    },
+    getY2bVideoId(url) {
+        
     }
 }
 

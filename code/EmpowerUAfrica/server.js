@@ -7,6 +7,7 @@ const Utils = require('./utils');
 const accountRouter = require('./account');
 const profileRouter = require('./profile');
 const communityRouter = require('./community');
+const learningRouter = require('./learning');
 
 const PORT = 5000; 
 
@@ -63,6 +64,11 @@ app.use((req, res, next) => {
     next();
 }); 
 
+app.use((req, res, next) => {
+    
+    next(); 
+})
+
 app.get("/", (req, res) => {
     res.send('Hello World!');
 });
@@ -70,5 +76,6 @@ app.get("/", (req, res) => {
 app.use('/api/account', accountRouter); 
 app.use('/api/profile', profileRouter); 
 app.use('/api/community', communityRouter); 
+app.use('/api/learning', learningRouter); 
 
 app.listen(PORT, () => console.log(`[server]: Server started on port ${PORT}`)); 
