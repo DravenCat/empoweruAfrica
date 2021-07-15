@@ -979,6 +979,34 @@ const db = {
     },
 
     /**
+     * Get all courses
+     */
+    getCourses:  async() =>{
+        var courseSet = [];
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (c:course)
+                     RETURN c`;
+        let result;
+        try {
+            result = await session.run(query, params);
+            let records = result.records;
+            for (let i = 0; i < records.length; i++) {
+                let course = records[i].get(0);
+                courseSet.push({
+                    name: course.properties.Name,
+                    description: course.properties.Description,
+                    instructor: course.properties.Instructor
+                })
+            }
+        } catch (err) {
+            console.log(err);
+        }
+
+        session.close();
+        return courseSet;
+    },
+
+    /**
      * Create the course in the database and its relation to the instructor
      * @param {*} name the unique name of the course
      * @param {*} instructor a set of username of the instructors
@@ -995,7 +1023,7 @@ const db = {
             await session.run(query, params);
         } catch (err) {
             console.log(err);
-                  }
+        }
         session.close();
     },
   
@@ -1003,6 +1031,7 @@ const db = {
      * Edit the course description
      * @param {*} name the name of the course
      * @param {*} description the new description
+     * @param {*} instructor the new instructor
      */
     editCourse: async (name, description) => {
         let session = Neo4jDriver.wrappedSession();

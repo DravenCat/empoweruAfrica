@@ -158,7 +158,7 @@ router.post('/deleteCourse', async (req, res) => {
         courseName: String
         updates: Object
 */
-router.post('/updateProfile', async (req, res) => {
+router.post('/updateCourse', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
     let courseName = req.courseName;
