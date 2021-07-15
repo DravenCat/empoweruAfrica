@@ -156,13 +156,16 @@ router.post('/deleteCourse', async (req, res) => {
     Request parameters:
         token: String
         courseName: String
-        updates: Object
+        newDescription: String
+        newInstructor: String
 */
 router.post('/updateCourse', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
     let courseName = req.courseName;
     let courseContent = await db.searchCourseByName(courseName);
+    let description = req.newDescription;
+    let instructor = req.newInstructor;
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
@@ -179,11 +182,15 @@ router.post('/updateCourse', async (req, res) => {
         return;
     }
 
-    let updates = req.body.updates; 
+    let abstract = await db.getUserAbstract(instructor);
+    if(abstract === null){
+        res.status(404).json({message: "New instructor does not exist"});
+        return; 
+    }
 
     if(courseContent !== null){
 
-        await db.updateCourse(courseName, updates);
+        await db.editCourse(courseName, description, instructor);
 
         res.status(200).json({message: "Success"});
 
