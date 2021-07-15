@@ -74,18 +74,18 @@ export default class courseModule extends Component{
         return (
             <div className="courseModule page">
                 
-                <div className="course-content-header">
+                <div className="course_content_header">
                     <h1>
                         {courseContent.name}
                     </h1>
-                    <p>
-                        <span>
+                    <div>
+                        <p>
                             Instructor: {courseContent.instructor}
-                        </span><br />
-                        <span>
+                        </p>
+                        <p>
                             {courseContent.description}
-                        </span>
-                    </p>
+                        </p>
+                    </div>
                 </div>
 
                 {

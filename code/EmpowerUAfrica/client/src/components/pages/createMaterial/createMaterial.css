@@ -1,5 +1,6 @@
 .addDeliver {
     display: block;
+    border-radius: 10px;
 }
 
 .addDeliver>div {
@@ -38,6 +39,9 @@
 
 .create-material-footer button {
     font-size: 1.2em;
+    background: -webkit-linear-gradient(135deg, rgb(158, 158, 158), #eee);
+    border-radius: 10px;
+    
 }
 
 #create-material-submit-btn {

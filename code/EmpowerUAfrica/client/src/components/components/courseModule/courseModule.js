@@ -48,7 +48,7 @@ export default class CourseModule extends Component{
                 <div style={{cursor: 'pointer'}}>
                     <div onClick={this.toggleExpand}>
                         <h2>{courseModule.name}</h2>
-                        {/* replace down with a down arrow */}
+
                         <button  className="toggle-expand-btn">
                             <div className={expand===true? 'triangle-left': 'triangle-down'}>
 

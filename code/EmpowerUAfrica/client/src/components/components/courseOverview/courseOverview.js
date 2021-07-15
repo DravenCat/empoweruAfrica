@@ -42,7 +42,7 @@ export default class courseOverview extends Component{
                 </div>
                 <p>Instructor: {course.instructor}</p>
                 <p>{course.description}</p>
-            
+                <span className='mask'></span>
             </div>
         )
         

@@ -2,14 +2,21 @@
     float: left;
     border: 1px solid #eee;
     border-radius: 10px;
-    background: -webkit-linear-gradient(right, rgb(102, 235, 212), rgb(88, 185, 214));
+    background: -webkit-linear-gradient(135deg, #a6db43 0%,#e2cf21 50%);
     min-width: 40%;
     padding: 10px 20px;
     margin-left: 5%;
     margin-bottom: 20px;
+    position: relative;
 }
-.courseOverview:hover {
-    box-shadow: 0 0 7px gray;
+
+.courseOverview:hover .mask{
+    animation-name: courseOverview;
+    animation-duration: 1s;
+}
+
+.courseOverview:hover{
+    box-shadow: 0 0 2px 2px black;
     cursor: pointer;
 }
 
@@ -48,4 +55,28 @@
 }
 .drop-btn {
     background-color: rgb(224, 74, 5);
+}
+
+.mask {
+    position: absolute;
+    display: block;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    border-bottom-right-radius: 50px;
+    border-top-right-radius: 50px;
+    background-color: #fff;
+}
+
+@keyframes courseOverview {
+    from {
+        width: 0;
+        opacity: 1;
+    }
+    to {
+        width: 100%;
+        opacity: 0;
+    }
 }

@@ -31,7 +31,7 @@ export class Reading extends Component {
                     
                     <button  className="toggle-expand-btn">
                         <div className={expand===true? 'triangle-left': 'triangle-down'}>
-
+                            
                         </div>
                     </button>
                     <button onClick={(e) => {window.open(this.props.content.path); e.stopPropagation()}}>Open in new window</button>
