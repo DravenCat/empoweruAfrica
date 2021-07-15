@@ -37,6 +37,14 @@ module.exports = {
     deliverableDesc: {
         minlen: 1,
         maxlen: 16384
-    }
+    },
+    courseName: {
+        minlen: 1,
+        maxlen: 256
+    },
+    courseDesc: {
+        minlen: 1,
+        maxlen: 4096
+    },
 
 }
