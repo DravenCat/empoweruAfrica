@@ -13,7 +13,7 @@ const router = express.Router();
 
 
 /* 
-    Endpoint to create a media
+    Endpoint to create a video
     Request parameters:
         token: String
         moduleId: String
@@ -21,13 +21,13 @@ const router = express.Router();
         description: String
         url: String
 */
-router.post('/createMedia', async (req, res) => {
+router.post('/createVideo', async (req, res) => {
 
     const timestamp = utils.timestamp(); 
     const name = req.name;
     const description = req.description;
     const moduleId = req.moduleId;
-    const mediaId = utils.URLSafe(utils.hash(name + timestamp.toString())); 
+    const videoId = utils.URLSafe(utils.hash(name + timestamp.toString())); 
     const url = req.url;
 
     let token = req.cookies.token;
@@ -49,8 +49,8 @@ router.post('/createMedia', async (req, res) => {
         return;
     }
 
-    await db.createVideo(mediaId, name, description, url, timestamp) ;
-    await db.addContentIntoModule(media, mediaId, moduleId);
+    await db.createVideo(videoId, name, description, url, timestamp) ;
+    await db.addContentIntoModule(video, videoId, moduleId);
     res.json({
         message: 'Success'
     });
