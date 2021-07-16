@@ -156,13 +156,16 @@ router.post('/deleteCourse', async (req, res) => {
     Request parameters:
         token: String
         courseName: String
-        updates: Object
+        newDescription: String
+        newInstructor: String
 */
-router.post('/updateProfile', async (req, res) => {
+router.post('/updateCourse', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
     let courseName = req.courseName;
     let courseContent = await db.searchCourseByName(courseName);
+    let description = req.newDescription;
+    let instructor = req.newInstructor;
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
@@ -179,11 +182,15 @@ router.post('/updateProfile', async (req, res) => {
         return;
     }
 
-    let updates = req.body.updates; 
+    let abstract = await db.getUserAbstract(instructor);
+    if(abstract === null){
+        res.status(404).json({message: "New instructor does not exist"});
+        return; 
+    }
 
     if(courseContent !== null){
 
-        await db.updateCourse(courseName, updates);
+        await db.editCourse(courseName, description, instructor);
 
         res.status(200).json({message: "Success"});
 
@@ -194,5 +201,177 @@ router.post('/updateProfile', async (req, res) => {
     }
 }); 
 
+/* 
+    Endpoint for when the user wants to create a module
+    Request parameters:
+        courseName: String
+        moduleName: String
+        token: String
+*/
+router.put('/createModule', async(req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            message: 'You have to sign in before making a course. '
+        });
+        return;
+    }
+
+    if(!admin.isAdmin(username)){
+        res.status(403).json({
+            message: 'You have to be an admin to do this. '
+        });
+        return;
+    }
+
+    const courseName = req.courseName;
+    const moduleName = req.moduleName;
+    const timestamp = utils.timestamp(); 
+    const moduleId = 'M' + utils.URLSafe(utils.hash(moduleName + timestamp.toString())); 
+
+    // checks if course username exists
+    let course = await db.searchCourseByName(courseName);
+    if(course === null){
+        res.status(404).json({message: "Course does not exist"});
+        return; 
+    }
+
+    let errCode = 0; 
+
+    if ((errCode = validation.validateCourseName(courseName)) !== 0
+        || (errCode = validation.validateModuleName(moduleName)) !== 0) {
+        res.status(400).json({
+            message: validation.errMsgs[errCode]
+        }); 
+        return; 
+    }
+
+    await db.createModule(courseName, moduleId, moduleName); 
+    res.json({
+        message: 'Success'
+    });
+});
+
+/* 
+    Endpoint to update module information
+    Request parameters:
+        token: String
+        moduleId: String
+        newModuleName: String
+*/
+router.post('/editModule', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    let moduleId = req.moduleId;
+    let module = await db.searchModuleById(moduleId);
+    let moduleName = req.newModuleName;
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            mesage: 'You have to sign in before you edit your profile. '
+        });
+        return;
+    }
+
+    if(!admin.isAdmin(username)){
+        res.status(403).json({
+            message: 'You have to be an admin to do this. '
+        });
+        return;
+    }
+
+    if(module !== null){
+        await db.editModule(moduleId, moduleName);
+        res.status(200).json({message: "Success"});
+    }else{
+        res.status(404).json({
+            message: 'Module not found'
+        });
+    }
+}); 
+
+/* 
+    Endpoint for when the user wants to delete a module
+    Request parameters:
+        moduleId: String
+        token: String
+*/
+router.post('/deleteModule', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    let module = await db.searchModuleById(req.moduleId);
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            message: 'You have to sign in before deleting course. '
+        });
+        return;
+    }
+
+    if(!admin.isAdmin(username)){
+        res.status(403).json({
+            message: 'You have to be an admin to do this. '
+        });
+        return;
+    }
+
+    if(module === null){
+        res.status(404).json({
+            message: 'Module not found'
+        });
+    }
+
+    await db.deleteModule(req.moduleId);
+
+    res.json({
+        message: 'success'
+    });
+});
+
+/* 
+    Endpoint for when the user wants to get content of the course
+    Request parameters:
+        courseName: String
+        token: String
+*/
+router.get('/getCourseContent', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    let courseName = req.courseName;
+    let courseContent = await db.searchCourseByName(courseName);
+    let result;
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            message: 'You have to sign in before deleting course. '
+        });
+        return;
+    }
+
+    if(!admin.isAdmin(username)){
+        res.status(403).json({
+            message: 'You have to be an admin to do this. '
+        });
+        return;
+    }
+
+    if(courseContent !== null){
+        result.name = courseContent.name;
+        result.instructor = courseContent.instructor;
+        result.description = courseContent.description;
+        result.module = await db.getAllModules(courseName);
+        res.status(200).json(result);
+    }else{
+        res.status(404).json({
+            message: 'Course not found'
+        });
+    }
+});
 
 module.exports = router; 
