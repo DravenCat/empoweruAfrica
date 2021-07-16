@@ -1639,6 +1639,7 @@ const db = {
 
     /**
 
+
      * Search the module by id and return an object containing its feature
      * Null o/w
      * @param {*} id the id of the module
@@ -1660,6 +1661,7 @@ const db = {
             return null;
         }else {
             module = {
+
                 name: result.records[0].get(0).properties.Name,
                 id: result.records[0].get(0).properties.Id,
                 course: result.records[0].get(0).properties.Course
@@ -1693,7 +1695,6 @@ const db = {
         }
         return result.records.length > 0;
     },
-
     
     /**
      * Delete all the module in the course
