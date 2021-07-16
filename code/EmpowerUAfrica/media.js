@@ -40,11 +40,18 @@ router.post('/createVideo', async (req, res) => {
         return;
     }
 
-    //TODO: Check if user is instructor of course
 
-    if(db.getModule(moduleId) === null){
+    if(db.searchModuleById(moduleId) === null){
         res.status(400).json({
             mesage: 'Module does not exist. '
+        });
+        return;
+    }
+
+    if(!db.checkIsInstructor(moduleId, username)){
+        // The user is not an instructor for this course. 
+        res.status(403).json({
+            mesage: 'You are not an instructor for this course. '
         });
         return;
     }
