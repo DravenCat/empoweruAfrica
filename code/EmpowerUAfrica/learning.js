@@ -346,6 +346,7 @@ router.post('/deleteModule', async (req, res) => {
         courseName: String
         token: String
 */
+/* Error in database function code, duplicate endpoint
 router.get('/getCourseContent', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
@@ -373,7 +374,7 @@ router.get('/getCourseContent', async (req, res) => {
         });
     }
 });
-
+*/
 
 /* 
     Endpoint for when the user wants to enroll in a course
