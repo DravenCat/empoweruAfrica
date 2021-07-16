@@ -40,9 +40,8 @@ router.post('/createVideo', async (req, res) => {
         return;
     }
 
-    //TODO: Check if user is instructor of course
 
-    if(db.getModule(moduleId) === null){
+    if(db.searchModuleById(moduleId) === null){
         res.status(400).json({
             mesage: 'Module does not exist. '
         });
@@ -109,6 +108,7 @@ router.post('/editVideo', async (req, res) => {
     }
 
     await db.editVideo(videoId, name, description, url) ;
+
     res.json({
         message: 'Success'
     });
