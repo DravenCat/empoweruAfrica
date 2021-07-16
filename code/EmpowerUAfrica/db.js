@@ -1053,13 +1053,13 @@ const db = {
     },
 
     /**
-     * Create a ENROL relationship between the user and the course
+     * Create a ENROLL relationship between the user and the course
      * @param {*} name the name of the course
      * @param {*} username the name of the user
      */
-    enrolCourse: async (name, username) => {
+    enrollCourse: async (name, username) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MERGE (:user {Username: $username})-[:ENROL]->(:course {Name: $name})`;
+        let query = `MERGE (:user {Username: $username})-[:ENROLL]->(:course {Name: $name})`;
         let params = {"username": username, "name": name};
         try {
             await session.run(query, params);
@@ -1070,13 +1070,13 @@ const db = {
     },
 
     /**
-     * DELETE the ENROL relationship between the user and the course
+     * DELETE the ENROLL relationship between the user and the course
      * @param {*} name the name of the course
      * @param {*} username the name of the user
      */
     dropCourse: async (name, username) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (:user {Username: $username})-[e:ENROL]->(:course {Name: $name}) 
+        let query = `MATCH (:user {Username: $username})-[e:ENROLL]->(:course {Name: $name}) 
                      DELETE e`;
         let params = {"username": username, "name": name};
         try {
@@ -1149,7 +1149,7 @@ const db = {
         var courseSet = [];
         let courseNameSet = [];
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (u:user {Username: $username})-[:ENROL]->(c:course) 
+        let query = `MATCH (u:user {Username: $username})-[:ENROLL]->(c:course) 
                      RETURN c.Name AS name`;
         let params = {"username": username};
         let result;
@@ -1164,6 +1164,27 @@ const db = {
             courseSet.push(await this.searchCourseByName(courseNameSet[i]));
         }
         return courseSet;
+    },
+
+    /**
+     * Check if a user is enrolled in a course
+     * @param {*} username the username
+     * @param {*} courseName the name of the course
+     * @returns true if enrolled, false otherwise
+     */
+    checkEnrollment: async (username, courseName) => {
+
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (u:user {Username: $username})-[:ENROLL]->(c:course {Name: $courseName}) 
+                     RETURN c.Name AS name`;
+        let params = {"username": username, "courseName": courseName};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        return result.records.length > 0;
     },
     
     /**
@@ -1660,6 +1681,27 @@ const db = {
         }
         return result.records.length > 0;
     },
+
+    /**
+     * Check whether the user is an instructor of the course
+     * @param {*} courseName the name of course
+     * @param {*} instructor the username of the module
+     * @returns true if the user is an instructor
+     *          false if not
+     */
+    checkIsInstructorFromCourse: async (courseName, instructor) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (u:user {Username: $instructor})-[cc:CREATE_COURSE]->(c:course {Name: $courseName}) 
+                     RETURN cc`;
+        let params = {"instructor": instructor, "courseName": courseName};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        return result.records.length > 0;
+    },
     
     /**
      * Delete all the module in the course
@@ -1689,7 +1731,7 @@ const db = {
         await this.deleteAllModule(name);
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (c:course {Name: $name}), 
-                           (:user)-[e:ENROL]->(c),
+                           (:user)-[e:ENROLL]->(c),
                            (:user)-[cc:CREATE_COURSE]->(c) 
                      DELETE cc, e, c`;
         let params = {"name": name};
