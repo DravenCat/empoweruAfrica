@@ -40,7 +40,6 @@ router.post('/createVideo', async (req, res) => {
         return;
     }
 
-
     if(db.searchModuleById(moduleId) === null){
         res.status(400).json({
             mesage: 'Module does not exist. '
@@ -83,8 +82,56 @@ router.post('/editVideo', async (req, res) => {
         });
         return;
     }
+  
+    if(db.getModule(moduleId) === null){
+        res.status(400).json({
+            mesage: 'Module does not exist. '
+        });
+        return;
+    }
 
-    
+    if(!db.checkIsInstructor(moduleId, username)){
+        // The user is not an instructor for this course. 
+        res.status(403).json({
+            mesage: 'You are not an instructor for this course. '
+        });
+        return;
+    }
+
+    if(db.searchVideoById(videoId) === null){
+        res.status(400).json({
+            mesage: 'Video does not exist. '
+        });
+        return;
+    }
+    await db.editVideo(videoId, name, description, url) ;
+    res.json({
+        message: 'Success'
+    });
+}); 
+
+
+/* 
+    Endpoint to create a video
+    Request parameters:
+        token: String
+        videoId: String
+*/
+router.post('/deleteVideo', async (req, res) => {
+
+
+    const videoId = req.videoId;
+
+    let token = req.cookies.token;
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            mesage: 'You have to sign in before you can modify course content. '
+        });
+        return;
+    }
+
     if(db.getModule(moduleId) === null){
         res.status(400).json({
             mesage: 'Module does not exist. '
@@ -107,7 +154,7 @@ router.post('/editVideo', async (req, res) => {
         return;
     }
 
-    await db.editVideo(videoId, name, description, url) ;
+    await db.deleteVideo(videoId);
 
     res.json({
         message: 'Success'

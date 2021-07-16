@@ -1014,34 +1014,6 @@ const db = {
     },
 
     /**
-     * Get all courses
-     */
-    getCourses:  async() =>{
-        var courseSet = [];
-        let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (c:course)
-                     RETURN c`;
-        let result;
-        try {
-            result = await session.run(query);
-            let records = result.records;
-            for (let i = 0; i < records.length; i++) {
-                let course = records[i].get(0);
-                courseSet.push({
-                    name: course.properties.Name,
-                    description: course.properties.Description,
-                    instructor: course.properties.Instructor
-                })
-            }
-        } catch (err) {
-            console.log(err);
-        }
-
-        session.close();
-        return courseSet;
-    },
-
-    /**
      * Create the course in the database and its relation to the instructor
      * @param {*} name the unique name of the course
      * @param {*} instructor a set of username of the instructors
@@ -1058,7 +1030,7 @@ const db = {
             await session.run(query, params);
         } catch (err) {
             console.log(err);
-        }
+                  }
         session.close();
     },
   
@@ -1066,18 +1038,12 @@ const db = {
      * Edit the course description
      * @param {*} name the name of the course
      * @param {*} description the new description
-     * @param {*} instructor the new instructor
      */
-     editCourse: async (name, description, instructor) => {
+    editCourse: async (name, description) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (:user)-[cc:CREATE_COURSE]->(c:course {Name: $name}) 
-                     DELETE cc 
-                     SET c.Description = $description, 
-                         c.Instructor = $instructor 
-                     WITH c, $instructorSet AS instructorSet 
-                     UNWIND instructorSet AS teacher 
-                     MERGE (u:user {Username: teacher})-[:CREATE_COURSE]->(c)`;
-        let params = {"name": name, "description": description, "instructor": instructor, "instructorSet": instructor};
+        let query = `MATCH (c:course {Name: $name}) 
+                     SET c.Description = $description`;
+        let params = {"name": name, "description": description};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1470,7 +1436,7 @@ const db = {
         let result;
         try {
             result = await session.run(query, params);
-            let records = result.records;
+            records = result.records;
             for (let i = 0; i < records.length; i++) {
                 let deliverable = records[i].get(0);
                 deliverableSet.push({
@@ -1502,7 +1468,7 @@ const db = {
         let result;
         try {
             result = await session.run(query, params);
-            let records = result.records;
+            records = result.records;
             for (let i = 0; i < records.length; i++) {
                 let video = records[i].get(0);
                 videoSet.push({
@@ -1533,7 +1499,7 @@ const db = {
         let result;
         try {
             result = await session.run(query, params);
-            let records = result.records;
+            records = result.records;
             for (let i = 0; i < records.length; i++) {
                 let reading = records[i].get(0);
                 readingSet.push({
@@ -1580,7 +1546,7 @@ const db = {
         let result;
         try {
             result = await session.run(query, params);
-            let records = result.records;
+            records = result.records;
         } catch (err) {
             console.log(err);
         }
@@ -1638,14 +1604,13 @@ const db = {
     },
 
     /**
-
-
-     * Search the module by id and return an object containing its feature
+     * Return an object that contains the feature of the module
      * Null o/w
      * @param {*} id the id of the module
-     * @returns return an object containing its id, name and course
+     * @returns an object that contains the course, id and name of a module
      */
-     searchModuleById: async (id) => {
+    searchModuleById: async (id) => {
+
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (m:module {Id: $id}) 
                      RETURN m`;
@@ -1661,17 +1626,17 @@ const db = {
             return null;
         }else {
             module = {
-
-                name: result.records[0].get(0).properties.Name,
+                course: result.records[0].get(0).properties.Course,
                 id: result.records[0].get(0).properties.Id,
-                course: result.records[0].get(0).properties.Course
+                name: result.records[0].get(0).properties.Name,
+
             }
         }
         session.close();
         return module;
     },
 
-
+      
     /**
      * Check whether the user is an instructor of the course
      * @param {*} moduleId the id of the module
@@ -1682,6 +1647,7 @@ const db = {
     checkIsInstructor: async (moduleId, instructor) => {
         let module = await this.searchModuleById(moduleId);
         let courseName = module.course;
+
 
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {Username: $instructor})-[cc:CREATE_COURSE]->(c:course {Name: $courseName}) 
