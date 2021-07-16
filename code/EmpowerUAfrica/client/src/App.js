@@ -21,6 +21,7 @@ import Video from './components/pages/video/video';
 import MyCourses from './components/pages/myCourse/myCourse';
 import CourseContent from './components/pages/courseContent/courseContent';
 import CreateMaterial from './components/pages/createMaterial/createMaterial';
+import AddCourse from './components/pages/addCourse/addCourse';
 
 // import EditProfile from './components/pages/profile_edit/profile_edit'; 
 
@@ -92,6 +93,10 @@ export default function App() {
 
         <Route exact path="/courseModule/add_deliver" key="add-course-content">
           <CreateMaterial/>
+        </Route>
+
+        <Route exact path="/add_course" key="add-course">
+          <AddCourse/>
         </Route>
         
       </Switch>
