@@ -121,15 +121,27 @@ router.post('/deleteVideo', async (req, res) => {
         return;
     }
 
-    //TODO: Check if user is instructor of course
+    if(db.getModule(moduleId) === null){
+        res.status(400).json({
+            mesage: 'Module does not exist. '
+        });
+        return;
+    }
 
-    // TODO: need a database function to get video to check if it exists
-    // if(db.getModule(moduleId) === null){
-    //     res.status(400).json({
-    //         mesage: 'Module does not exist. '
-    //     });
-    //     return;
-    // }
+    if(!db.checkIsInstructor(moduleId, username)){
+        // The user is not an instructor for this course. 
+        res.status(403).json({
+            mesage: 'You are not an instructor for this course. '
+        });
+        return;
+    }
+
+    if(db.searchVideoById(videoId) === null){
+        res.status(400).json({
+            mesage: 'Video does not exist. '
+        });
+        return;
+    }
 
     await db.deleteVideo(videoId);
     res.json({
