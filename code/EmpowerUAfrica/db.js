@@ -866,7 +866,41 @@ const db = {
         }
         session.close();
     },
-  
+    
+    /**
+     * Return a object that contains the feature of the assignmeent
+     * Null o/w
+     * @param {*} id the id of the assignment
+     * @returns an object that contains the id, title, media, content, post_time and due_time
+     */
+    searchAssignmentById: async (id) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (a:assignment {Id: $id}) 
+                     RETURN a`
+        let params = {"id": id};
+        let result;
+        try{
+            result = await session.run(query, params);
+        }catch (err) {
+            console.log(err);
+        }
+        var assignment;
+        if (result.records.length == 0) {
+            return null;
+        }else {
+            assignment = {
+                id: result.records[0].get(0).properties.Id,
+                title: result.records[0].get(0).properties.Title,
+                media: result.records[0].get(0).properties.Media,
+                content: result.records[0].get(0).properties.Content,
+                postTime: result.records[0].get(0).properties.Post_time,
+                dueTime: result.records[0].get(0).properties.Due_time,
+            }
+        }
+        session.close();
+        return assignment;
+    },
+
     /**
      * Get all the in-time submission id that related to the assignment
      * @param {*} id the assignment id
@@ -979,34 +1013,6 @@ const db = {
     },
 
     /**
-     * Get all courses
-     */
-    getCourses:  async() =>{
-        var courseSet = [];
-        let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (c:course)
-                     RETURN c`;
-        let result;
-        try {
-            result = await session.run(query);
-            let records = result.records;
-            for (let i = 0; i < records.length; i++) {
-                let course = records[i].get(0);
-                courseSet.push({
-                    name: course.properties.Name,
-                    description: course.properties.Description,
-                    instructor: course.properties.Instructor
-                })
-            }
-        } catch (err) {
-            console.log(err);
-        }
-
-        session.close();
-        return courseSet;
-    },
-
-    /**
      * Create the course in the database and its relation to the instructor
      * @param {*} name the unique name of the course
      * @param {*} instructor a set of username of the instructors
@@ -1023,7 +1029,7 @@ const db = {
             await session.run(query, params);
         } catch (err) {
             console.log(err);
-        }
+                  }
         session.close();
     },
   
@@ -1031,18 +1037,12 @@ const db = {
      * Edit the course description
      * @param {*} name the name of the course
      * @param {*} description the new description
-     * @param {*} instructor the new instructor
      */
-     editCourse: async (name, description, instructor) => {
+    editCourse: async (name, description) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (:user)-[cc:CREATE_COURSE]->(c:course {Name: $name}) 
-                     DELETE cc 
-                     SET c.Description = $description, 
-                         c.Instructor = $instructor 
-                     WITH c, $instructorSet AS instructorSet 
-                     UNWIND instructorSet AS teacher 
-                     MERGE (u:user {Username: teacher})-[:CREATE_COURSE]->(c)`;
-        let params = {"name": name, "description": description, "instructor": instructor, "instructorSet": instructor};
+        let query = `MATCH (c:course {Name: $name}) 
+                     SET c.Description = $description`;
+        let params = {"name": name, "description": description};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1188,17 +1188,15 @@ const db = {
     /**
      * Edit the description and url for the video
      * @param {*} id the id of the video
-     * @param {*} name the new name
      * @param {*} description the new description
      * @param {*} url the new url
      */
-    editVideo: async (id, name, description, url) => {
+    editVideo: async (id, description, url) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (v:video {Id: $id}) 
                      SET v.Description = $description, 
-                         v.Name = $name
                          v.Url = $url`;
-        let params = {"id": id, "name": name, "description": description, "url": url};
+        let params = {"id": id, "description": description, "url": url};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1223,6 +1221,39 @@ const db = {
             console.log(err);
         }
         session.close();
+    },
+
+    /**
+     * Return a object that contains the feature of the video
+     * Null o/w
+     * @param {*} id the id of the video
+     * @returns an object that contains the id, name, description, url and post-time
+     */
+    searchVideoById: async (id) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (v:video {Id: $id}) 
+                     RETURN v`
+        let params = {"id": id};
+        let result;
+        try{
+            result = await session.run(query, params);
+        }catch (err) {
+            console.log(err);
+        }
+        var video;
+        if (result.records.length == 0) {
+            return null;
+        }else {
+            video = {
+                id: result.records[0].get(0).properties.Id,
+                name: result.records[0].get(0).properties.Name,
+                description: result.records[0].get(0).properties.Description,
+                url: result.records[0].get(0).properties.Url,
+                postTime: result.records[0].get(0).properties.Post_time,
+            }
+        }
+        session.close();
+        return video;
     },
 
     /**
@@ -1281,6 +1312,39 @@ const db = {
             console.log(err);
         }
         session.close();
+    },
+
+    /**
+     * Return a object that contains the feature of the reading
+     * Null o/w
+     * @param {*} id the id of the reading
+     * @returns an object that contains the id, name, description, path and post-time
+     */
+    searchReadingById: async (id) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (r:reading {Id: $id}) 
+                     RETURN r`
+        let params = {"id": id};
+        let result;
+        try{
+            result = await session.run(query, params);
+        }catch (err) {
+            console.log(err);
+        }
+        var reading;
+        if (result.records.length == 0) {
+            return null;
+        }else {
+            reading = {
+                id: result.records[0].get(0).properties.Id,
+                name: result.records[0].get(0).properties.Name,
+                description: result.records[0].get(0).properties.Description,
+                path: result.records[0].get(0).properties.Path,
+                postTime: result.records[0].get(0).properties.Post_time,
+            }
+        }
+        session.close();
+        return reading;
     },
 
     /**
@@ -1372,7 +1436,7 @@ const db = {
         let result;
         try {
             result = await session.run(query, params);
-            let records = result.records;
+            records = result.records;
             for (let i = 0; i < records.length; i++) {
                 let assignment = records[i].get(0);
                 assignmentSet.push({
@@ -1404,7 +1468,7 @@ const db = {
         let result;
         try {
             result = await session.run(query, params);
-            let records = result.records;
+            records = result.records;
             for (let i = 0; i < records.length; i++) {
                 let video = records[i].get(0);
                 videoSet.push({
@@ -1435,7 +1499,7 @@ const db = {
         let result;
         try {
             result = await session.run(query, params);
-            let records = result.records;
+            records = result.records;
             for (let i = 0; i < records.length; i++) {
                 let reading = records[i].get(0);
                 readingSet.push({
@@ -1465,9 +1529,6 @@ const db = {
         moduleContent.push.apply(a, assignmentSet);
         moduleContent.push.apply(a, videoSet);
         moduleContent.push.apply(a, readingSet);
-        if(moduleContent === []){
-            return null;
-        }
         return moduleContent;
     },
 
@@ -1485,7 +1546,7 @@ const db = {
         let result;
         try {
             result = await session.run(query, params);
-            let records = result.records;
+            records = result.records;
         } catch (err) {
             console.log(err);
         }
@@ -1542,7 +1603,60 @@ const db = {
         session.close();
     },
 
+    /**
+     * Return an object that contains the feature of the module
+     * Null o/w
+     * @param {*} id the id of the module
+     * @returns an object that contains the course, id and name of a module
+     */
+    searchModuleById: async (id) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (m:module {Id: $id}) 
+                     RETURN m`;
+        let params = {"id": id};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        var module;
+        if (result.records.length == 0) {
+            return null;
+        }else {
+            module = {
+                course: result.records[0].get(0).properties.Course,
+                id: result.records[0].get(0).properties.Id,
+                name: result.records[0].get(0).properties.Name,
+            }
+        }
+        session.close();
+        return module;
+    },
 
+    /**
+     * Check whether the user is an instructor of the course
+     * @param {*} moduleId the id of the module
+     * @param {*} instructor the username of the module
+     * @returns true if the user is an instructor
+     *          false if not
+     */
+    checkIsInstructor: async (moduleId, instructor) => {
+        let module = await this.searchModuleById(moduleId);
+        let courseName = module.course;
+
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (u:user {Username: $instructor})-[cc:CREATE_COURSE]->(c:course {Name: $courseName}) 
+                     RETURN cc`;
+        let params = {"instructor": instructor, "courseName": courseName};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        return result.records.length > 0;
+    },
     
     /**
      * Delete all the module in the course
