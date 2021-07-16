@@ -44,7 +44,7 @@ router.get('/getUsersAbstract', async (req, res) => {
     let isAdminListPromise = (async (users) => {
         let isAdmin = []; 
         for (const user of users) {
-            isAdmin[user] = false; 
+            isAdmin[user] = admin.isAdmin(user); 
         }
         return isAdmin; 
     })(users);  // TODO: Replace this with actual query / file read to 

@@ -46,6 +46,7 @@ export default class signin extends Component {
         if (res.ok) {
             localStorage.setItem('signedIn', true);
             localStorage.setItem('username', body.username); 
+            localStorage.setItem('abstract', null); 
             window.location.replace('/');
             return; 
         }

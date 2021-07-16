@@ -64,7 +64,7 @@ let Utils = {
     */
     URLSafe: (str) => {
         let safeStr = '';
-        const URLSafeChars = ['-', '_', '~', ]
+        const URLSafeChars = ['-', '_', '~'];
         for (const char of str) {
             if (!(char >= 'a' && char <= 'z') && 
                 !(char >= 'A' && char <= 'Z') && 

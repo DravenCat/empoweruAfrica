@@ -33,7 +33,8 @@ const expectedFields = {
     '/api/community/followPost': ['id', 'follow'],
     '/api/community/deleteContent': ['id'],
     '/api/proifle/getUsersAbstract': ['username'],
-    '/api/community/getPosts': ['post_per_page', 'page_number']
+    '/api/community/getPosts': ['post_per_page', 'page_number'],
+    '/api/learning/createCourse': ['name', 'instructor', 'description']
 };
 
 // parse the request body as json. 

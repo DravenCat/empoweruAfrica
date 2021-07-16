@@ -13,6 +13,7 @@
 .courseOverview:hover .mask{
     animation-name: courseOverview;
     animation-duration: 1s;
+    z-index: 0;
 }
 
 .courseOverview:hover{

@@ -1,6 +1,5 @@
 const express = require('express');
 
-const express = require('express'); 
 const fs = require('fs').promises; 
 
 const db = require('./db'); 
@@ -16,8 +15,10 @@ const router = express.Router();
     Params: None
 */
 router.get('/getCourses', async (req, res) => {
+    let token = req.cookies.token;
+    let username = token === undefined? undefined: await db.getUsernameByToken(token); 
 
-    let results = await db.getCourses();
+    let results = await db.getCourses(username);
     if(results != null){
         res.status(200).json(results);
     }else{
@@ -61,29 +62,27 @@ router.get('/getCourseContent', async (req, res) => {
         description: String
         token: String
 */
-router.course('/createCourse', async (req, res) => {
+router.put('/createCourse', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
         res.status(403).json({
-            message: 'You have to sign in before making a course. '
+            message: 'You have to sign in before creating a course. '
         });
         return;
     }
 
 
-    if(!admin.isAdmin(username)){
+    if(!(await admin.isAdmin(username))){
         res.status(403).json({
             message: 'You have to be an admin to do this. '
         });
         return;
     }
 
-    const courseName = req.courseName;
-    const instructor  = req.instructor;
-    const description = req.description;
+    const { name, instructor, description } = req.body; 
     
     // checks if instructor username exists
     let abstract = await db.getUserAbstract(instructor);
@@ -94,7 +93,7 @@ router.course('/createCourse', async (req, res) => {
 
     let errCode = 0; 
 
-    if ((errCode = validation.validateCourseName(courseName)) !== 0
+    if ((errCode = validation.validateCourseName(name)) !== 0
         || (errCode = validation.validateCourseDesc(description)) !== 0) {
         res.status(400).json({
             message: validation.errMsgs[errCode]
@@ -102,7 +101,11 @@ router.course('/createCourse', async (req, res) => {
         return; 
     }
 
-    await db.createCourse(courseName, instructor, description); 
+    if (await db.createCourse(name, instructor, description) === 1) {
+        res.status(409).json({
+            message: 'Course with such name already exists.'
+        });
+    }
     res.json({
         message: 'Success'
     });
