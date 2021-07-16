@@ -29,9 +29,11 @@ router.post('/createDeliverable', async (req, res) => {
         return;
     }
 
-    if(!admin.isAdmin(username)){
+    const isInstructor = await db.checkIsInstructor(moduleId, username);
+    if(!isInstructor){
+        // The user is not an instructor for this course. 
         res.status(403).json({
-            message: 'You have to be an admin to do this. '
+            mesage: 'You are not an instructor for this course. '
         });
         return;
     }

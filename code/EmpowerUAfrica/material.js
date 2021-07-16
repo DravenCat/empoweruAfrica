@@ -48,8 +48,8 @@ router.post('/createReading', async (req, res) => {
         return;
     }
 
-
-    if(!db.checkIsInstructor(moduleId, username)){
+    const isInstructor = await db.checkIsInstructor(moduleId, username);
+    if(!isInstructor){
         // The user is not an instructor for this course. 
         res.status(403).json({
             mesage: 'You are not an instructor for this course. '
