@@ -1188,15 +1188,17 @@ const db = {
     /**
      * Edit the description and url for the video
      * @param {*} id the id of the video
+     * @param {*} name the new name
      * @param {*} description the new description
      * @param {*} url the new url
      */
-    editVideo: async (id, description, url) => {
+    editVideo: async (id, name, description, url) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (v:video {Id: $id}) 
                      SET v.Description = $description, 
+                         v.Name = $name
                          v.Url = $url`;
-        let params = {"id": id, "description": description, "url": url};
+        let params = {"id": id, "name": name, "description": description, "url": url};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1463,6 +1465,9 @@ const db = {
         moduleContent.push.apply(a, assignmentSet);
         moduleContent.push.apply(a, videoSet);
         moduleContent.push.apply(a, readingSet);
+        if(moduleContent === []){
+            return null;
+        }
         return moduleContent;
     },
 
@@ -1543,7 +1548,7 @@ const db = {
      * Delete all the module in the course
      * @param {*} course the name of the course
      */
-     deleteAllModule: async (course) => {
+    deleteAllModule: async (course) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (c:course {Name: $course}), 
                            (c)-[:HAS_MODULE]->(m:module), 
