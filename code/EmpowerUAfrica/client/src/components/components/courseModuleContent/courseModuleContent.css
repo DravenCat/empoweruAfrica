@@ -1,0 +1,43 @@
+.course-module-content-name {
+    margin: .2em 0;
+}
+
+.course-module-content {
+    cursor: pointer;
+    transition: 200ms;
+}
+
+.course-module-content:hover {
+    background-color: antiquewhite;
+}
+
+.overdue {
+    color: red; 
+}
+
+.video-wrapper {
+    text-align: center;
+}
+
+.course-module-content iframe {
+    margin: 1em auto;
+    width: 80%;
+    height: 60%;
+    box-shadow: 0 0 15px gray;
+    background-color: white;
+}
+
+.course-content-full-description {
+    transition: color 200ms;
+}
+.course-content-full-description:hover {
+    color: gray;
+}
+
+.course-module-content button {
+    border: 0;
+    cursor: pointer;
+    padding: .4em;
+    float: right;
+    background: none;
+}

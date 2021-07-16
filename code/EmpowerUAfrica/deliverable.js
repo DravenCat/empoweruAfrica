@@ -40,6 +40,8 @@ router.post('/createDeliverable', async (req, res) => {
     const description  = req.body.description; 
     const timestamp = utils.timestamp(); 
     const deliverableId = 'D' + utils.URLSafe(utils.hash(name + timestamp.toString())); 
+
+
     const dueDate = req.dueDate;
 
     let errCode = 0;

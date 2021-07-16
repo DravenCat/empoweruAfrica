@@ -1,0 +1,38 @@
+.courseModule {
+    margin-top: 150px;
+    background: url('../../../resource/images/start_to_learn_bg.jpg');
+    background-position: top center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    padding-top: 1px;
+}
+
+.courseModule_create_module {
+    width: 30%;
+    margin: 0 auto;
+}
+
+.courseModule_create_module button{
+    background-color: #d8c627;
+    padding: 5px 10px;
+}
+
+.courseModule_create_module input{
+    border: 2px solid black;
+    padding: 5px 10px;
+    min-width: 50%;
+}
+
+.course_content_header {
+    border: 1px solid black;
+    width: 70%;
+    margin: 50px auto;
+    padding: 10px 20px;
+    background: -webkit-linear-gradient(135deg, #a6db43 0%,#d8c627 50%);
+    border-radius: 10px;
+}
+
+.course_content_header>div>p:nth-child(1) {
+    font-weight: 600;
+}
