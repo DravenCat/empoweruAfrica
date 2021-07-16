@@ -1339,14 +1339,13 @@ const db = {
     },
 
     /**
-     * Delete all the content of a module
+     * Delete all the realationship of content with a module
      * @param {*} moduleId the module id
      */
     deleteAllContent: async (moduleId) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (m:module {Id: $moduleId})-[:HAS_CONTENT]->(o), 
-                           (o)<-[:SUBMIT_TO]-[s:submission]
-                     DETACH DELETE s, o`;
+        let query = `MATCH (m:module {Id: $moduleId})-[hs:HAS_CONTENT]->(o) 
+                     DELETE hs`;
         let params = {"moduleId": moduleId};
         try {
             await session.run(query, params);
@@ -1537,7 +1536,36 @@ const db = {
         session.close();
     },
 
-
+    /**
+     * Search the module by id and return an object containing its feature
+     * Null o/w
+     * @param {*} id the id of the module
+     * @returns return an object containing its id, name and course
+     */
+     searchModuleById: async (id) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (m:module {Id: $id}) 
+                     RETURN m`;
+        let params = {"id": id};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        var module;
+        if (result.records.length == 0) {
+            return null;
+        }else {
+            module = {
+                name: result.records[0].get(0).properties.Name,
+                id: result.records[0].get(0).properties.Id,
+                course: result.records[0].get(0).properties.Course
+            }
+        }
+        session.close();
+        return module;
+    },
     
     /**
      * Delete all the module in the course
