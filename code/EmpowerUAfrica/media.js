@@ -13,30 +13,22 @@ const router = express.Router();
 
 
 /* 
-    Endpoint to create a reading
+    Endpoint to create a media
     Request parameters:
         token: String
         moduleId: String
         name: String
         description: String
-        tag: file
+        url: String
 */
-router.post('/createReading', async (req, res) => {
+router.post('/createMedia', async (req, res) => {
 
     const timestamp = utils.timestamp(); 
     const name = req.name;
     const description = req.description;
     const moduleId = req.moduleId;
-    const readingId = utils.URLSafe(utils.hash(name + timestamp.toString())); 
-
-
-    if (!req.files || Object.keys(req.files).length === 0) {
-        // No file was given in the request
-        res.status(400).json({
-            message: 'No file found in the request body. '
-        });
-        return; 
-    }
+    const mediaId = utils.URLSafe(utils.hash(name + timestamp.toString())); 
+    const url = req.url;
 
     let token = req.cookies.token;
     let username = token === undefined? null: await db.getUsernameByToken(token); 
@@ -57,22 +49,8 @@ router.post('/createReading', async (req, res) => {
         return;
     }
 
-    let newReading = req.files[Object.keys(req.files)[0]]; 
-    let extensionNames = [null, '.pdf', '.txt'];
-    let extension = newReading.name.slice(-3) === 'png'? 2: 1;
-    let path = 'client/public/files/users/' + username + extensionNames[extension];
-    try {
-        await newReading.mv(path); 
-    }
-    catch (err) {
-        console.error(err); 
-        res.status(500).json({
-            message: 'Error when moving the file onto server. '
-        });
-        return; 
-    }
-    await db.createReading(readingId, name, description, path, timestamp) ;
-    await db.addContentIntoModule(reading, readingId, moduleId);
+    await db.createVideo(mediaId, name, description, url, timestamp) ;
+    await db.addContentIntoModule(media, mediaId, moduleId);
     res.json({
         message: 'Success'
     });
