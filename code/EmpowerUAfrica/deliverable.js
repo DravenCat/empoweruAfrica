@@ -62,7 +62,7 @@ router.post('/createDeliverable', async (req, res) => {
         return; 
     }
 
-    if(getModule(moduleId) === null){
+    if(searchModuleById(moduleId) === null){
         res.status(404).json({
             message: 'Module not found'
         });

@@ -1320,7 +1320,7 @@ const db = {
 
     /**
      * Delete the reading
-     * @param {*} id the id of the video
+     * @param {*} id the id of the reading
      */
     deleteReading: async (id) => {
         let session = Neo4jDriver.wrappedSession();
