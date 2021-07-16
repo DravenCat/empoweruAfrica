@@ -47,9 +47,8 @@ router.get('/getCourseContent', async (req, res) => {
     // returns the object containing the course contents and all comments
     res.status(200).json({
         name: courseName,
-        author: courseContent.author,
-        title: courseContent.Title,
-        content: courseContent.Content,
+        instructor: courseContent.instructor,
+        description: courseContent.description
     });
 }); 
 
