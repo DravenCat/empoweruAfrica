@@ -46,5 +46,8 @@ module.exports = {
         minlen: 1,
         maxlen: 4096
     },
-
+    moduleName: {
+        minlen: 1,
+        maxlen: 256
+    },
 }
