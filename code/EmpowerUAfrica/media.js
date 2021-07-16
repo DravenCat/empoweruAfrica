@@ -56,4 +56,47 @@ router.post('/createMedia', async (req, res) => {
     });
 }); 
 
+
+/* 
+    Endpoint to create a video
+    Request parameters:
+        token: String
+        videoId: String
+        name: String
+        description: String
+        url: String
+*/
+router.post('/editVideo', async (req, res) => {
+
+    const name = req.name;
+    const description = req.description;
+    const videoId = req.videoId;
+    const url = req.url;
+
+    let token = req.cookies.token;
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            mesage: 'You have to sign in before you can modify course content. '
+        });
+        return;
+    }
+
+    //TODO: Check if user is instructor of course
+
+    // TODO: need a database function to get video to check if it exists
+    // if(db.getModule(moduleId) === null){
+    //     res.status(400).json({
+    //         mesage: 'Module does not exist. '
+    //     });
+    //     return;
+    // }
+
+    await db.editVideo(videoId, name, description, url) ;
+    res.json({
+        message: 'Success'
+    });
+}); 
+
 module.exports = router; 
