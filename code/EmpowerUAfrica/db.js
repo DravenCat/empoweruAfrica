@@ -809,20 +809,21 @@ const db = {
 
     },
 
-    /** Store the assignment info in the database. If the assignment does not have due, it will be set to -1
-     * @param {*} id the id of the assignment
-     * @param {*} title the title of the assignment
-     * @param {*} media assignment media
-     * @param {*} content assignment content
-     * @param {*} posted_timestamp the date when the assignment is posted
-     * @param {*} due_timestamp the date when the assignment will due
+    /** Store the deliverable info in the database. If the deliverable does not have due, it will be set to -1
+     * @param {*} id the id of the deliverable
+     * @param {*} title the title of the deliverable
+     * @param {*} content deliverable content
+     * @param {*} posted_timestamp the date when the deliverable is posted
+     * @param {*} due_timestamp the date when the deliverable will due
+     * @param {*} moduleId the module that the deliverable is under
      */
-    createAssignment: async (id, title, media, content, posted_timestamp, due_timestamp = -1) => {
+    createDeliverable: async (id, title, content, posted_timestamp, due_timestamp = -1, moduleId) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `CREATE (a:assignment 
-                            {Id: $id, Title: $title, Media: $media, Content: $content, Posted_time: $posted, Due_time: $due})`;
-        let params = {"id": id, "title": title, "media": media, "content": content,
-                      "posted": neo4j.int(posted_timestamp), "due": neo4j.int(due_timestamp)};
+        let query = `CREATE (a:deliverable 
+                            {Id: $id, Title: $title, Content: $content, Posted_time: $posted, Due_time: $due})
+                     MERGE (a)-[:HAS_MODULE]->(m:module {Id: $id})`;
+        let params = {"id": id, "title": title, "content": content,
+                      "posted": neo4j.int(posted_timestamp), "due": neo4j.int(due_timestamp), "id": moduleId};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -833,13 +834,13 @@ const db = {
     },
   
     /**
-     * Set the assignment to new due. If missing the second paramaters, it will be set to -1
-     * @param {*} id the id of the assignment
-     * @param {*} due the new due of the assignment
+     * Set the deliverable to new due. If missing the second paramaters, it will be set to -1
+     * @param {*} id the id of the deliverable
+     * @param {*} due the new due of the deliverable
      */
-    setAssignmentDue: async (id, due = -1) => {
+    setDeliverableDue: async (id, due = -1) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (a:assignment {Id: $id}) 
+        let query = `MATCH (a:deliverable {Id: $id}) 
                      SET a.Due_time = $due`;
         let params = {"id": id, "due": neo4j.int(due)};
         try {
@@ -851,12 +852,12 @@ const db = {
     },
   
     /**
-     * Delete the assignment and all related submission
-     * @param {*} id the id of the assignment
+     * Delete the deliverable and all related submission
+     * @param {*} id the id of the deliverable
      */
-    deleteAssignment: async (id) => {
+    deleteDeliverable: async (id) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (s:submission)-[:SUBMIT_TO]->(a:assignment {Id: $id}) 
+        let query = `MATCH (s:submission)-[:SUBMIT_TO]->(a:deliverable {Id: $id}) 
                      DETACH DELETE s, a`;
         let params = {"id": id};
         try {
@@ -902,14 +903,14 @@ const db = {
     },
 
     /**
-     * Get all the in-time submission id that related to the assignment
-     * @param {*} id the assignment id
+     * Get all the in-time submission id that related to the deliverable
+     * @param {*} id the deliverable id
      * @returns a set that contains all the id of in-time submission
      */
     getInTimeSubmission: async (id) => {
         let submissionSet = [];
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (s:submission)-[:SUBMIT_TO]->(a:assignment {Id: $id}) 
+        let query = `MATCH (s:submission)-[:SUBMIT_TO]->(a:deliverable {Id: $id}) 
                      WHERE s.Posted_time <= a.Due_time
                      RETURN s.Id AS submissionId`;
         let params = {"id": id};
@@ -925,14 +926,14 @@ const db = {
     },
 
     /**
-     * Get all the late submission id that related to the assignment
-     * @param {*} id the assignment id
+     * Get all the late submission id that related to the deliverable
+     * @param {*} id the deliverable id
      * @returns a set that contains all the id of late submission
      */
     getLateSubmission: async (id) => {
         let submissionSet = [];
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (s:submission)-[:SUBMIT_TO]->(a:assignment {Id: $id}) 
+        let query = `MATCH (s:submission)-[:SUBMIT_TO]->(a:deliverable {Id: $id}) 
                      WHERE s.Posted_time > a.Due_time 
                      RETURN s.Id AS submissionId`;
         let params = {"id": id};
@@ -949,21 +950,21 @@ const db = {
 
     /**
      * Create a submission, a CREATE_SUBMISSION relationship with the user
-     * and a SUBMIT_TO relationship with the assignment
+     * and a SUBMIT_TO relationship with the deliverable
      * @param {*} username the username of the user
-     * @param {*} assignmentId the id of the assignment
+     * @param {*} deliverableId the id of the deliverable
      * @param {*} id the unique id of the submission
      * @param {*} content the content of the submission
      * @param {*} media the submission media
-     * @param {*} posted_timestamp the date when the assignment is posted
+     * @param {*} posted_timestamp the date when the deliverable is posted
      */
-    createSubmission: async (username, assignmentId, submissionId, content, media, posted_timestamp) => {
+    createSubmission: async (username, deliverableId, submissionId, content, media, posted_timestamp) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (u:user {UserName: $username}), (a:assignment {Id: $assignmentId}) 
+        let query = `MATCH (u:user {UserName: $username}), (a:deliverable {Id: $deliverableId}) 
                      CREATE (u)-[:CREATE_SUBMISSION]->(s:submission 
                             {Id: $submissionId, Content: $content, Media: $media, Posted_time: $posted, Grade: -1}) 
                      CREATE (s)-[:SUBMIT_TO]->(a)`;
-        let params = {"username": username, "assignmentId": assignmentId, "submissionId": submissionId, "content": content, 
+        let params = {"username": username, "deliverableId": deliverableId, "submissionId": submissionId, "content": content, 
                       "media": media, "posted": neo4j.int(posted_timestamp)};
         try {
             await session.run(query, params);
@@ -1368,7 +1369,7 @@ const db = {
 
     /**
      * Create HAS_CONTENT relationship with an object
-     * @param {*} type type of object (assignment, video or reading)
+     * @param {*} type type of object (deliverable, video or reading)
      * @param {*} objId the id of the object
      * @param {*} moduleId the id of the module
      */
@@ -1387,7 +1388,7 @@ const db = {
 
     /**
      * Delete HAS_CONTENT relationship with an object
-     * @param {*} type type of object (assignment, video or reading)
+     * @param {*} type type of object (deliverable, video or reading)
      * @param {*} objId the id of the object
      * @param {*} moduleId the id of the module
      */
@@ -1405,14 +1406,13 @@ const db = {
     },
 
     /**
-     * Delete all the content of a module
+     * Delete all the realationship of content with a module
      * @param {*} moduleId the module id
      */
     deleteAllContent: async (moduleId) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (m:module {Id: $moduleId})-[:HAS_CONTENT]->(o), 
-                           (o)<-[:SUBMIT_TO]-[s:submission]
-                     DETACH DELETE s, o`;
+        let query = `MATCH (m:module {Id: $moduleId})-[hs:HAS_CONTENT]->(o) 
+                     DELETE hs`;
         let params = {"moduleId": moduleId};
         try {
             await session.run(query, params);
@@ -1423,14 +1423,14 @@ const db = {
     },
 
     /**
-     * Return a set of object that contains all the assignment in the module
+     * Return a set of object that contains all the deliverable in the module
      * @param {*} moduleId the id of the module
-     * @returns a set of object that each object contains assignment title, media, content and due
+     * @returns a set of object that each object contains deliverable title, media, content and due
      */
-    getAllAssignment: async (moduleId) => {
-        var assignmentSet = [];
+    getAllDeliverable: async (moduleId) => {
+        var deliverableSet = [];
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (m:module {Id: $moduleId})-[:HAS_CONTENT]->(a:assignment) 
+        let query = `MATCH (m:module {Id: $moduleId})-[:HAS_CONTENT]->(a:deliverable) 
                      RETURN a`
         let params = {"moduleId": moduleId};
         let result;
@@ -1438,20 +1438,20 @@ const db = {
             result = await session.run(query, params);
             records = result.records;
             for (let i = 0; i < records.length; i++) {
-                let assignment = records[i].get(0);
-                assignmentSet.push({
-                    type: "Assignment",
-                    title: assignment.properties.Title,
-                    media: assignment.properties.Media,
-                    content: assignment.properties.Content,
-                    due: assignment.properties.Due_time
+                let deliverable = records[i].get(0);
+                deliverableSet.push({
+                    type: "Deliverable",
+                    title: deliverable.properties.Title,
+                    media: deliverable.properties.Media,
+                    content: deliverable.properties.Content,
+                    due: deliverable.properties.Due_time
                 })
             }
         } catch (err) {
             console.log(err);
         }
         session.close();
-        return assignmentSet;
+        return deliverableSet;
     },
     
     /**
@@ -1522,11 +1522,11 @@ const db = {
      * @returns a set that contains all the content in the module where each content contains its feature
      */
     getModule: async (moduleId) => {
-        let assignmentSet = await this.getAllAssignment(moduleId);
+        let deliverableSet = await this.getAllDeliverable(moduleId);
         let videoSet = await this.getAllVideo(moduleId);
         let readingSet = await this.getAllReading(moduleId);
         var moduleContent = [];
-        moduleContent.push.apply(a, assignmentSet);
+        moduleContent.push.apply(a, deliverableSet);
         moduleContent.push.apply(a, videoSet);
         moduleContent.push.apply(a, readingSet);
         return moduleContent;
@@ -1610,6 +1610,8 @@ const db = {
      * @returns an object that contains the course, id and name of a module
      */
     searchModuleById: async (id) => {
+
+
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (m:module {Id: $id}) 
                      RETURN m`;
@@ -1628,12 +1630,14 @@ const db = {
                 course: result.records[0].get(0).properties.Course,
                 id: result.records[0].get(0).properties.Id,
                 name: result.records[0].get(0).properties.Name,
+
             }
         }
         session.close();
         return module;
     },
 
+      
     /**
      * Check whether the user is an instructor of the course
      * @param {*} moduleId the id of the module
@@ -1644,7 +1648,6 @@ const db = {
     checkIsInstructor: async (moduleId, instructor) => {
         let module = await this.searchModuleById(moduleId);
         let courseName = module.course;
-
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {Username: $instructor})-[cc:CREATE_COURSE]->(c:course {Name: $courseName}) 
                      RETURN cc`;

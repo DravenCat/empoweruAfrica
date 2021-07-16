@@ -102,6 +102,12 @@ module.exports = {
         }
         return 0;
     },
+    validateModuleName: (title) => {
+        if (title.length < config.moduleName.minlen || title.length > config.moduleName.maxlen) {
+            return 12;
+        }
+        return 0;
+    },
     errMsgs : [
         '',
         `Username should be between ${config.username.minlen} and ${config.username.maxlen} characters.`,
@@ -114,6 +120,7 @@ module.exports = {
         `Deliverable name should be between ${config.deliverableName.minlen} and ${config.deliverableName.maxlen} characters.`,
         `Deliverable description should be between ${config.deliverableDesc.minlen} and ${config.deliverableDesc.maxlen} characters.`,
         `Course name should be between ${config.courseName.minlen} and ${config.courseName.maxlen} characters.`,
-        `Course description should be between ${config.courseDesc.minlen} and ${config.courseDesc.maxlen} characters.`
+        `Course description should be between ${config.courseDesc.minlen} and ${config.courseDesc.maxlen} characters.`,
+        `Module name should be between ${config.moduleName.minlen} and ${config.moduleName.maxlen} characters`
     ]
 }
