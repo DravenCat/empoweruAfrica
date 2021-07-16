@@ -1429,6 +1429,9 @@ const db = {
         moduleContent.push.apply(a, assignmentSet);
         moduleContent.push.apply(a, videoSet);
         moduleContent.push.apply(a, readingSet);
+        if(moduleContent === []){
+            return null;
+        }
         return moduleContent;
     },
 
@@ -1509,7 +1512,7 @@ const db = {
      * Delete all the module in the course
      * @param {*} course the name of the course
      */
-     deleteAllModule: async (course) => {
+    deleteAllModule: async (course) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (c:course {Name: $course}), 
                            (c)-[:HAS_MODULE]->(m:module), 
