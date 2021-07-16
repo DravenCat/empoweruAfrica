@@ -1611,6 +1611,7 @@ const db = {
      */
     searchModuleById: async (id) => {
 
+
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (m:module {Id: $id}) 
                      RETURN m`;
@@ -1647,8 +1648,6 @@ const db = {
     checkIsInstructor: async (moduleId, instructor) => {
         let module = await this.searchModuleById(moduleId);
         let courseName = module.course;
-
-
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {Username: $instructor})-[cc:CREATE_COURSE]->(c:course {Name: $courseName}) 
                      RETURN cc`;
