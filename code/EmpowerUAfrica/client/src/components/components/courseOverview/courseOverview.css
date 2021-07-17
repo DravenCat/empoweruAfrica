@@ -45,6 +45,7 @@
     z-index: 2;
     transition: background-color 200ms ease-out;
     border-style:unset;
+    margin-left: 1em;
 }
 
 .courseOverview div:nth-child(1) button:hover {

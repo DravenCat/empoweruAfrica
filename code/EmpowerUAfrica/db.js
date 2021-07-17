@@ -1599,7 +1599,7 @@ const db = {
      */
     getAllModules: async (course) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (m:module {Course: $course}), 
+        let query = `MATCH (m:module {Course: $course})
                      RETURN m`;
         let params = {"course": course};
         let result;

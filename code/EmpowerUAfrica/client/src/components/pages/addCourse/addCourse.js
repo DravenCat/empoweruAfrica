@@ -8,7 +8,9 @@ const startToLearnURL = '/start_to_learn';
 
 export default class addCourse extends Component{
     state = {
-        error: null
+        error: null,
+        mode: 'create',
+        courseName: null
     }
     discard = () => {
         if (!window.confirm('Discard current input? ')) {
@@ -20,8 +22,19 @@ export default class addCourse extends Component{
         const name = document.getElementById('new-course-name').value;
         const instructor = document.getElementById('new-course-instructor').value;
         const description = document.getElementById('new-course-description').value;
+        const { mode } = this.state; 
+        let method; 
 
         if (name.length === 0 || instructor.length === 0 || description.length === 0) {
+            return; 
+        }
+        if (mode === 'create') {
+            method = 'PUT';
+        }
+        else if (mode === 'edit') {
+            method = 'POST';
+        }
+        else {
             return; 
         }
 
@@ -56,28 +69,56 @@ export default class addCourse extends Component{
             })
         }
     }
+
+    componentDidMount() {
+        let mode;
+        if (this.props.match !== undefined) {
+            mode = 'edit';
+        } else {
+            mode = 'create';
+        }
+        this.setState({mode}); 
+    }
  
     render() {
-
+        let mode; 
+        let courseName = null; 
+        if (this.props.match !== undefined) {
+            mode = 'edit';
+            courseName = this.props.match.params.course_name; 
+        } else {
+            mode = 'create';
+        }
         return (
             <div className="add_course page">
                 <div className='add_course_form'>
-                    <h1>Create New Course</h1><br />
+                    <h1>
+                        {
+                            mode === 'create'? 
+                                <>Create New Course</>:
+                                <>Edit Course</>
+                        }
+                    </h1><br />
                     <span className="warningMsg">{this.state.error}</span>
                     <div>
                         <h2>Name</h2>
-                        <input type='text' id="new-course-name"></input><br />
+                        {
+                            mode === 'create'? 
+                            <input type='text' id="new-course-name"></input>:
+                            <input type='text' id="new-course-name" value={courseName} disabled></input>
+                        }
+                        <br />
                         <span>
                             This will be used as the unique identifier of the course and cannot be changed later. 
                         </span>
                     </div>
-
+                    <hr />
                     <div>
                         <h2>Instructor</h2>
                         <input type='text' id="new-course-instructor"></input><br />
                         <span>Username of the course instructor</span>
                     </div>
-
+                    <hr />
                     <div>
                         <h2>Description</h2>
                         <textarea id="new-course-description">

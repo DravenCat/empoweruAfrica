@@ -57,7 +57,7 @@ export default class startToLearn extends Component{
 
                     {
                         isAdmin? 
-                        <a href='/add_course' style={{marginLeft: '2em'}}>
+                        <a href='/learning/create_course' style={{marginLeft: '2em'}}>
                             Create Course
                         </a>:
                         <></>
