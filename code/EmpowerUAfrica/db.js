@@ -1032,23 +1032,81 @@ const db = {
     },
 
     /**
+
+     * Get all courses
+     * @param {*} username (optional)
+     *      when provided, this function will also return whether the user is enrolled in
+     *      the course or not. 
+     */
+    getCourses:  async(username) =>{
+        var courseSet = [];
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH 
+                        (c:course),
+                        (u:user)-[:TEACH_COURSE]->(c)
+                     RETURN c, u.UserName AS instructor`;
+        let params = {}; 
+        if (username !== undefined) {
+            query = 
+                `MATCH 
+                    (c:course),
+                    (u:user)-[:TEACH_COURSE]->(c)
+                OPTIONAL MATCH 
+                    (s:user {UserName:'test'})-[:ENROLLED_IN]->(c)
+                RETURN c, u.UserName AS instructor, count(s) as enrolled`;
+            params = {username}
+        }
+        let result;
+        try {
+            result = await session.run(query, params);
+            let records = result.records;
+            for (let i = 0; i < records.length; i++) {
+                let course = records[i].get('c');
+                let instructor = records[i].get('instructor');
+                let courseData = {
+                    name: course.properties.Name,
+                    description: course.properties.Description,
+                    instructor
+                }
+                if (username !== undefined) {
+                    let enrolled = records[i].get('enrolled');
+                    if (enrolled !== 0) {
+                        courseData.enrolled = true; 
+                    }
+                }
+                courseSet.push(courseData)
+            }
+        } catch (err) {
+            console.log(err);
+        }
+
+        session.close();
+        return courseSet;
+    },
+
+    /**
      * Create the course in the database and its relation to the instructor
+     * @prereq the instructor must exist, and there are no course with the same name 
+     *      as `name`
+     * 
      * @param {*} name the unique name of the course
      * @param {*} instructor a set of username of the instructors
      * @param {*} description description of the course
      */
     createCourse: async (name, instructor, description) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `CREATE (c:course {Name: $name, Instructor: $instructor, Description: $description}) 
-                     WITH c, $instructorSet AS instructorSet  
-                     UNWIND instructorSet AS teacher 
-                     MERGE (u:user {Username: teacher})-[:CREATE_COURSE]->(c)`;
-        let params = {"name": name, "instructor": instructor, "description": description, "instructorSet": instructor};
+        let query = 
+        `
+        CREATE (i:user {UserName: $instructor})-[:TEACH_COURSE]->(c:course {Name: $name, Description: $description})
+        `
+        let params = {name, instructor, description}; 
+        let res; 
         try {
-            await session.run(query, params);
+            res = await session.run(query, params);
         } catch (err) {
             console.log(err);
-                  }
+
+        }
         session.close();
     },
   
@@ -1062,6 +1120,7 @@ const db = {
         let query = `MATCH (c:course {Name: $name}) 
                      SET c.Description = $description`;
         let params = {"name": name, "description": description};
+
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1071,13 +1130,15 @@ const db = {
     },
 
     /**
-     * Create a ENROLL relationship between the user and the course
+
+     * Create a ENROLLED_IN relationship between the user and the course
      * @param {*} name the name of the course
      * @param {*} username the name of the user
      */
     enrollCourse: async (name, username) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MERGE (:user {Username: $username})-[:ENROLL]->(:course {Name: $name})`;
+        let query = `MERGE (:user {Username: $username})-[:ENROLLED_IN]->(:course {Name: $name})`;
+
         let params = {"username": username, "name": name};
         try {
             await session.run(query, params);
@@ -1088,13 +1149,15 @@ const db = {
     },
 
     /**
-     * DELETE the ENROLL relationship between the user and the course
+
+     * DELETE the ENROLLED_IN relationship between the user and the course
      * @param {*} name the name of the course
      * @param {*} username the name of the user
      */
     dropCourse: async (name, username) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (:user {Username: $username})-[e:ENROLL]->(:course {Name: $name}) 
+        let query = `MATCH (:user {Username: $username})-[e:ENROLLED_IN]->(:course {Name: $name}) 
+
                      DELETE e`;
         let params = {"username": username, "name": name};
         try {
@@ -1144,7 +1207,7 @@ const db = {
     searchCourseByInstructor: async (instructor) => {
         var courseSet= [];
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (u:user {Username: $instructor})-[:CREATE_COURSE]->(c:course) 
+        let query = `MATCH (u:user {Username: $instructor})-[:TEACH_COURSE]->(c:course) 
                      RETURN c.Name AS name`;
         let params = {"instructor": instructor};
         let result;
@@ -1167,7 +1230,7 @@ const db = {
         var courseSet = [];
         let courseNameSet = [];
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (u:user {Username: $username})-[:ENROLL]->(c:course) 
+        let query = `MATCH (u:user {Username: $username})-[:ENROLLED_IN]->(c:course) 
                      RETURN c.Name AS name`;
         let params = {"username": username};
         let result;
@@ -1579,7 +1642,7 @@ const db = {
      */
     getAllModules: async (course) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (m:module {Course: $course}), 
+        let query = `MATCH (m:module {Course: $course})
                      RETURN m`;
         let params = {"course": course};
         let result;
@@ -1688,7 +1751,7 @@ const db = {
         let module = await this.searchModuleById(moduleId);
         let courseName = module.course;
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (u:user {Username: $instructor})-[cc:CREATE_COURSE]->(c:course {Name: $courseName}) 
+        let query = `MATCH (u:user {Username: $instructor})-[cc:TEACH_COURSE]->(c:course {Name: $courseName}) 
                      RETURN cc`;
         let params = {"instructor": instructor, "courseName": courseName};
         let result;
@@ -1749,8 +1812,8 @@ const db = {
         await this.deleteAllModule(name);
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (c:course {Name: $name}), 
-                           (:user)-[e:ENROLL]->(c),
-                           (:user)-[cc:CREATE_COURSE]->(c) 
+                           (:user)-[e:ENROLLED_IN]->(c),
+                           (:user)-[cc:TEACH_COURSE]->(c) 
                      DELETE cc, e, c`;
         let params = {"name": name};
         try {
@@ -1779,6 +1842,21 @@ const db = {
             modules: await this.getAllModules(courseName)
         };
         return courseContent;
+    },
+    courseExists: async (courseName) => {
+        const session = Neo4jDriver.wrappedSession();
+        let query = 
+        `
+        MATCH 
+            (c:course {Name: $courseName})
+        RETURN 
+            count(c) AS exists
+        `
+        let params = {courseName}
+        let result = await session.run(query, params); 
+        let exists = result.records[0].get('exists').low !== 0; 
+        session.close(); 
+        return exists; 
     }
 
 

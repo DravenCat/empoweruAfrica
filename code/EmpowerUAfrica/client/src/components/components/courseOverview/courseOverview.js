@@ -1,9 +1,8 @@
 import React, { Component} from 'react'; 
+import Utils from '../../../utils';
 import './courseOverview.css';
 
-
-
-
+const editCourseURL = '/learning/editCourse'; 
 
 export default class courseOverview extends Component{
 
@@ -19,6 +18,7 @@ export default class courseOverview extends Component{
 
     render() {
         const course = this.props.course; 
+        const isAdmin = Utils.isAdmin(); 
 
         return (
             <div className="courseOverview" onClick={this.gotoCoursePage}>
@@ -38,7 +38,14 @@ export default class courseOverview extends Component{
                             >Enrol
                             </button>
                     }
-                    
+                    {
+                        isAdmin === true? 
+                            <button
+                            className="drop-btn">
+                                Edit
+                            </button>:
+                            null
+                    } 
                 </div>
                 <p>Instructor: {course.instructor}</p>
                 <p>{course.description}</p>

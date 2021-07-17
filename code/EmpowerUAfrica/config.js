@@ -11,7 +11,7 @@ module.exports = {
     username: {
         minlen: 3,
         maxlen: 31,
-        specialChars: ['-', '_', '@', '#']
+        specialChars: ['-', '_', '@']
     },
     email: {
         minlen: 0, 

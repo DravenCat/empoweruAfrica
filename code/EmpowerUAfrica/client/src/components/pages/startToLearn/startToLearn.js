@@ -1,44 +1,33 @@
 import React, { Component} from 'react'; 
 import './startToLearn.css';
 import CourseOverview from '../../components/courseOverview/courseOverview';
+import Utils from '../../../utils'; 
 
 
-
+const getAllCoursesURL = '/learning/getCourses'
 
 export default class startToLearn extends Component{
     state = {
 
     }
     getAllCourses = async () => {
-        let courses = [
-            {
-                "instructor": "Dr. A", 
-                "name": "Introduction to Software Engineering",
-                "description": "This course will teach you how to become a software engineer. ",
-                "enrolled": true
-            }, 
-            {
-                "instructor": "Dr. A", 
-                "name": "Introduction to Web Design",
-                "description": "This course will teach you how to build a website from scratch. "
-            }, 
-            {
-                "instructor": "Dr. A", 
-                "name": "Introduction to software",
-                "description": "This course will teach you how to become a software engineer. ",
-                "enrolled": true
-            }, 
-            {
-                "instructor": "Dr. A", 
-                "name": "Introduction to Software Engineering",
-                "description": "This course will teach you how to become a software engineer. "
-            }, 
-            {
-                "instructor": "Dr. A", 
-                "name": "Introduction to Software Engineering",
-                "description": "This course will teach you how to become a software engineer. "
-            }
-        ]
+        let courses; 
+
+        let res; 
+        try {
+            res = await fetch(
+                getAllCoursesURL,
+                {
+                    method: 'GET'
+                }
+            )
+        }
+        catch (err) {
+            console.error(err); 
+            alert('Internet Failure: Failed to connect to server.');
+        }
+        courses = await res.json(); 
+        console.dir(courses); 
         return courses; 
     
     }
@@ -54,7 +43,7 @@ export default class startToLearn extends Component{
             return <></>
         }
         let courses = this.state.courses.map(course => <CourseOverview course={course} key={course.name}/>);
-
+        const isAdmin = Utils.isAdmin(); 
         return (
             <div className="start_to_learn">
                 
@@ -65,6 +54,15 @@ export default class startToLearn extends Component{
                     <a href='/learning/my_courses'>
                         See my courses
                     </a>
+
+                    {
+                        isAdmin? 
+                        <a href='/learning/create_course' style={{marginLeft: '2em'}}>
+                            Create Course
+                        </a>:
+                        <></>
+                    }
+                    
                 </div>
 
                 <div className='course_enrol clearfix'>

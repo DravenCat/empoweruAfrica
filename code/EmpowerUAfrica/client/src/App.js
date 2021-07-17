@@ -95,8 +95,11 @@ export default function App() {
           <CreateMaterial/>
         </Route>
 
-        <Route exact path="/add_course" key="add-course">
+        <Route exact path="/learning/create_course" key="add-course">
           <AddCourse/>
+        </Route>
+
+        <Route exact path="/learning/edit_course/:course_name" key="edit-course" component={AddCourse}>     
         </Route>
         
       </Switch>
