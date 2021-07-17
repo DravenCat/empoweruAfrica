@@ -1,6 +1,6 @@
 import React, { Component } from 'react'; 
 import './signup.css';
-
+import Utils from '../../../utils';
 
 
 
@@ -93,8 +93,10 @@ export default class signin extends Component {
         if (res.ok) {
             localStorage.setItem('signedIn', true);
             localStorage.setItem('username', username); 
-            localStorage.setItem('abstract', null); 
+
+            await Utils.updateSelfAbstract(); 
             window.location.replace('/');
+
             return; 
         }
         this.setState({error: body.message});

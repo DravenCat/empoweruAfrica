@@ -1,5 +1,4 @@
 .add_course {
-    margin-top: 100px;
     background: url('../../../resource/images/start_to_learn_bg.jpg');
     background-position: top center;
     background-size: cover;
@@ -18,23 +17,23 @@
     box-shadow: 1px 1px 5px 2px gray;
 }
 
-.add_course>div>div:nth-child(-n+2)>h2 {
+.add_course h2 {
     display: inline-block;
     margin-right: 50px;
 }
 
-.add_course>div>div:nth-child(-n+2)>input {
+.add_course input {
     padding: 5px 10px;
     border-radius: 10px;
     outline: none;
     background-color: #eee;
 }
 
-.add_course>div>div:nth-child(-n+2)>input:focus {
+.add_course input:focus {
     box-shadow: 0 0 8px 1px black;
 }
 
-.add_course>div>div:nth-child(3)>textarea {
+.add_course textarea {
     height: 300px;
     width: 100%;
     resize: none;
@@ -42,20 +41,21 @@
     outline: none;
 }
 
-.add_course>div>div:nth-child(3)>textarea:focus {
+.add_course textarea:focus {
     box-shadow: 0 0 8px 1px black;
 }
 
-.add_course>div>div:nth-child(4)>div {
+
+.create-course-footer>div {
     position: relative;
 }
 
-.add_course>div>div:nth-child(4)>div button .mask{
+.create-course-footer>div button .mask{
     animation-name: courseOverview;
     animation-duration: 1s;
 }
 
-.add_course>div>div:nth-child(4)>button {
+.create-course-footer>button {
     position: relative;
     margin-top: 20px;
     padding: 0 10px;
@@ -64,16 +64,16 @@
     cursor: pointer;
 }
 
-.add_course>div>div:nth-child(4)>button:hover {
+.create-course-footer>button:hover {
     box-shadow: 0 0 8px 1px black;
 }
 
-.add_course>div>div:nth-child(4)>button:hover .add_course_mask {
+.create-course-footer>button:hover .add_course_mask {
     animation-name: addCourse;
     animation-duration: 1s;
 }
 
-.add_course_form>div:nth-child(4)>button:nth-child(2) {
+.create-course-footer>button:nth-child(2) {
     float: right;
 }
 

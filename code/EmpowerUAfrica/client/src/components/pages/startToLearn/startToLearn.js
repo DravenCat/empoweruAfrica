@@ -1,6 +1,7 @@
 import React, { Component} from 'react'; 
 import './startToLearn.css';
 import CourseOverview from '../../components/courseOverview/courseOverview';
+import Utils from '../../../utils'; 
 
 
 const getAllCoursesURL = '/learning/getCourses'
@@ -42,7 +43,7 @@ export default class startToLearn extends Component{
             return <></>
         }
         let courses = this.state.courses.map(course => <CourseOverview course={course} key={course.name}/>);
-
+        const isAdmin = Utils.isAdmin(); 
         return (
             <div className="start_to_learn">
                 
@@ -53,9 +54,15 @@ export default class startToLearn extends Component{
                     <a href='/learning/my_courses'>
                         See my courses
                     </a>
-                    <a href='/learning/my_courses'>
-                        See my courses
-                    </a>
+
+                    {
+                        isAdmin? 
+                        <a href='/add_course' style={{marginLeft: '2em'}}>
+                            Create Course
+                        </a>:
+                        <></>
+                    }
+                    
                 </div>
 
                 <div className='course_enrol clearfix'>

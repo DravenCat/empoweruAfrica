@@ -1,6 +1,7 @@
 import React, { Component } from 'react'; 
 import Loading from '../../components/loading/loading'; 
 import Tag from '../../components/tag/tag';
+import Utils from '../../../utils';
 import "./profile.css"
 
 
@@ -232,6 +233,7 @@ export default class profile extends Component {
     if (promises.length !== 0) {
       await Promise.all(promises); 
     }
+    await Utils.updateSelfAbstract(); 
 
   }
 

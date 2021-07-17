@@ -1023,8 +1023,10 @@ const db = {
     getCourses:  async(username) =>{
         var courseSet = [];
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (c:course)
-                     RETURN c`;
+        let query = `MATCH 
+                        (c:course),
+                        (u:user)-[:TEACH_COURSE]->(c)
+                     RETURN c, u.UserName AS instructor`;
         let params = {}; 
         if (username !== undefined) {
             query = 
@@ -1066,28 +1068,18 @@ const db = {
 
     /**
      * Create the course in the database and its relation to the instructor
-     * @prereq the instructor must exist. 
+     * @prereq the instructor must exist, and there are no course with the same name 
+     *      as `name`
      * 
      * @param {*} name the unique name of the course
      * @param {*} instructor a set of username of the instructors
      * @param {*} description description of the course
-     * 
-     * @returns {*} 
-     *      0 on success
-     *      1 if course with such name already exists. 
      */
     createCourse: async (name, instructor, description) => {
         let session = Neo4jDriver.wrappedSession();
         let query = 
         `
-        OPTIONAL MATCH 
-            (e:course {Name: $name})
-        MATCH
-            (u:user {UserName: $instructor})
-        MERGE
-            (u)-[:TEACH_COURSE]->(c:course {Name: $name, Description: $description})
-        RETURN 
-            count(e) AS already_exists
+        CREATE (i:user {UserName: $instructor})-[:TEACH_COURSE]->(c:course {Name: $name, Description: $description})
         `
         let params = {name, instructor, description}; 
         let res; 
@@ -1097,9 +1089,7 @@ const db = {
             console.log(err);
 
         }
-        const errCode = res.records[0].get('already_exists').low; 
         session.close();
-        return errCode === 0? 0: 1; 
     },
   
     /**
@@ -1718,7 +1708,7 @@ const db = {
         let module = await this.searchModuleById(moduleId);
         let courseName = module.course;
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (u:user {Username: $instructor})-[cc:CREATE_COURSE]->(c:course {Name: $courseName}) 
+        let query = `MATCH (u:user {Username: $instructor})-[cc:TEACH_COURSE]->(c:course {Name: $courseName}) 
                      RETURN cc`;
         let params = {"instructor": instructor, "courseName": courseName};
         let result;
@@ -1788,6 +1778,21 @@ const db = {
             modules: await this.getAllModules(courseName)
         };
         return courseContent;
+    },
+    courseExists: async (courseName) => {
+        const session = Neo4jDriver.wrappedSession();
+        let query = 
+        `
+        MATCH 
+            (c:course {Name: $courseName})
+        RETURN 
+            count(c) AS exists
+        `
+        let params = {courseName}
+        let result = await session.run(query, params); 
+        let exists = result.records[0].get('exists').low !== 0; 
+        session.close(); 
+        return exists; 
     }
 
 

@@ -57,6 +57,24 @@ const Utils = {
         }
         return body; 
     },
+    updateSelfAbstract: async () =>  {
+        if (localStorage.getItem('signedIn') !== 'true') {
+            return null; 
+        }
+        const username = localStorage.getItem('username'); 
+        const selfAbstract = (await Utils.getUsersAbstract([username]))[username]; 
+        localStorage.setItem('abstract', JSON.stringify(selfAbstract)); 
+    },
+    isAdmin() {
+        if (localStorage.getItem('signedIn') !== 'true') {
+            return false; 
+        }
+        if (JSON.parse(localStorage.getItem('abstract')).isAdmin === true ) {
+            return true; 
+        }
+        return false; 
+    }
+    ,
     trimString(str, maxLen) {
         return str.length > maxLen? 
             str.slice(0, maxLen) + '...':

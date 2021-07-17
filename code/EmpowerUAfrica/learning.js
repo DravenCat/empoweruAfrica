@@ -83,11 +83,19 @@ router.put('/createCourse', async (req, res) => {
     }
 
     const { name, instructor, description } = req.body; 
-    
-    // checks if instructor username exists
-    let abstract = await db.getUserAbstract(instructor);
-    if(abstract === null){
+
+    let courseExistPromise = db.courseExists(name);
+    let instructorAbstractPromise = db.getUserAbstract(instructor); 
+    const [courseExists, instructorAbstract] = await Promise.all([courseExistPromise, instructorAbstractPromise]);
+
+    if (instructorAbstract === null){
         res.status(404).json({message: "Instructor does not exist"});
+        return; 
+    }
+    if (courseExists) {
+        res.status(409).json({
+            message: 'Course with such name already exists.'
+        });
         return; 
     }
 
@@ -101,11 +109,7 @@ router.put('/createCourse', async (req, res) => {
         return; 
     }
 
-    if (await db.createCourse(name, instructor, description) === 1) {
-        res.status(409).json({
-            message: 'Course with such name already exists.'
-        });
-    }
+    await db.createCourse(name, instructor, description)
     res.json({
         message: 'Success'
     });

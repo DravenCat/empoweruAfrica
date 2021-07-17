@@ -4,9 +4,11 @@ import chat from '../../../resource/icons/chat.png'
 import bell from '../../../resource/icons/bell.png'
 import profile from '../../../resource/icons/profile.png'
 
+const getUsersAbstractURL = '/profile/getUsersAbstract'; 
+
 export default class header extends Component {
 
-    componentDidMount() {
+    async componentDidMount() {
         document.title = "EmpowerU Africa";
     }
 
@@ -18,6 +20,7 @@ export default class header extends Component {
             if (res.status === 200) {
                 localStorage.setItem('signedIn', false); 
                 localStorage.setItem('username', null);
+                localStorage.setItem('abstract', null); 
                 window.location.reload(); 
             }
         })
