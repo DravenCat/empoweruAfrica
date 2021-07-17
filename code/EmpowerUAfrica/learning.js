@@ -28,30 +28,6 @@ router.get('/getCourses', async (req, res) => {
 
 });
 
-/* 
-    Endpoint for when the user wants to get all contents of a course and all comments for the course
-    Request parameters:
-        courseName: String
-*/
-router.get('/getCourseContent', async (req, res) => {
-    let courseName = req.query.course_name; 
-
-    let courseContent = await db.searchCourseByName(courseName);
-
-    // check if the course exists
-    if(courseContent === null){
-        res.status(404).json({
-            message: 'Course not found'
-        });
-    }
-    // returns the object containing the course contents and all comments
-    res.status(200).json({
-        name: courseName,
-        instructor: courseContent.instructor,
-        description: courseContent.description
-    });
-}); 
-
 
 /* 
     Endpoint for when the user wants to create a course
@@ -346,7 +322,6 @@ router.post('/deleteModule', async (req, res) => {
         courseName: String
         token: String
 */
-/* Error in database function code, duplicate endpoint
 router.get('/getCourseContent', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
@@ -357,7 +332,7 @@ router.get('/getCourseContent', async (req, res) => {
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
         res.status(403).json({
-            message: 'You have to sign in before deleting course. '
+            message: 'You have to sign in before getting course content. '
         });
         return;
     }
@@ -374,7 +349,7 @@ router.get('/getCourseContent', async (req, res) => {
         });
     }
 });
-*/
+
 
 /* 
     Endpoint for when the user wants to enroll in a course
