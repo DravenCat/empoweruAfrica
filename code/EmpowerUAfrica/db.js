@@ -832,6 +832,26 @@ const db = {
         }
         session.close();
     },
+
+    /**
+     * Set the deliverable to new due. If missing the second paramaters, it will be set to -1
+     * @param {*} id the id of the deliverable
+     * @param {*} title the title of the deliverable
+     * @param {*} description the new description
+     */
+    editDeliverable: async (id, title, description) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (a:deliverable {Id: $id}) 
+                     SET a.Title = $title, 
+                         a.Content = $content`;
+        let params = {"id": id, "title": title, "content": description};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.error(err);
+        }
+        session.close();
+    },
   
     /**
      * Set the deliverable to new due. If missing the second paramaters, it will be set to -1
