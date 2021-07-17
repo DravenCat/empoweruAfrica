@@ -871,12 +871,12 @@ const db = {
     /**
      * Return a object that contains the feature of the assignmeent
      * Null o/w
-     * @param {*} id the id of the assignment
+     * @param {*} id the id of the deliverable
      * @returns an object that contains the id, title, media, content, post_time and due_time
      */
-    searchAssignmentById: async (id) => {
+    searchDeliverableById: async (id) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (a:assignment {Id: $id}) 
+        let query = `MATCH (a:deliverable {Id: $id}) 
                      RETURN a`
         let params = {"id": id};
         let result;
@@ -885,11 +885,11 @@ const db = {
         }catch (err) {
             console.log(err);
         }
-        var assignment;
+        var deliverable;
         if (result.records.length == 0) {
             return null;
         }else {
-            assignment = {
+            deliverable = {
                 id: result.records[0].get(0).properties.Id,
                 title: result.records[0].get(0).properties.Title,
                 media: result.records[0].get(0).properties.Media,
@@ -899,7 +899,7 @@ const db = {
             }
         }
         session.close();
-        return assignment;
+        return deliverable;
     },
 
     /**
