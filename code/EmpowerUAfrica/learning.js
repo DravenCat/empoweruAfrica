@@ -17,8 +17,9 @@ const router = express.Router();
 router.get('/getCourses', async (req, res) => {
     let token = req.cookies.token;
     let username = token === undefined? undefined: await db.getUsernameByToken(token); 
+    let searchCriteria = req.query; 
 
-    let results = await db.getCourses(username);
+    let results = await db.searchCourses(username, searchCriteria);
     if(results != null){
         res.status(200).json(results);
     }else{
@@ -144,43 +145,56 @@ router.post('/deleteCourse', async (req, res) => {
 router.post('/updateCourse', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let courseName = req.courseName;
-    let courseContent = await db.searchCourseByName(courseName);
-    let description = req.newDescription;
-    let instructor = req.newInstructor;
+    let { name, instructor, description} = req.body; 
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
         res.status(403).json({
-            mesage: 'You have to sign in before you edit your profile. '
+            mesage: 'Please sign in first.'
         });
         return;
     }
 
     if(!admin.isAdmin(username)){
         res.status(403).json({
-            message: 'You have to be an admin to do this. '
+            message: 'You have to be an admin to do this.'
         });
         return;
     }
-
-    let abstract = await db.getUserAbstract(instructor);
-    if(abstract === null){
-        res.status(404).json({message: "New instructor does not exist"});
-        return; 
+    
+    let promises = [db.courseExists(name)];
+    // If the request specifies a new instructor, verify the new insturctor exists. 
+    if (instructor !== null) {
+        promises.push(
+            (async () => (await db.getUserAbstract(instructor)) !== null)()
+        ); 
     }
+    let [courseExists, instructorExists] = await Promise.all(promises); 
 
-    if(courseContent !== null){
-
-        await db.editCourse(courseName, description, instructor);
-
-        res.status(200).json({message: "Success"});
-
-    }else{
+    if (courseExists === false) {
         res.status(404).json({
             message: 'Course not found'
         });
+        return;
     }
+    if (instructorExists === false) {
+        res.status(404).json({
+            message: "Instructor does not exist"
+        });
+        return; 
+    }
+
+    // Validate new description
+    let errCode;
+    if ((errCode = validation.validateCourseDesc(description)) !== 0) {
+        res.status(400).json({
+            message: validation.errMsgs[errCode]
+        }); 
+        return; 
+    }
+
+    await db.editCourse(name, description, instructor);
+    res.status(200).json({message: "Success"});
 }); 
 
 /* 
@@ -322,6 +336,7 @@ router.post('/deleteModule', async (req, res) => {
         message: 'success'
     });
 });
+
 
 /* 
     Endpoint for when the user wants to get content of the course

@@ -3,14 +3,17 @@ import React, { Component} from 'react';
 import './addCourse.css';
 
 const createCourseURL = '/learning/createCourse'; 
+const editCourseURL = '/learning/updateCourse';
+const getCoursesURL = '/learning/getCourses';
 const startToLearnURL = '/start_to_learn';
 
 
 export default class addCourse extends Component{
     state = {
         error: null,
-        mode: 'create',
-        courseName: null
+        mode: null,
+        courseName: null,
+        courseAbstract: null
     }
     discard = () => {
         if (!window.confirm('Discard current input? ')) {
@@ -23,16 +26,34 @@ export default class addCourse extends Component{
         const instructor = document.getElementById('new-course-instructor').value;
         const description = document.getElementById('new-course-description').value;
         const { mode } = this.state; 
-        let method; 
+        let method, url, reqBody; 
 
         if (name.length === 0 || instructor.length === 0 || description.length === 0) {
             return; 
         }
+        reqBody = {
+            name,
+            instructor,
+            description
+        }
         if (mode === 'create') {
             method = 'PUT';
+            url = createCourseURL; 
         }
         else if (mode === 'edit') {
             method = 'POST';
+            url = editCourseURL; 
+            // Remove all unchanged properties from request body. 
+            for (const key in reqBody) {
+                if (this.state[key] === reqBody[key]) {
+                    delete reqBody[key]; 
+                }
+            }
+            // If nothing was changed, do not send the request. 
+            if (Object.keys(reqBody).length === 0) {
+                window.location.href = startToLearnURL;
+                return; 
+            }
         }
         else {
             return; 
@@ -41,14 +62,10 @@ export default class addCourse extends Component{
         let res;
         try {
             res = await fetch(
-                createCourseURL,
+                url,
                 {
-                    method: 'PUT',
-                    body: JSON.stringify({
-                        name,
-                        instructor,
-                        description
-                    }),
+                    method,
+                    body: JSON.stringify(reqBody),
                     headers: {
                         'Content-Type': 'application/json'
                     }
@@ -70,25 +87,59 @@ export default class addCourse extends Component{
         }
     }
 
-    componentDidMount() {
-        let mode;
-        if (this.props.match !== undefined) {
-            mode = 'edit';
-        } else {
-            mode = 'create';
+    getCourseAbstract = async (courseName) => {
+        let res; 
+        try {
+            res = await fetch(
+                `${getCoursesURL}?name_equals=${courseName}`,
+                {
+                    method: 'GET'
+                }
+            )
         }
-        this.setState({mode}); 
+        catch (err) {
+            console.error(err); 
+            this.setState({error: 'Internet Failure'}); 
+            return null; 
+        }
+        let body = await res.json();
+        if (res.ok) {
+            if (body.length === 0) {
+                this.setState({
+                    error: 'Course Not Found. '
+                }); 
+                return null; 
+            }
+            return body[0]; 
+        }
+        else {
+            this.setState({
+                error: body.message
+            })
+        }
     }
- 
-    render() {
-        let mode; 
-        let courseName = null; 
+
+    async componentDidMount() {
+        let mode;
+        let courseName; 
+        let courseAbstract; 
         if (this.props.match !== undefined) {
             mode = 'edit';
             courseName = this.props.match.params.course_name; 
+            courseAbstract = await this.getCourseAbstract(courseName);
         } else {
             mode = 'create';
         }
+        this.setState({mode, courseName, courseAbstract}); 
+    }
+ 
+    render() {
+
+        let { mode, courseName, courseAbstract } = this.state; 
+        if (mode === null) {
+            return (<div className="page"></div>);
+        }
+
         return (
             <div className="add_course page">
                 <div className='add_course_form'>
@@ -115,13 +166,18 @@ export default class addCourse extends Component{
                     <hr />
                     <div>
                         <h2>Instructor</h2>
-                        <input type='text' id="new-course-instructor"></input><br />
+                        <input 
+                        type='text' 
+                        id="new-course-instructor"
+                        defaultValue={mode === 'create'? '': courseAbstract.instructor}></input><br />
                         <span>Username of the course instructor</span>
                     </div>
                     <hr />
                     <div>
                         <h2>Description</h2>
-                        <textarea id="new-course-description">
+                        <textarea 
+                        id="new-course-description"
+                        defaultValue={mode === 'create'? '': courseAbstract.description}>
 
                         </textarea>
                     </div>
