@@ -815,13 +815,11 @@ const db = {
      * @param {*} content deliverable content
      * @param {*} posted_timestamp the date when the deliverable is posted
      * @param {*} due_timestamp the date when the deliverable will due
-     * @param {*} moduleId the module that the deliverable is under
      */
-    createDeliverable: async (id, title, content, posted_timestamp, due_timestamp = -1, moduleId) => {
+    createDeliverable: async (id, title, content, posted_timestamp, due_timestamp = -1) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `CREATE (a:deliverable 
-                            {Id: $id, Title: $title, Content: $content, Posted_time: $posted, Due_time: $due})
-                     MERGE (a)-[:HAS_MODULE]->(m:module {Id: $id})`;
+                            {Id: $id, Title: $title, Content: $content, Posted_time: $posted, Due_time: $due})`;
         let params = {"id": id, "title": title, "content": content,
                       "posted": neo4j.int(posted_timestamp), "due": neo4j.int(due_timestamp), "id": moduleId};
         try {

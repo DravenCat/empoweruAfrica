@@ -68,12 +68,72 @@ router.post('/createDeliverable', async (req, res) => {
         });
     }
 
-    await db.createDeliverable(deliverableId, name, description, timestamp, dueDate, moduleId); 
+    await db.createDeliverable(deliverableId, name, description, timestamp, dueDate); 
+    await db.addContentIntoModule("deliverable", deliverableId, moduleId);
     res.json({
         message: 'Success'
     });
 }); 
 
+
+
+/* 
+    Endpoint for when the user wants to create an deliverable
+    Request parameters:
+        deliverableId: String
+        name: String
+        description: String
+        newDueDate: int
+        moduleId: String
+*/
+router.post('/editDeliverable', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    let deliverableId = req.deliverableId;
+    let moduleId = req.moduleId;
+    let name = req.name;
+    let newDueDate = req.newDueDate;
+    let description = req.description;
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            message: 'You have to sign in before making a deliverable. '
+        });
+        return;
+    }
+
+    const isInstructor = await db.checkIsInstructor(moduleId, username);
+    if(!isInstructor){
+        // The user is not an instructor for this course. 
+        res.status(403).json({
+            mesage: 'You are not an instructor for this course. '
+        });
+        return;
+    }
+
+    const deliverable = await db.searchDeliverableById(deliverableId);
+
+    if(deliverable === null){
+        res.status(404).json({
+            message: 'Deliverable not found'
+        });
+    }
+
+    const timestamp = utils.timestamp(); 
+    if(timestamp - newDueDate <= 0){
+        res.status(400).json({
+            message: 'Your new due date is in the past!'
+        });
+    }
+
+    await db.editDeliverable(deliverableId, name, description);
+    await db.setDeliverableDue(deliverableId, newDueDate);
+    res.json({
+        message: 'Success'
+    });
+
+}); 
 
 
 /* 
