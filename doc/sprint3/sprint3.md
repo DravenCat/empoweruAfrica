@@ -3,14 +3,14 @@ This meeting is held on July 4, 2021 on Discord. The main purpose of this meetin
 
 
 
-##Sprint goal:
+## Sprint goal:
 Finish user stories UOF-17 UOF-18 UOF-19 UOF-20 UOF-21 UOF-25 UOF-29 UOF-30
 
 
 
-##Tasks Breakdown:
+## Tasks Breakdown:
 
-###Epic: Entrepreneurs can watch videos and read materials.
+## Epic: Entrepreneurs can watch videos and read materials.
 UOF-18 UOF-20
 Tasks:
 - Create an endpoint for users to access the media and content.
@@ -19,7 +19,7 @@ Tasks:
 - Front-end and back-end integration.
 
 
-###Epic: Instructors can upload videos and reading materials.
+## Epic: Instructors can upload videos and reading materials.
 UOF-17 UOF-19
 Tasks:
 - Create a front-end area where video files or reading materials can be uploaded.
@@ -28,7 +28,7 @@ Tasks:
 - Front-end and back-end integration.
 
 
-###Epic: Instructors can set deliverables with deadlines and manage the modules section.
+## Epic: Instructors can set deliverables with deadlines and manage the modules section.
 UOF-21 UOF-25 UOF-29
 Tasks:
      
@@ -38,7 +38,7 @@ Tasks:
 - Front-end and back-end integration.
 
 
-###Epic: Entrepreneurs can see course material in the modules.
+## Epic: Entrepreneurs can see course material in the modules.
 UOF - 30
 Tasks:
 - Create a front-end area where modules can be viewed.
@@ -48,12 +48,12 @@ Tasks:
 
 
 
-##Spikes:
+## Spikes:
 When building the learning page, we used javascript to interact with DOM to control the expansion of an element and this led to the undesired result when we write the element as an react component, because the javascript changes every element with the same class name. Instead we used state, because the state in react component is isolated, it works perfectly fine.
 
 
 
-##Team capacity:
+## Team capacity:
 | Name | Estimated hours of work per day |
 | --- | --- |
 | Siyang Chen | 5 |
