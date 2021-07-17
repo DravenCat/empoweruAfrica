@@ -815,13 +815,11 @@ const db = {
      * @param {*} content deliverable content
      * @param {*} posted_timestamp the date when the deliverable is posted
      * @param {*} due_timestamp the date when the deliverable will due
-     * @param {*} moduleId the module that the deliverable is under
      */
-    createDeliverable: async (id, title, content, posted_timestamp, due_timestamp = -1, moduleId) => {
+    createDeliverable: async (id, title, content, posted_timestamp, due_timestamp = -1) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `CREATE (a:deliverable 
-                            {Id: $id, Title: $title, Content: $content, Posted_time: $posted, Due_time: $due})
-                     MERGE (a)-[:HAS_MODULE]->(m:module {Id: $id})`;
+                            {Id: $id, Title: $title, Content: $content, Posted_time: $posted, Due_time: $due})`;
         let params = {"id": id, "title": title, "content": content,
                       "posted": neo4j.int(posted_timestamp), "due": neo4j.int(due_timestamp), "id": moduleId};
         try {
@@ -829,6 +827,26 @@ const db = {
         } catch (err) {
             console.error(err);
 
+        }
+        session.close();
+    },
+
+    /**
+     * Set the deliverable to new due. If missing the second paramaters, it will be set to -1
+     * @param {*} id the id of the deliverable
+     * @param {*} title the title of the deliverable
+     * @param {*} description the new description
+     */
+    editDeliverable: async (id, title, description) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (a:deliverable {Id: $id}) 
+                     SET a.Title = $title, 
+                         a.Content = $content`;
+        let params = {"id": id, "title": title, "content": description};
+        try {
+            await session.run(query, params);
+        } catch (err) {
+            console.error(err);
         }
         session.close();
     },
@@ -871,12 +889,12 @@ const db = {
     /**
      * Return a object that contains the feature of the assignmeent
      * Null o/w
-     * @param {*} id the id of the assignment
+     * @param {*} id the id of the deliverable
      * @returns an object that contains the id, title, media, content, post_time and due_time
      */
-    searchAssignmentById: async (id) => {
+    searchDeliverableById: async (id) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (a:assignment {Id: $id}) 
+        let query = `MATCH (a:deliverable {Id: $id}) 
                      RETURN a`
         let params = {"id": id};
         let result;
@@ -885,11 +903,11 @@ const db = {
         }catch (err) {
             console.log(err);
         }
-        var assignment;
+        var deliverable;
         if (result.records.length == 0) {
             return null;
         }else {
-            assignment = {
+            deliverable = {
                 id: result.records[0].get(0).properties.Id,
                 title: result.records[0].get(0).properties.Title,
                 media: result.records[0].get(0).properties.Media,
@@ -899,7 +917,7 @@ const db = {
             }
         }
         session.close();
-        return assignment;
+        return deliverable;
     },
 
     /**
@@ -1112,13 +1130,15 @@ const db = {
     },
 
     /**
+
      * Create a ENROLLED_IN relationship between the user and the course
      * @param {*} name the name of the course
      * @param {*} username the name of the user
      */
-    enrolCourse: async (name, username) => {
+    enrollCourse: async (name, username) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MERGE (:user {Username: $username})-[:ENROLLED_IN]->(:course {Name: $name})`;
+
         let params = {"username": username, "name": name};
         try {
             await session.run(query, params);
@@ -1129,13 +1149,15 @@ const db = {
     },
 
     /**
-     * DELETE the ENROLLED_INLED_IN relationship between the user and the course
+
+     * DELETE the ENROLLED_IN relationship between the user and the course
      * @param {*} name the name of the course
      * @param {*} username the name of the user
      */
     dropCourse: async (name, username) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (:user {Username: $username})-[e:ENROLLED_INLED_IN]->(:course {Name: $name}) 
+        let query = `MATCH (:user {Username: $username})-[e:ENROLLED_IN]->(:course {Name: $name}) 
+
                      DELETE e`;
         let params = {"username": username, "name": name};
         try {
@@ -1208,7 +1230,7 @@ const db = {
         var courseSet = [];
         let courseNameSet = [];
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (u:user {Username: $username})-[:ENROLLED_INLED_IN]->(c:course) 
+        let query = `MATCH (u:user {Username: $username})-[:ENROLLED_IN]->(c:course) 
                      RETURN c.Name AS name`;
         let params = {"username": username};
         let result;
@@ -1223,6 +1245,27 @@ const db = {
             courseSet.push(await this.searchCourseByName(courseNameSet[i]));
         }
         return courseSet;
+    },
+
+    /**
+     * Check if a user is enrolled in a course
+     * @param {*} username the username
+     * @param {*} courseName the name of the course
+     * @returns true if enrolled, false otherwise
+     */
+    checkEnrollment: async (username, courseName) => {
+
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (u:user {Username: $username})-[:ENROLL]->(c:course {Name: $courseName}) 
+                     RETURN c.Name AS name`;
+        let params = {"username": username, "courseName": courseName};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        return result.records.length > 0;
     },
     
     /**
@@ -1358,7 +1401,7 @@ const db = {
 
     /**
      * Delete the reading
-     * @param {*} id the id of the video
+     * @param {*} id the id of the reading
      */
     deleteReading: async (id) => {
         let session = Neo4jDriver.wrappedSession();
@@ -1719,6 +1762,27 @@ const db = {
         }
         return result.records.length > 0;
     },
+
+    /**
+     * Check whether the user is an instructor of the course
+     * @param {*} courseName the name of course
+     * @param {*} instructor the username of the module
+     * @returns true if the user is an instructor
+     *          false if not
+     */
+    checkIsInstructorFromCourse: async (courseName, instructor) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (u:user {Username: $instructor})-[cc:CREATE_COURSE]->(c:course {Name: $courseName}) 
+                     RETURN cc`;
+        let params = {"instructor": instructor, "courseName": courseName};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        return result.records.length > 0;
+    },
     
     /**
      * Delete all the module in the course
@@ -1748,7 +1812,7 @@ const db = {
         await this.deleteAllModule(name);
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (c:course {Name: $name}), 
-                           (:user)-[e:ENROLLED_INLED_IN]->(c),
+                           (:user)-[e:ENROLLED_IN]->(c),
                            (:user)-[cc:TEACH_COURSE]->(c) 
                      DELETE cc, e, c`;
         let params = {"name": name};

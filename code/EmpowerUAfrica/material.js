@@ -48,8 +48,8 @@ router.post('/createReading', async (req, res) => {
         return;
     }
 
-
-    if(!db.checkIsInstructor(moduleId, username)){
+    const isInstructor = await db.checkIsInstructor(moduleId, username);
+    if(!isInstructor){
         // The user is not an instructor for this course. 
         res.status(403).json({
             mesage: 'You are not an instructor for this course. '
@@ -58,7 +58,7 @@ router.post('/createReading', async (req, res) => {
     }
 
 
-    if(db.getModule(moduleId) === null){
+    if(db.searchModuleById(moduleId) === null){
         res.status(400).json({
             mesage: 'Module does not exist. '
         });
@@ -81,6 +81,100 @@ router.post('/createReading', async (req, res) => {
     }
     await db.createReading(readingId, name, description, path, timestamp) ;
     await db.addContentIntoModule(reading, readingId, moduleId);
+    res.json({
+        message: 'Success'
+    });
+}); 
+
+
+/* 
+    Endpoint to edit a reading
+    Request parameters:
+        token: String
+        moduleId: String
+        readingId: String
+        name: String
+        description: String
+*/
+router.post('/editReading', async (req, res) => {
+
+    const name = req.name;
+    const description = req.description;
+    const readingId = req.readingId;
+    const moduleId = req.moduleId;
+
+    let token = req.cookies.token;
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            mesage: 'You have to sign in before you can modify course content. '
+        });
+        return;
+    }
+
+    if(db.searchModuleById(moduleId) === null){
+        res.status(400).json({
+            mesage: 'Module does not exist. '
+        });
+        return;
+    }
+
+    if(!db.checkIsInstructor(moduleId, username)){
+        // The user is not an instructor for this course. 
+        res.status(403).json({
+            mesage: 'You are not an instructor for this course. '
+        });
+        return;
+    }
+
+
+    await db.editReading(readingId, name, description);
+    res.json({
+        message: 'Success'
+    });
+}); 
+
+
+/* 
+    Endpoint to delete a reading
+    Request parameters:
+        token: String
+        moduleId: String
+        readingId: String
+
+*/
+router.post('/deleteReading', async (req, res) => {
+
+    const readingId = req.readingId;
+
+    let token = req.cookies.token;
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            mesage: 'You have to sign in before you can modify course content. '
+        });
+        return;
+    }
+
+    if(db.searchModuleById(moduleId) === null){
+        res.status(400).json({
+            mesage: 'Module does not exist. '
+        });
+        return;
+    }
+
+    if(!db.checkIsInstructor(moduleId, username)){
+        // The user is not an instructor for this course. 
+        res.status(403).json({
+            mesage: 'You are not an instructor for this course. '
+        });
+        return;
+    }
+
+
+    await db.deleteReading(readingId);
     res.json({
         message: 'Success'
     });

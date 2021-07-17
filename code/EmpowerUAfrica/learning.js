@@ -29,30 +29,6 @@ router.get('/getCourses', async (req, res) => {
 
 });
 
-/* 
-    Endpoint for when the user wants to get all contents of a course and all comments for the course
-    Request parameters:
-        courseName: String
-*/
-router.get('/getCourseContent', async (req, res) => {
-    let courseName = req.query.course_name; 
-
-    let courseContent = await db.searchCourseByName(courseName);
-
-    // check if the course exists
-    if(courseContent === null){
-        res.status(404).json({
-            message: 'Course not found'
-        });
-    }
-    // returns the object containing the course contents and all comments
-    res.status(200).json({
-        name: courseName,
-        instructor: courseContent.instructor,
-        description: courseContent.description
-    });
-}); 
-
 
 /* 
     Endpoint for when the user wants to create a course
@@ -217,6 +193,11 @@ router.post('/updateCourse', async (req, res) => {
 router.put('/createModule', async(req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
+    const courseName = req.courseName;
+    const moduleName = req.moduleName;
+    const timestamp = utils.timestamp(); 
+    const moduleId = 'M' + utils.URLSafe(utils.hash(moduleName + timestamp.toString())); 
+
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
@@ -226,17 +207,15 @@ router.put('/createModule', async(req, res) => {
         return;
     }
 
-    if(!admin.isAdmin(username)){
+    const isInstructor = await db.checkIsInstructorFromCourse(courseName, username);
+    if(!isInstructor){
+        // The user is not an instructor for this course. 
         res.status(403).json({
-            message: 'You have to be an admin to do this. '
+            mesage: 'You are not an instructor for this course. '
         });
         return;
     }
 
-    const courseName = req.courseName;
-    const moduleName = req.moduleName;
-    const timestamp = utils.timestamp(); 
-    const moduleId = 'M' + utils.URLSafe(utils.hash(moduleName + timestamp.toString())); 
 
     // checks if course username exists
     let course = await db.searchCourseByName(courseName);
@@ -283,9 +262,11 @@ router.post('/editModule', async (req, res) => {
         return;
     }
 
-    if(!admin.isAdmin(username)){
+    const isInstructor = await db.checkIsInstructor(moduleId, username);
+    if(!isInstructor){
+        // The user is not an instructor for this course. 
         res.status(403).json({
-            message: 'You have to be an admin to do this. '
+            mesage: 'You are not an instructor for this course. '
         });
         return;
     }
@@ -309,7 +290,8 @@ router.post('/editModule', async (req, res) => {
 router.post('/deleteModule', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let module = await db.searchModuleById(req.moduleId);
+    let moduleId = req.moduleId;
+    let module = await db.searchModuleById(moduleId);
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
@@ -319,9 +301,11 @@ router.post('/deleteModule', async (req, res) => {
         return;
     }
 
-    if(!admin.isAdmin(username)){
+    const isInstructor = await db.checkIsInstructor(moduleId, username);
+    if(!isInstructor){
+        // The user is not an instructor for this course. 
         res.status(403).json({
-            message: 'You have to be an admin to do this. '
+            mesage: 'You are not an instructor for this course. '
         });
         return;
     }
@@ -332,7 +316,7 @@ router.post('/deleteModule', async (req, res) => {
         });
     }
 
-    await db.deleteModule(req.moduleId);
+    await db.deleteModule(moduleId);
 
     res.json({
         message: 'success'
@@ -355,14 +339,7 @@ router.get('/getCourseContent', async (req, res) => {
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
         res.status(403).json({
-            message: 'You have to sign in before deleting course. '
-        });
-        return;
-    }
-
-    if(!admin.isAdmin(username)){
-        res.status(403).json({
-            message: 'You have to be an admin to do this. '
+            message: 'You have to sign in before getting course content. '
         });
         return;
     }
@@ -379,5 +356,74 @@ router.get('/getCourseContent', async (req, res) => {
         });
     }
 });
+
+
+/* 
+    Endpoint for when the user wants to enroll in a course
+    Request parameters:
+        courseName: String
+        token: String
+*/
+router.get('/enrollCourse', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    let courseName = req.courseName;
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            message: 'You have to sign in before enrolling in course. '
+        });
+        return;
+    }
+
+    await db.enrollCourse(courseName, username);
+    res.json({
+        message: 'success'
+    });
+
+});
+
+
+/* 
+    Endpoint for when the user wants to drop a course
+    Request parameters:
+        courseName: String
+        token: String
+*/
+router.get('/dropCourse', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    let courseName = req.courseName;
+
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            message: 'You have to sign in before dropping course. '
+        });
+        return;
+    }
+
+
+    const isEnrolled = await db.checkEnrollment(username, courseName);
+
+    if (!isEnrolled) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(400).json({
+            message: 'You are already not enrolled in the course! '
+        });
+        return;
+    }
+
+    await db.dropCourse(courseName, username);
+    res.json({
+        message: 'success'
+    });
+
+});
+
+
+
 
 module.exports = router; 
