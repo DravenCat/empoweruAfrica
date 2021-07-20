@@ -5,6 +5,10 @@
     display: grid;
     grid-template-columns: 20% 60% 20%;
     background-image: url('../../../resource/icons/background_image.png');
+    background-attachment: fixed;
+    background-position: top center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 /* grid1 section */
