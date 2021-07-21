@@ -6,11 +6,13 @@
     background-attachment: fixed;
     min-height: 100%;
     border-top: 1px solid transparent;
+    margin-top: 0;
 }
 
 .add_course_form {
     border-radius: 20px;
     margin: 150px auto;
+    margin-top: 6.5%;
     width: 30%;
     background: -webkit-linear-gradient(135deg, #a6db43 0%,#e2cf21 50%);
     padding: 50px 100px;
@@ -55,22 +57,31 @@
     animation-duration: 1s;
 }
 
-.create-course-footer>button {
+.create-course-footer button {
     position: relative;
     margin-top: 20px;
     padding: 0 10px;
     border-radius: 8px;
     border: 1px solid yellowgreen;
     cursor: pointer;
+    height: 100%;
 }
 
-.create-course-footer>button:hover {
+.create-course-footer button:hover {
     box-shadow: 0 0 8px 1px black;
 }
 
-.create-course-footer>button:hover .add_course_mask {
+.create-course-footer button:hover .add_course_mask {
     animation-name: addCourse;
     animation-duration: 1s;
+}
+
+.create-course-footer .delete-course-btn {
+    background-color: var(--btn-cancel-color);
+    color:wheat;
+}
+.create-course-footer .submit-change-btn {
+    float: right;
 }
 
 .create-course-footer>button:nth-child(2) {

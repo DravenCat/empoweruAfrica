@@ -1809,13 +1809,11 @@ const db = {
      * @param {*} name the name of the course
      */
     deleteCourse: async (name) => {
-        await this.deleteAllModule(name);
+        await db.deleteAllModule(name);
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (c:course {Name: $name}), 
-                           (:user)-[e:ENROLLED_IN]->(c),
-                           (:user)-[cc:TEACH_COURSE]->(c) 
-                     DELETE cc, e, c`;
-        let params = {"name": name};
+        let query = `MATCH (c:course {Name: $name})
+                     DETACH DELETE c`;
+        let params = {name};
         try {
             await session.run(query, params);
         } catch (err) {
