@@ -1,4 +1,3 @@
-import { ExpectationFailed } from 'http-errors';
 import React, { Component} from 'react'; 
 import './addCourse.css';
 
@@ -6,8 +5,11 @@ const createCourseURL = '/learning/createCourse';
 const editCourseURL = '/learning/updateCourse';
 const getCoursesURL = '/learning/getCourses';
 const startToLearnURL = '/start_to_learn';
+const deleteCourseURL = '/learning/deleteCourse'
 
-
+/*
+    This component is responsible for course creation, edit and deletion. 
+*/
 export default class addCourse extends Component{
     state = {
         error: null,
@@ -119,6 +121,60 @@ export default class addCourse extends Component{
         }
     }
 
+
+    deleteCourse = async () => {
+        // Re-enter the course name to confirm. 
+        const deletePrompt = 
+        `
+        All related modules and contents will be deleted!
+        To proceed, type the course name below (case sensitive). 
+        `;
+        const userInputName = prompt(deletePrompt);
+        if (userInputName !== this.state.courseName) {
+            if (userInputName !== null) {
+                // If the user did not click 'cancel' 
+                alert('Incorrect course name.'); 
+            }
+            return; 
+        }
+
+        let res;
+        try {
+            res = await fetch(
+                deleteCourseURL,
+                {
+                    method: 'DELETE',
+                    body: JSON.stringify({
+                        name: this.state.courseName
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            alert('Deleting course, please wait... '); 
+        }
+        catch (err) {
+            console.error(err); 
+            this.setState({
+                error: 'Internet Failure'
+            }); 
+        }
+        if (res.ok) {
+            alert('Course successfully deleted. '); 
+            window.location.href = startToLearnURL; 
+        }
+        else {
+            let body; 
+            if (res.type === 'application/json') {
+                body = await res.json(); 
+                this.setState({
+                    error: body.message
+                })
+            }
+        }
+    }
+
     async componentDidMount() {
         let mode;
         let courseName; 
@@ -183,16 +239,39 @@ export default class addCourse extends Component{
                     </div>
 
                     <div className="create-course-footer">
-                        <button onClick={this.discard}>
-                            <h3>Discard</h3>
-                            <span className='add_course_mask'></span>
-                        </button>
-
-                        <button onClick={this.submit}>
-                            <h3>Sumbit</h3>
-                            <span className='add_course_mask'></span>
-                        </button>
-
+                        <table style={{width: '100%'}}>
+                            <colgroup>
+                                <col style={{width: '33%'}} key="discard"></col>
+                                <col style={{width: '33%'}} key="delete"></col>
+                                <col style={{width: '33%'}} key="submit"></col>
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <button onClick={this.discard}>
+                                            <h3>Discard</h3>
+                                            <span className='add_course_mask'></span>
+                                        </button>
+                                    </td>
+                                    <td style={{textAlign: 'center'}}>
+                                        {
+                                            mode === 'create'? 
+                                                null:
+                                                <button onClick={this.deleteCourse} className="delete-course-btn">
+                                                    <h3>Delete Course</h3>
+                                                    <span className='add_course_mask'></span>
+                                                </button>
+                                        }   
+                                    </td>
+                                    <td>
+                                        <button onClick={this.submit} className="submit-change-btn">
+                                            <h3>Sumbit</h3>
+                                            <span className='add_course_mask'></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             

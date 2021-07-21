@@ -100,10 +100,10 @@ router.put('/createCourse', async (req, res) => {
         courseName: String
         token: String
 */
-router.post('/deleteCourse', async (req, res) => {
+router.delete('/deleteCourse', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let courseContent = await db.searchCourseByName(req.courseName);
+    let { name: courseName } = req.body; 
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
@@ -120,13 +120,14 @@ router.post('/deleteCourse', async (req, res) => {
         return;
     }
 
-    if(courseContent === null){
+    if((await db.courseExists(courseName)) === false){
         res.status(404).json({
             message: 'Course not found'
         });
+        return; 
     }
 
-    await db.deleteCourse(req.courseName);
+    await db.deleteCourse(courseName);
 
     res.json({
         message: 'success'

@@ -2,7 +2,7 @@ import React, { Component} from 'react';
 import Utils from '../../../utils';
 import './courseOverview.css';
 
-const editCourseURL = '/learning/editCourse'; 
+const editCourseURL = '/learning/edit_course'; 
 
 export default class courseOverview extends Component{
 
@@ -14,6 +14,12 @@ export default class courseOverview extends Component{
     gotoCoursePage = () => {
         let courseURL = '/learning/course/' + this.props.course.name; 
         window.location.href = courseURL;
+    }
+
+    gotoEditPage = (event) => {
+        let url = `${editCourseURL}/${this.props.course.name}`;
+        window.location.href = url; 
+        event.stopPropagation(); 
     }
 
     render() {
@@ -41,7 +47,8 @@ export default class courseOverview extends Component{
                     {
                         isAdmin === true? 
                             <button
-                            className="drop-btn">
+                            className="drop-btn"
+                            onClick={this.gotoEditPage}>
                                 Edit
                             </button>:
                             null
@@ -49,7 +56,8 @@ export default class courseOverview extends Component{
                 </div>
                 <p>Instructor: {course.instructor}</p>
                 <p>{course.description}</p>
-                <span className='mask'></span>
+                {/* <span className='mask'></span> */}
+                {/* This mask is covering the buttons.  */}
             </div>
         )
         
