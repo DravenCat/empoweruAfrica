@@ -1,5 +1,5 @@
 const neo4j = require('neo4j-driver'); 
-
+const utils = require('./utils'); 
 const init = require('./db-init'); 
 const config = require('./config');
 
@@ -1037,26 +1037,51 @@ const db = {
      * @param {*} username (optional)
      *      when provided, this function will also return whether the user is enrolled in
      *      the course or not. 
+     * @param {*} criteria 
+     *      {
+     *          'name_contains': string,
+     *          'enrolled_by': string,
+     *          'name_equals': string
+     *      }
      */
-    getCourses:  async(username) =>{
+    searchCourses:  async(username, criteria) =>{
         var courseSet = [];
         let session = Neo4jDriver.wrappedSession();
+
+        let constraints = [];
+        if ('name_contains' in criteria) {
+            constraints.push(`toLower(c.Name) =~ '.*${criteria.name_contains.toLowerCase()}.*'`);
+        }
+        if ('name_equals' in criteria) {
+            constraints.push(`c.Name = $name_equals`); 
+        }
+        if ('enrolled_by' in criteria) {
+            constraints.push(`(:user {UserName: $enrolled_by})-[:ENROLLED_IN]->(c)`); 
+        }
+        let constraintStr = constraints.length === 0? 
+            '': 
+            `WHERE ${constraints.join(' AND ')}`; 
+
         let query = `MATCH 
                         (c:course),
                         (u:user)-[:TEACH_COURSE]->(c)
+                    ${constraintStr}
                      RETURN c, u.UserName AS instructor`;
-        let params = {}; 
+        let params = criteria; 
         if (username !== undefined) {
             query = 
                 `MATCH 
                     (c:course),
                     (u:user)-[:TEACH_COURSE]->(c)
+                ${constraintStr}
                 OPTIONAL MATCH 
-                    (s:user {UserName:'test'})-[:ENROLLED_IN]->(c)
-                RETURN c, u.UserName AS instructor, count(s) as enrolled`;
-            params = {username}
+                    (s:user {UserName:$username})-[:ENROLLED_IN]->(c)
+                RETURN c, u.UserName AS instructor, count(s) AS enrolled`;
+            params.username = username; 
         }
         let result;
+        console.log(query); 
+        console.log(params); 
         try {
             result = await session.run(query, params);
             let records = result.records;
@@ -1097,7 +1122,8 @@ const db = {
         let session = Neo4jDriver.wrappedSession();
         let query = 
         `
-        CREATE (i:user {UserName: $instructor})-[:TEACH_COURSE]->(c:course {Name: $name, Description: $description})
+        MATCH (i:user {UserName: $instructor})
+        CREATE (i)-[:TEACH_COURSE]->(c:course {Name: $name, Description: $description})
         `
         let params = {name, instructor, description}; 
         let res; 
@@ -1112,14 +1138,21 @@ const db = {
   
     /**
      * Edit the course description
+     * 
+     * @prereq instructor and course specified exists. 
+     * 
      * @param {*} name the name of the course
-     * @param {*} description the new description
+     * @param {*} description optional. the new description
+     * @param {*} instructor optional. username of the new instructor
      */
-    editCourse: async (name, description) => {
+    editCourse: async (name, description, instructor) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (c:course {Name: $name}) 
-                     SET c.Description = $description`;
-        let params = {"name": name, "description": description};
+        let query = `MATCH 
+                        (c:course {Name: $name}) 
+                        ${instructor === undefined? '': ',(:user)-[t:TEACH_COURSE]->(c), (i:user {UserName: $instructor})'}
+                    ${description === undefined? '': 'SET c.Description = $description'}
+                    ${instructor === undefined? '': 'DELETE t CREATE (i)-[:TEACH_COURSE]->(c)'}`;
+        let params = {name, description, instructor};
 
         try {
             await session.run(query, params);
