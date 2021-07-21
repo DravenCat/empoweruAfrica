@@ -348,29 +348,42 @@ router.post('/deleteModule', async (req, res) => {
 router.get('/getCourseContent', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let courseName = req.courseName;
-    let courseContent = await db.searchCourseByName(courseName);
-    let result;
+    let { courseName } = req.query;
+    let result = {};
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
+        res.status(401).json({
             message: 'You have to sign in before getting course content. '
         });
         return;
     }
-
-    if(courseContent !== null){
-        result.name = courseContent.name;
-        result.instructor = courseContent.instructor;
-        result.description = courseContent.description;
-        result.module = await db.getAllModules(courseName);
-        res.status(200).json(result);
-    }else{
+    
+    if (!(await db.courseExists(courseName))) {
+        // If the course does not exist. 
         res.status(404).json({
             message: 'Course not found'
         });
+        return; 
     }
+    let courseContent = (await db.searchCourses(username, {name_equals: courseName}))[0]; 
+
+    if (!(await admin.isAdmin(username))) {
+        if (courseContent.instructor !== username && courseContent.enrolled !== true) {
+            res.status(403).json({
+                message: 'You do not have the permission to view the contents of this course. Enroll first. '
+            });
+            return;
+        }
+    }
+    // If the user is an admin, skip the enrollment test. 
+
+    result.name = courseContent.name;
+    result.instructor = courseContent.instructor;
+    result.description = courseContent.description;
+    result.module = await db.getAllModules(courseName);
+    console.log(courseContent); 
+    res.status(200).json(result);
 });
 
 

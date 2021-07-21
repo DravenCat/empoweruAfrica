@@ -64,6 +64,11 @@ export default class courseOverview extends Component{
     }
 
     gotoCoursePage = () => {
+        let { enrolled } = this.state; 
+        if (enrolled !== true) {
+            alert('Please enroll first. '); 
+            return; 
+        }
         let courseURL = '/learning/course/' + this.props.course.name; 
         window.location.href = courseURL;
     }
@@ -95,7 +100,7 @@ export default class courseOverview extends Component{
             <div className="courseOverview" onClick={this.gotoCoursePage}>
                 
                 <div>
-                    <h3>{course.name}</h3>
+                    <h3>{course.name || '(No Name)'}</h3>
                     {
                         enrolled === true?
                             <button
@@ -119,8 +124,8 @@ export default class courseOverview extends Component{
                             null
                     } 
                 </div>
-                <p>Instructor: {course.instructor}</p>
-                <p>{course.description}</p>
+                <p>Instructor: {course.instructor || '(No instructor)'}</p>
+                <p>{course.description || '(No description)'}</p>
                 {/* <span className='mask'></span> */}
                 {/* This mask is covering the buttons.  */}
             </div>

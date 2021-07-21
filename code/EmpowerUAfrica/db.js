@@ -1037,7 +1037,7 @@ const db = {
      * @param {*} username (optional)
      *      when provided, this function will also return whether the user is enrolled in
      *      the course or not. 
-     * @param {*} criteria 
+     * @param {*} criteria can be an object with any combinition of the following fields
      *      {
      *          'name_contains': string,
      *          'enrolled_by': string,
@@ -1063,17 +1063,19 @@ const db = {
             `WHERE ${constraints.join(' AND ')}`; 
 
         let query = `MATCH 
-                        (c:course),
-                        (u:user)-[:TEACH_COURSE]->(c)
+                        (c:course)
                     ${constraintStr}
+                    OPTIONAL MATCH
+                        (u:user)-[:TEACH_COURSE]->(c)
                      RETURN c, u.UserName AS instructor`;
         let params = criteria; 
         if (username !== undefined) {
             query = 
                 `MATCH 
-                    (c:course),
-                    (u:user)-[:TEACH_COURSE]->(c)
+                    (c:course)
                 ${constraintStr}
+                OPTIONAL MATCH
+                    (u:user)-[:TEACH_COURSE]->(c)
                 OPTIONAL MATCH 
                     (s:user {UserName:$username})-[:ENROLLED_IN]->(c)
                 RETURN c, u.UserName AS instructor, count(s) AS enrolled`;
@@ -1680,9 +1682,17 @@ const db = {
      */
     getAllModules: async (course) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (m:module {Course: $course})
-                     RETURN m`;
-        let params = {"course": course};
+        let query = 
+        `
+        MATCH 
+            (c:course {Name: $course}),
+            (c)-[:HAS_MODULE]->(m:module)
+        OPTIONAL MATCH 
+            (m)-[:HAS_CONTENT]->(content)
+        RETURN  
+            m, collect(content) AS contents
+        `;
+        let params = { course };
         let result;
         try {
             result = await session.run(query, params);
@@ -1690,20 +1700,17 @@ const db = {
         } catch (err) {
             console.log(err);
         }
-        var moduleSet = [];
-        if (records.length == 0) {
-            return null;
-        }else {
-            for (let i = 0; i < records.length; i++) {
-                let module = records[i].get(0);
-                moduleSet.push({
-                    name: module.properties.Name,
-                    content: await this.getModule(module.properties.Id)
-                })
-            }
+        let modules = []; 
+
+        for (const record of result.records) {
+            let moduleInfo = record.get('m'); 
+            let contents = record.get('contents'); 
+            console.log(moduleInfo); 
+            console.log(contents); 
         }
+
         session.close();
-        return moduleSet;
+        return modules;
     },
 
     /**

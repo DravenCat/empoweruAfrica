@@ -1,7 +1,9 @@
 import React, { Component} from 'react'; 
 import './courseContent.css';
 import CourseModule from '../../components/courseModule/courseModule';
+import Utils from '../../../utils';
 
+const getCourseContentURL = '/learning/getCourseContent'; 
 
 export default class courseModule extends Component{
 
@@ -11,7 +13,7 @@ export default class courseModule extends Component{
 
 
     getCourseContent = async () => {
-        const course_name = this.props.match.params.course_name; 
+        const courseName = this.props.match.params.course_name; 
         // TODO: ajax
         // on 403: window.history.back()
         let courseContent = {
@@ -48,7 +50,29 @@ export default class courseModule extends Component{
                 }
             ]
         }
-        return courseContent; 
+        let res, body; 
+        try {
+            ( { res, body } = await Utils.ajax(
+                `${getCourseContentURL}?courseName=${courseName}`,
+                {
+                    method: 'GET'
+                }
+            ));
+        }
+        catch (err) {
+            console.error(err); 
+        }
+        console.log(body); 
+        if (res.ok) {
+            return body; 
+        }
+        else {
+            if (res.status === 403 || res.statue === 401) {
+                alert(body.message); 
+                window.history.back(); 
+                return; 
+            }
+        }
     }
 
     async componentDidMount() {
