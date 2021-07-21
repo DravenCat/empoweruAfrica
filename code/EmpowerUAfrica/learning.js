@@ -45,7 +45,7 @@ router.put('/createCourse', async (req, res) => {
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
+        res.status(401).json({
             message: 'You have to sign in before creating a course. '
         });
         return;
@@ -108,7 +108,7 @@ router.delete('/deleteCourse', async (req, res) => {
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
         res.status(403).json({
-            message: 'You have to sign in before deleting course. '
+            message: 'You have to sign in before deleting a course. '
         });
         return;
     }
@@ -380,14 +380,14 @@ router.get('/getCourseContent', async (req, res) => {
         courseName: String
         token: String
 */
-router.get('/enrollCourse', async (req, res) => {
+router.post('/enrollCourse', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let courseName = req.courseName;
+    let { courseName } = req.body;
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
+        res.status(401).json({
             message: 'You have to sign in before enrolling in course. '
         });
         return;
@@ -405,29 +405,17 @@ router.get('/enrollCourse', async (req, res) => {
     Endpoint for when the user wants to drop a course
     Request parameters:
         courseName: String
-        token: String
 */
-router.get('/dropCourse', async (req, res) => {
+router.post('/dropCourse', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let courseName = req.courseName;
+    let { courseName } = req.body;
 
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
+        res.status(401).json({
             message: 'You have to sign in before dropping course. '
-        });
-        return;
-    }
-
-
-    const isEnrolled = await db.checkEnrollment(username, courseName);
-
-    if (!isEnrolled) {
-        // The user havn't logged in, or the token has expired. 
-        res.status(400).json({
-            message: 'You are already not enrolled in the course! '
         });
         return;
     }

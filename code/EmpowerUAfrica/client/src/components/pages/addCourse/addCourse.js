@@ -166,11 +166,18 @@ export default class addCourse extends Component{
         }
         else {
             let body; 
-            if (res.type === 'application/json') {
+            console.log(res.headers.get('Content-Type'));
+            if (res.headers.get('Content-Type').indexOf('application/json') !== -1) {
                 body = await res.json(); 
                 this.setState({
                     error: body.message
                 })
+            }
+            if (res.status === 401) {
+                // Login token outdated. 
+                localStorage.setItem('signedIn', false);
+                localStorage.setItem('username', null);
+                localStorage.setItem('abstract', null);
             }
         }
     }

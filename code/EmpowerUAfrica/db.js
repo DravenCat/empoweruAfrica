@@ -1094,7 +1094,7 @@ const db = {
                     instructor
                 }
                 if (username !== undefined) {
-                    let enrolled = records[i].get('enrolled');
+                    let enrolled = records[i].get('enrolled').low;
                     if (enrolled !== 0) {
                         courseData.enrolled = true; 
                     }
@@ -1170,7 +1170,12 @@ const db = {
      */
     enrollCourse: async (name, username) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MERGE (:user {Username: $username})-[:ENROLLED_IN]->(:course {Name: $name})`;
+        let query = `
+        MATCH 
+            (u:user {UserName: $username}),
+            (c:course {Name: $name})
+        MERGE (u)-[:ENROLLED_IN]->(c)
+        `;
 
         let params = {"username": username, "name": name};
         try {
@@ -1189,9 +1194,9 @@ const db = {
      */
     dropCourse: async (name, username) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (:user {Username: $username})-[e:ENROLLED_IN]->(:course {Name: $name}) 
-
-                     DELETE e`;
+        let query = 
+        `MATCH (:user {UserName: $username})-[e:ENROLLED_IN]->(:course {Name: $name}) 
+        DELETE e`;
         let params = {"username": username, "name": name};
         try {
             await session.run(query, params);
@@ -1842,10 +1847,14 @@ const db = {
      * @param {*} name the name of the course
      */
     deleteCourse: async (name) => {
-        await db.deleteAllModule(name);
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (c:course {Name: $name})
-                     DETACH DELETE c`;
+        let query = 
+        `
+        MATCH (c: course {Name: $name})
+        OPTIONAL MATCH (c)-[:HAS_MODULE]-(m: module)
+        OPTIONAL MATCH (m)-[:HAS_CONTENT]-(content)
+        DETACH DELETE c, m, content
+        `;
         let params = {name};
         try {
             await session.run(query, params);
