@@ -1041,7 +1041,9 @@ const db = {
      *      {
      *          'name_contains': string,
      *          'enrolled_by': string,
-     *          'name_equals': string
+     *          'name_equals': string,
+     *          'has_module': string,
+     *          'has_content': string
      *      }
      */
     searchCourses:  async(username, criteria) =>{
@@ -1049,11 +1051,15 @@ const db = {
         let session = Neo4jDriver.wrappedSession();
 
         let constraints = [];
+        // TODO: clean up this section 
         if ('name_contains' in criteria) {
             constraints.push(`toLower(c.Name) =~ '.*${criteria.name_contains.toLowerCase()}.*'`);
         }
         if ('has_module' in criteria) {
             constraints.push(`(c)-[:HAS_MODULE]->(:module {Id: $has_module})`);
+        }
+        if ('has_content' in criteria) {
+            constraints.push(`(c)-[:HAS_MODULE]->()-[:HAS_CONTENT]-({Id: $has_content})`); 
         }
         if ('name_equals' in criteria) {
             constraints.push(`c.Name = $name_equals`); 
@@ -1316,11 +1322,14 @@ const db = {
      * @param {*} url the url of the video
      * @param {*} posted_timestamp the posted time of the video
      */
-    createVideo: async (id, name, description, vid, posted_timestamp) => {
+    createVideo: async (id, name, description, vid, posted_timestamp, moduleId) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `CREATE 
-            (v:video {Id: $id, Name: $name, Description: $description, Source: $source, Vid: $vid, Post_time: $posted})`;
-        let params = {id, name, description, vid, "posted": posted_timestamp, source: 'YouTube'};
+        let query = `
+        MATCH (m:module {Id: $moduleId})
+        MERGE (v:video {Id: $id, Name: $name, Description: $description, Source: $source, Vid: $vid, Post_time: $posted})
+        MERGE (m)-[:HAS_CONTENT]->(v)
+        `;
+        let params = {id, name, description, vid, "posted": posted_timestamp, source: 'YouTube', moduleId};
         try {
             await session.run(query, params);
         } catch (err) {

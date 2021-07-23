@@ -1,6 +1,4 @@
 const express = require('express');
-
-const express = require('express'); 
 const fs = require('fs').promises; 
 
 const db = require('./db'); 
@@ -21,14 +19,11 @@ const router = express.Router();
         description: String
         url: String
 */
-router.post('/createVideo', async (req, res) => {
-
+router.put('/createVideo', async (req, res) => {
+    const { name, description, moduleId, vid } = req.body; 
     const timestamp = utils.timestamp(); 
-    const name = req.name;
-    const description = req.description;
-    const moduleId = req.moduleId;
     const videoId = utils.URLSafe(utils.hash(name + timestamp.toString())); 
-    const url = req.url;
+    
 
     let token = req.cookies.token;
     let username = token === undefined? null: await db.getUsernameByToken(token); 
@@ -40,15 +35,16 @@ router.post('/createVideo', async (req, res) => {
         return;
     }
 
-    if(db.searchModuleById(moduleId) === null){
+    const course = (await db.searchCourses(null, {has_module: moduleId}))[0];
+    if (course === undefined) {
         res.status(400).json({
             mesage: 'Module does not exist. '
         });
         return;
     }
 
-    await db.createVideo(videoId, name, description, url, timestamp) ;
-    await db.addContentIntoModule(video, videoId, moduleId);
+    await db.createVideo(videoId, name, description, vid, timestamp, moduleId); 
+
     res.json({
         message: 'Success'
     });

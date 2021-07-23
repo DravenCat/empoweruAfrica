@@ -159,7 +159,7 @@ export default class CourseModule extends Component{
 
 class EditModule extends Component {
     submitChange = async () => {
-        const { moduleId, moduleName } = this.props; 
+        const { moduleId } = this.props; 
         const newModuleName = document.getElementById(`edit-module-name-${moduleId}`).value;
         if (newModuleName.length === 0) {
             alert('Module name cannot be empty. '); 

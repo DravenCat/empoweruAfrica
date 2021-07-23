@@ -18,3 +18,20 @@
     color: black;
     background: -webkit-linear-gradient(135deg, #a6db43 0%,#d8c627 50%);
 }
+
+.myCourse a{
+    text-decoration: none;
+    display: inline-block;
+    color: black;
+    background: yellowgreen;
+    padding: 5px 10px;
+    border-radius: 10px;
+    border: 2px solid #eee;
+    cursor: pointer;
+    transition: all .5s;
+    margin-left: 1em;
+}
+.myCourse a:hover{
+    background: black;
+    color: white;
+}

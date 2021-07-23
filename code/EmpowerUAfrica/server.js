@@ -8,6 +8,8 @@ const accountRouter = require('./account');
 const profileRouter = require('./profile');
 const communityRouter = require('./community');
 const learningRouter = require('./learning');
+const mediaRouter = require('./media'); 
+const deliverableRouter = require('./deliverable'); 
 
 const PORT = 5000; 
 
@@ -82,5 +84,7 @@ app.use('/api/account', accountRouter);
 app.use('/api/profile', profileRouter); 
 app.use('/api/community', communityRouter); 
 app.use('/api/learning', learningRouter); 
+app.use('/api/learning', mediaRouter); 
+app.use('/api/learning', deliverableRouter); 
 
 app.listen(PORT, () => console.log(`[server]: Server started on port ${PORT}`)); 

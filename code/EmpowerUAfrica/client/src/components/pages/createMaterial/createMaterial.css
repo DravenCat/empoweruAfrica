@@ -37,10 +37,11 @@
 }
 
 .create-material-footer button {
-    font-size: 1.2em;
-    background: -webkit-linear-gradient(135deg, rgb(158, 158, 158), #eee);
-    border-radius: 10px;
-    
+    font-size: 1.3em;
+    border: 1px solid darkgreen;
+    border-radius: 7px;
+    padding: .2em;
+    transition: 300ms;
 }
 
 #create-material-submit-btn {

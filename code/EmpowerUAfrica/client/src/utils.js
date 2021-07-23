@@ -81,7 +81,9 @@ const Utils = {
             str;
     },
     getY2bVideoId(url) {
-        
+        return url.match(/(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/)[1];
+        // RegEx from 
+        // https://stackoverflow.com/questions/3452546/how-do-i-get-the-youtube-video-id-from-a-url/3452617#3452617 
     },
     /**
      * A wrapper for fetch() to reduce repeated code in ajax requests. 

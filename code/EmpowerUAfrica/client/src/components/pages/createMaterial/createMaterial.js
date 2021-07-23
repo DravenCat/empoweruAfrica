@@ -1,7 +1,10 @@
 import React, { Component} from 'react'; 
 import './createMaterial.css';
+import Utils from '../../../utils';
 
 const supportedReadingFormat = ['txt', 'md', 'pdf'];
+const createVideoURL = '/learning/createVideo'; 
+
 
 export default class CreateMaterial extends Component{
     state = {
@@ -15,10 +18,62 @@ export default class CreateMaterial extends Component{
     }
 
     discard = () => {
+        if (!window.confirm('Discard all chanegs? ')) {
+            return; 
+        }
         this.props.collapse(); 
     }
-    submit = () => {
+    submit = async () => {
+        const { id: moduleId } = this.props.module; 
+        const name = document.getElementById(`${moduleId}-new-content-name`).value; 
+        const description = document.getElementById(`${moduleId}-new-content-description`).value; 
+        const type = document.getElementById(`${moduleId}-new-content-type`).value; 
+        let newContent = {
+            name,
+            description,
+            moduleId
+        }; 
+        let url; 
+        switch (type) {
+            case 'video': 
+                url = createVideoURL; 
+                const videoURL = document.getElementById(`${moduleId}-new-video-link`).value; 
+                const vid = Utils.getY2bVideoId(videoURL); 
+                if (vid === undefined) {
+                    alert('Invalid YouTube video link. '); 
+                    return; 
+                }
+                newContent.vid = vid; 
+                break; 
+            default: return;
+        }
 
+        let res, body; 
+        try {
+            ({ res, body } = await Utils.ajax(
+                url, 
+                {
+                    method: 'PUT',
+                    body: JSON.stringify(newContent),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            )); 
+        }
+        catch (err) {
+            console.error(err); 
+            alert('Internet failure');
+            return; 
+        }
+
+        if (!res.ok) {
+            alert(body.message); 
+        }
+        else {
+            window.location.reload(); 
+            return;
+        }
     }
 
     render() {
@@ -43,9 +98,15 @@ export default class CreateMaterial extends Component{
                 break;
             case 'deliverable':
                 contentUpload =
-                <>
-                    <h2>Deadline: </h2>
-                    <input type="datetime-local" id={`${moduleId}-new-deliverable-due`}></input>
+                <>  
+                    <div>
+                        <h2>Max points</h2>
+                        <input type="text" id={`${moduleId}-new-deliverable-maxpts`}></input><br />
+                    </div>
+                    <div style={{marginTop: '.4em'}}>
+                        <h2>Deadline: </h2>
+                        <input type="datetime-local" id={`${moduleId}-new-deliverable-due`}></input>
+                    </div>
                 </>;
                 break;
             default: 
@@ -87,11 +148,11 @@ export default class CreateMaterial extends Component{
                 <div className="create-material-footer">
 
                     <button
-                    className='discard-btn' onClick={this.discard}>Discard</button>
+                    className='cancel-btn' onClick={this.discard}>Discard</button>
 
                     <button 
                     id='create-material-submit-btn' 
-                    className='submit-btn' onClick={this.submit}>Submit</button>
+                    className='confirm-btn' onClick={this.submit}>Submit</button>
                 </div>
                 
 
