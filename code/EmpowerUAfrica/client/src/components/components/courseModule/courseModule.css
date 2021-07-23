@@ -41,14 +41,14 @@
     background: none;
 }
 
-.edit-module-icon {
+.module_deliver .icon {
     margin-left: 1.5em;
     width: 1.5em;
     height: 1.5em;
     opacity: .7;
     transition: 300ms;
 }
-.edit-module-icon:hover {
+.module_deliver .icon:hover {
     opacity: 1;
 }
 

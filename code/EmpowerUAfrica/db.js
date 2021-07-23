@@ -1052,6 +1052,9 @@ const db = {
         if ('name_contains' in criteria) {
             constraints.push(`toLower(c.Name) =~ '.*${criteria.name_contains.toLowerCase()}.*'`);
         }
+        if ('has_module' in criteria) {
+            constraints.push(`(c)-[:HAS_MODULE]->(:module {Id: $has_module})`);
+        }
         if ('name_equals' in criteria) {
             constraints.push(`c.Name = $name_equals`); 
         }
@@ -1068,7 +1071,7 @@ const db = {
                         (u:user)-[:TEACH_COURSE]->(c)
                      RETURN c, u.UserName AS instructor`;
         let params = criteria; 
-        if (username !== undefined) {
+        if (username !== undefined && username !== null) {
             query = 
                 `MATCH 
                     (c:course)
@@ -1092,7 +1095,7 @@ const db = {
                     description: course.properties.Description,
                     instructor
                 }
-                if (username !== undefined) {
+                if (username !== undefined && username !== null) {
                     let enrolled = records[i].get('enrolled').low;
                     if (enrolled !== 0) {
                         courseData.enrolled = true; 
@@ -1767,12 +1770,11 @@ const db = {
      * @param {*} id the id of the module
      */
     deleteModule: async (id) => {
-        await this.deleteAllContent(id);
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (m:module {Id: $id}), 
-                           (:course)-[h:HAS_MODULE]->(m) 
-                     DELETE h, m`;
-        let params = {"id": id};
+        let query = `MATCH (m:module {Id: $id})
+                    OPTIONAL MATCH (m)-[:HAS_CONTENT]->(c)
+                    DETACH DELETE m, c`;
+        let params = { id };
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1793,7 +1795,8 @@ const db = {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (m:module {Id: $id}) 
                      RETURN m`;
-        let params = {"id": id};
+        let params = { id };
+        console.log(query); 
         let result;
         try {
             result = await session.run(query, params);
@@ -1808,7 +1811,6 @@ const db = {
                 course: result.records[0].get(0).properties.Course,
                 id: result.records[0].get(0).properties.Id,
                 name: result.records[0].get(0).properties.Name,
-
             }
         }
         session.close();
@@ -1824,7 +1826,7 @@ const db = {
      *          false if not
      */
     checkIsInstructor: async (moduleId, instructor) => {
-        let module = await this.searchModuleById(moduleId);
+        let module = await db.searchModuleById(moduleId);
         let courseName = module.course;
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {Username: $instructor})-[cc:TEACH_COURSE]->(c:course {Name: $courseName}) 
