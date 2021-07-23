@@ -17,11 +17,11 @@ const router = express.Router();
         moduleId: String
         dueDate: int
 */
-router.post('/createDeliverable', async (req, res) => {
+router.put('/createDeliverable', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
     let moduleId = req.body.moduleId;
-    let total_points = req.body.total_points;
+    let totalPoints = parseFloat(req.body.totalPoints); 
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
@@ -31,13 +31,17 @@ router.post('/createDeliverable', async (req, res) => {
         return;
     }
 
-    const isInstructor = await db.checkIsInstructor(moduleId, username);
-    if(!isInstructor){
-        // The user is not an instructor for this course. 
-        res.status(403).json({
-            mesage: 'You are not an instructor for this course. '
+    const course = (await db.searchCourses(null, {has_module: moduleId}))[0];
+    if (course === undefined) {
+        res.status(400).json({
+            mesage: 'Module does not exist. '
         });
         return;
+    }
+    if (course.instructor !== username ) {
+        res.status(403).json({
+            message: 'You have to be the instructor of the course to perform this action. '
+        }); 
     }
 
     const name = req.body.name;
@@ -46,11 +50,11 @@ router.post('/createDeliverable', async (req, res) => {
     const deliverableId = 'D' + utils.URLSafe(utils.hash(name + timestamp.toString())); 
 
 
-    const dueDate = req.body.dueDate;
+    const dueTimestamp = parseInt(req.body.dueTimestamp);
 
     let errCode = 0;
 
-    if(timestamp - dueDate <= 0){
+    if(timestamp - dueTimestamp >= 0 && dueTimestamp > 0){
         res.status(400).json({
             message: 'Your due date is in the past!'
         });
@@ -64,13 +68,7 @@ router.post('/createDeliverable', async (req, res) => {
         return; 
     }
 
-    if(searchModuleById(moduleId) === null){
-        res.status(404).json({
-            message: 'Module not found'
-        });
-    }
-
-    await db.createDeliverable(deliverableId, name, description, total_points, timestamp, dueDate); 
+    await db.createDeliverable(deliverableId, name, description, totalPoints, timestamp, dueTimestamp, moduleId); 
     await db.addContentIntoModule("deliverable", deliverableId, moduleId);
     res.json({
         message: 'Success'

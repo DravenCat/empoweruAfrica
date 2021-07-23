@@ -817,12 +817,19 @@ const db = {
      * @param {*} posted_timestamp the date when the deliverable is posted
      * @param {*} due_timestamp the date when the deliverable will due
      */
-    createDeliverable: async (id, title, content, total_points, posted_timestamp, due_timestamp = -1) => {
+    createDeliverable: async (id, name, description, totalPoints, creationTimestamp, dueTimestamp, moduleId) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `CREATE (a:deliverable 
-                            {Id: $id, Title: $title, Content: $content, Total_points: $total_points, Posted_time: $posted, Due_time: $due})`;
-        let params = {"id": id, "title": title, "content": content, "total_points": total_points,
-                      "posted": neo4j.int(posted_timestamp), "due": neo4j.int(due_timestamp), "id": moduleId};
+            {Id: $id, Name: $name, Description: $description, TotalPoints: $totalPoints, CreatedAt: $creationTimestamp, DueAt: $dueTimestamp})`;
+        let params = {
+            id, 
+            name, 
+            description,
+            totalPoints,
+            creationTimestamp, 
+            dueTimestamp,
+            moduleId
+        }
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1530,7 +1537,7 @@ const db = {
      */
     addContentIntoModule: async (type, objId, moduleId) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (o:$type {Id: $objId}), (m:module {Id: $moduleId}) 
+        let query = `MATCH (o:${type} {Id: $objId}), (m:module {Id: $moduleId}) 
                      CREATE (m)-[:HAS_CONTENT]->(o)`;
         let params = {"type": type, "objId": objId, "moduleId": moduleId};
         try {
@@ -1746,7 +1753,7 @@ const db = {
                         contentInfo.vid = content.properties.Vid;  
                         break; 
                     case 'deliverable': 
-                        contentIndo.due = content.properties.Due_time; 
+                        contentInfo.due = content.properties.DueAt; 
                         break; 
                     default: break; 
                 }

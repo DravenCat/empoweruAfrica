@@ -4,7 +4,8 @@ import Utils from '../../../utils';
 
 const supportedReadingFormat = ['txt', 'md', 'pdf'];
 const createVideoURL = '/learning/createVideo'; 
-
+const createDeliverableURL = '/learning/createDeliverable'; 
+const createReadingURL = '/learning/createReading'; 
 
 export default class CreateMaterial extends Component{
     state = {
@@ -34,6 +35,7 @@ export default class CreateMaterial extends Component{
             moduleId
         }; 
         let url; 
+        let formdata;
         switch (type) {
             case 'video': 
                 url = createVideoURL; 
@@ -45,6 +47,37 @@ export default class CreateMaterial extends Component{
                 }
                 newContent.vid = vid; 
                 break; 
+            case 'deliverable':
+                url = createDeliverableURL; 
+                const dueTimeString = document.getElementById(`${moduleId}-new-deliverable-due`).value;
+                const maxPointsStr = document.getElementById(`${moduleId}-new-deliverable-maxpts`).value;
+                const maxPoints = parseFloat(maxPointsStr); 
+                let dueTimestamp; 
+                if (isNaN(maxPoints)) {
+                    alert('Max points should be a number. '); 
+                    return;
+                }
+                if (dueTimeString.length === 0) {
+                    dueTimestamp = -1;
+                }
+                else {
+                    dueTimestamp = Math.round( Date.parse(dueTimeString) / 1000); 
+                }
+                newContent.dueTimestamp = dueTimestamp; 
+                newContent.maxPoints = maxPoints; 
+                break; 
+            case 'reading':
+                url = `${createReadingURL}?name=${name}&description=${description}&moduleId=${moduleId}`; 
+                const readingFile = document.getElementById(`${moduleId}-new-reading-file`).files[0];
+                console.log(readingFile); 
+                formdata = new FormData(); 
+                if (readingFile === undefined) {
+                    alert('Please select a file. '); 
+                    return; 
+                }
+                
+                formdata.append('file', readingFile); 
+                break; 
             default: return;
         }
 
@@ -54,8 +87,8 @@ export default class CreateMaterial extends Component{
                 url, 
                 {
                     method: 'PUT',
-                    body: JSON.stringify(newContent),
-                    headers: {
+                    body: type === 'reading'? formdata: JSON.stringify(newContent),
+                    headers: type === 'reading'? undefined: {
                         'Content-Type': 'application/json'
                     }
                 }
@@ -106,6 +139,7 @@ export default class CreateMaterial extends Component{
                     <div style={{marginTop: '.4em'}}>
                         <h2>Deadline: </h2>
                         <input type="datetime-local" id={`${moduleId}-new-deliverable-due`}></input>
+                        {/* TODO: Change this to date and time, since firefox does not support datetime-local*/}
                     </div>
                 </>;
                 break;

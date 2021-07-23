@@ -42,6 +42,11 @@ router.put('/createVideo', async (req, res) => {
         });
         return;
     }
+    if (course.instructor !== username ) {
+        res.status(403).json({
+            message: 'You have to be the instructor of the course to perform this action. '
+        }); 
+    }
 
     await db.createVideo(videoId, name, description, vid, timestamp, moduleId); 
 

@@ -10,6 +10,7 @@ const communityRouter = require('./community');
 const learningRouter = require('./learning');
 const mediaRouter = require('./media'); 
 const deliverableRouter = require('./deliverable'); 
+const materialRouter = require('./material'); 
 
 const PORT = 5000; 
 
@@ -86,5 +87,6 @@ app.use('/api/community', communityRouter);
 app.use('/api/learning', learningRouter); 
 app.use('/api/learning', mediaRouter); 
 app.use('/api/learning', deliverableRouter); 
+app.use('/api/learning', materialRouter); 
 
 app.listen(PORT, () => console.log(`[server]: Server started on port ${PORT}`)); 
