@@ -1061,7 +1061,6 @@ const db = {
         let constraintStr = constraints.length === 0? 
             '': 
             `WHERE ${constraints.join(' AND ')}`; 
-
         let query = `MATCH 
                         (c:course)
                     ${constraintStr}
@@ -1082,8 +1081,6 @@ const db = {
             params.username = username; 
         }
         let result;
-        console.log(query); 
-        console.log(params); 
         try {
             result = await session.run(query, params);
             let records = result.records;
@@ -1316,10 +1313,11 @@ const db = {
      * @param {*} url the url of the video
      * @param {*} posted_timestamp the posted time of the video
      */
-    createVideo: async (id, name, description, url, posted_timestamp) => {
+    createVideo: async (id, name, description, vid, posted_timestamp) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `CREATE (v:video {Id: $id, Name: $name, Description: $description, Url: $url, Post_time: $posted})`;
-        let params = {"id": id, "name": name, "description": description, "url": url, "posted": posted_timestamp};
+        let query = `CREATE 
+            (v:video {Id: $id, Name: $name, Description: $description, Source: $source, Vid: $vid, Post_time: $posted})`;
+        let params = {id, name, description, vid, "posted": posted_timestamp, source: 'YouTube'};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1496,11 +1494,11 @@ const db = {
      * @param {*} id the module id
      * @param {*} name the name of the id
      */
-    createModule: async (course, id, name) => {
+    createModule: async (courseName, moduleId, moduleName, timestamp) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (c:course {Name: $courseName}) 
-                     MERGE (c)-[:HAS_MODULE]->(:module {Course: $course, Id: $id, Name: $name})`;
-        let params = {"courseName": course, "course": course, "id": id, "name": name};
+                     MERGE (c)-[:HAS_MODULE]->(:module {Id: $moduleId, Name: $moduleName, CreatedAt: $timestamp})`;
+        let params = {courseName, moduleId, moduleName, timestamp};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1690,7 +1688,7 @@ const db = {
         OPTIONAL MATCH 
             (m)-[:HAS_CONTENT]->(content)
         RETURN  
-            m, collect(content) AS contents
+            m, collect(content) AS contents ORDER BY m.CreatedAt
         `;
         let params = { course };
         let result;
@@ -1701,12 +1699,45 @@ const db = {
             console.log(err);
         }
         let modules = []; 
-
+        /*
+            Record structure: 
+                .get('m') => module info
+                .get('contents') => array of content info that belongs to the module 
+        */
         for (const record of result.records) {
-            let moduleInfo = record.get('m'); 
+            let moduleRecord = record.get('m');
+            let moduleInfo = {
+                id: moduleRecord.properties.Id,
+                name: moduleRecord.properties.Name,
+                contents: []
+            }
             let contents = record.get('contents'); 
-            console.log(moduleInfo); 
-            console.log(contents); 
+            moduleInfo.contents = [];
+            for (const content of contents) {
+                let type = content.labels[0]; 
+                let contentInfo = {
+                    id: content.properties.Id,
+                    name: content.properties.Name,
+                    description: content.properties.Description, 
+                    type
+                }
+                // Type specific fields
+                switch (type) {
+                    case 'reading': 
+                        contentInfo.path = content.properties.Path; 
+                        break; 
+                    case 'video': 
+                        contentInfo.source = content.properties.Source;
+                        contentInfo.vid = content.properties.Vid;  
+                        break; 
+                    case 'deliverable': 
+                        contentIndo.due = content.properties.Due_time; 
+                        break; 
+                    default: break; 
+                }
+                moduleInfo.contents.push(contentInfo); 
+            }
+            modules.push(moduleInfo); 
         }
 
         session.close();

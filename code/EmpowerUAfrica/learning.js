@@ -208,34 +208,33 @@ router.post('/updateCourse', async (req, res) => {
 router.put('/createModule', async(req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    const courseName = req.courseName;
-    const moduleName = req.moduleName;
-    const timestamp = utils.timestamp(); 
-    const moduleId = 'M' + utils.URLSafe(utils.hash(moduleName + timestamp.toString())); 
-
+    const {courseName, moduleName} = req.body; 
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
+        res.status(401).json({
             message: 'You have to sign in before making a course. '
         });
         return;
     }
 
-    const isInstructor = await db.checkIsInstructorFromCourse(courseName, username);
+    const timestamp = utils.timestamp(); 
+    const moduleId = 'M' + utils.URLSafe(utils.hash(moduleName + timestamp.toString())); 
+    const courseInfo = (await db.searchCourses(username, {name_equals: courseName}))[0]; 
+
+    if (courseInfo === undefined) {
+        // The course does not exist. 
+        res.status(404).json({
+            message: 'The course specified does not exist. '
+        });
+        return; 
+    }
+    const isInstructor = courseInfo.instructor === username; 
     if(!isInstructor){
         // The user is not an instructor for this course. 
         res.status(403).json({
-            mesage: 'You are not an instructor for this course. '
+            message: 'You are not an instructor for this course. '
         });
-        return;
-    }
-
-
-    // checks if course username exists
-    let course = await db.searchCourseByName(courseName);
-    if(course === null){
-        res.status(404).json({message: "Course does not exist"});
         return; 
     }
 
@@ -249,7 +248,7 @@ router.put('/createModule', async(req, res) => {
         return; 
     }
 
-    await db.createModule(courseName, moduleId, moduleName); 
+    await db.createModule(courseName, moduleId, moduleName, timestamp); 
     res.json({
         message: 'Success'
     });
@@ -378,10 +377,10 @@ router.get('/getCourseContent', async (req, res) => {
     }
     // If the user is an admin, skip the enrollment test. 
 
-    result.name = courseContent.name;
-    result.instructor = courseContent.instructor;
-    result.description = courseContent.description;
-    result.module = await db.getAllModules(courseName);
+    result.name = courseContent.name || '';
+    result.instructor = courseContent.instructor || '';
+    result.description = courseContent.description || '';
+    result.modules = await db.getAllModules(courseName);
     console.log(courseContent); 
     res.status(200).json(result);
 });

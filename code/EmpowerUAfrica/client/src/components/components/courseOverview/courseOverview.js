@@ -65,7 +65,7 @@ export default class courseOverview extends Component{
 
     gotoCoursePage = () => {
         let { enrolled } = this.state; 
-        if (enrolled !== true) {
+        if (enrolled !== true && !Utils.isAdmin()) {
             alert('Please enroll first. '); 
             return; 
         }

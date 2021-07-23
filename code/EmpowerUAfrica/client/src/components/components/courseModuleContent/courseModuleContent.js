@@ -69,7 +69,11 @@ export class Video extends Component {
     render() {
         const video = this.props.content;
         const expand = this.state.expand; 
-        const videoY2bId = 'dQw4w9WgXcQ'; 
+        const { source, vid } = video; 
+        let embeddedVideo; 
+        if (source === 'YouTube') {
+            embeddedVideo = <iframe className="embedded-video"  src={`https://www.youtube.com/embed/${vid}`} title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        }
         return (
             <div className="course-module-content">
                 <div onClick={this.toggleExpand} style={{cursor: 'pointer'}}>
@@ -91,7 +95,7 @@ export class Video extends Component {
                 <div class="video-wrapper">
                 {
                     expand === true? 
-                    <iframe className="embedded-video"  src={`https://www.youtube.com/embed/${videoY2bId}`} title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>:
+                    embeddedVideo:
                     null
                 }
                 </div>
