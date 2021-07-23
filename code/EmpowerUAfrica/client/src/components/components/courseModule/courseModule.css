@@ -15,10 +15,6 @@
     display: inline-block;
 }
 
-.module_deliver>div:nth-child(1) button{
-    float: right;
-    margin-top: 20px;
-}
 
 .module_content>div {
     border-bottom: 2px solid rgb(54, 49, 49);
@@ -44,3 +40,36 @@
     float: right;
     background: none;
 }
+
+.edit-module-icon {
+    margin-left: 1.5em;
+    width: 1.5em;
+    height: 1.5em;
+    opacity: .7;
+    transition: 300ms;
+}
+.edit-module-icon:hover {
+    opacity: 1;
+}
+
+.edit-module {
+    margin: .4em 0;
+}
+
+.edit-module  input{
+    font-size: 1.5em;
+    width: 100%;
+}
+
+.edit-module  button {
+    border-radius: 7px;
+    transition: 300ms;
+    border: 1px solid darkgreen; 
+    cursor: pointer;
+    margin: 0 auto;
+}
+
+.edit-module button > h2 {
+    margin: .25em .3em;
+}
+

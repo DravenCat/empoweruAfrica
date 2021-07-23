@@ -12,7 +12,7 @@
   --btn-confirm-color: yellowgreen; 
   --btn-cancel-color: rgb(252, 57, 45); 
   --btn-confirm-hover-color: rgb(102, 145, 16);
-  --btn-cancel-hover-color: rgb(255, 97, 85); 
+  --btn-cancel-hover-color: darkred; 
   font-family: sans-serif;
 }
 
@@ -66,7 +66,19 @@
   border-right: 12px solid cadetblue;
   border-bottom: 7px solid transparent;
 }
+.confirm-btn {
+  background-color: var(--btn-confirm-color);
+}
+.confirm-btn:hover {
+  background-color: var(--btn-confirm-hover-color);
+}
+.cancel-btn {
+  background-color: var(--btn-cancel-color);
+}
+.cancel-btn:hover {
+  background-color: var(--btn-cancel-hover-color);
+}
 
 .page {
-  min-height: 70%;
+  min-height: 100%;
 }

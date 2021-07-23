@@ -813,14 +813,15 @@ const db = {
      * @param {*} id the id of the deliverable
      * @param {*} title the title of the deliverable
      * @param {*} content deliverable content
+     * @param {*} total_points total amount of points available to award for the deliverable
      * @param {*} posted_timestamp the date when the deliverable is posted
      * @param {*} due_timestamp the date when the deliverable will due
      */
-    createDeliverable: async (id, title, content, posted_timestamp, due_timestamp = -1) => {
+    createDeliverable: async (id, title, content, total_points, posted_timestamp, due_timestamp = -1) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `CREATE (a:deliverable 
-                            {Id: $id, Title: $title, Content: $content, Posted_time: $posted, Due_time: $due})`;
-        let params = {"id": id, "title": title, "content": content,
+                            {Id: $id, Title: $title, Content: $content, Total_points: $total_points, Posted_time: $posted, Due_time: $due})`;
+        let params = {"id": id, "title": title, "content": content, "total_points": total_points,
                       "posted": neo4j.int(posted_timestamp), "due": neo4j.int(due_timestamp), "id": moduleId};
         try {
             await session.run(query, params);
@@ -835,14 +836,16 @@ const db = {
      * Set the deliverable to new due. If missing the second paramaters, it will be set to -1
      * @param {*} id the id of the deliverable
      * @param {*} title the title of the deliverable
+     * @param {*} total_points total amount of points available to award for the deliverable
      * @param {*} description the new description
      */
-    editDeliverable: async (id, title, description) => {
+    editDeliverable: async (id, title, total_points, description) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (a:deliverable {Id: $id}) 
                      SET a.Title = $title, 
-                         a.Content = $content`;
-        let params = {"id": id, "title": title, "content": description};
+                         a.Content = $content,
+                         a.Total_points = $total_points`;
+        let params = {"id": id, "title": title, "total_points": total_points, "content": description};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1037,7 +1040,7 @@ const db = {
      * @param {*} username (optional)
      *      when provided, this function will also return whether the user is enrolled in
      *      the course or not. 
-     * @param {*} criteria 
+     * @param {*} criteria can be an object with any combinition of the following fields
      *      {
      *          'name_contains': string,
      *          'enrolled_by': string,
@@ -1061,27 +1064,26 @@ const db = {
         let constraintStr = constraints.length === 0? 
             '': 
             `WHERE ${constraints.join(' AND ')}`; 
-
         let query = `MATCH 
-                        (c:course),
-                        (u:user)-[:TEACH_COURSE]->(c)
+                        (c:course)
                     ${constraintStr}
+                    OPTIONAL MATCH
+                        (u:user)-[:TEACH_COURSE]->(c)
                      RETURN c, u.UserName AS instructor`;
         let params = criteria; 
         if (username !== undefined) {
             query = 
                 `MATCH 
-                    (c:course),
-                    (u:user)-[:TEACH_COURSE]->(c)
+                    (c:course)
                 ${constraintStr}
+                OPTIONAL MATCH
+                    (u:user)-[:TEACH_COURSE]->(c)
                 OPTIONAL MATCH 
                     (s:user {UserName:$username})-[:ENROLLED_IN]->(c)
                 RETURN c, u.UserName AS instructor, count(s) AS enrolled`;
             params.username = username; 
         }
         let result;
-        console.log(query); 
-        console.log(params); 
         try {
             result = await session.run(query, params);
             let records = result.records;
@@ -1094,7 +1096,7 @@ const db = {
                     instructor
                 }
                 if (username !== undefined) {
-                    let enrolled = records[i].get('enrolled');
+                    let enrolled = records[i].get('enrolled').low;
                     if (enrolled !== 0) {
                         courseData.enrolled = true; 
                     }
@@ -1170,7 +1172,12 @@ const db = {
      */
     enrollCourse: async (name, username) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MERGE (:user {Username: $username})-[:ENROLLED_IN]->(:course {Name: $name})`;
+        let query = `
+        MATCH 
+            (u:user {UserName: $username}),
+            (c:course {Name: $name})
+        MERGE (u)-[:ENROLLED_IN]->(c)
+        `;
 
         let params = {"username": username, "name": name};
         try {
@@ -1189,9 +1196,9 @@ const db = {
      */
     dropCourse: async (name, username) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (:user {Username: $username})-[e:ENROLLED_IN]->(:course {Name: $name}) 
-
-                     DELETE e`;
+        let query = 
+        `MATCH (:user {UserName: $username})-[e:ENROLLED_IN]->(:course {Name: $name}) 
+        DELETE e`;
         let params = {"username": username, "name": name};
         try {
             await session.run(query, params);
@@ -1309,10 +1316,11 @@ const db = {
      * @param {*} url the url of the video
      * @param {*} posted_timestamp the posted time of the video
      */
-    createVideo: async (id, name, description, url, posted_timestamp) => {
+    createVideo: async (id, name, description, vid, posted_timestamp) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `CREATE (v:video {Id: $id, Name: $name, Description: $description, Url: $url, Post_time: $posted})`;
-        let params = {"id": id, "name": name, "description": description, "url": url, "posted": posted_timestamp};
+        let query = `CREATE 
+            (v:video {Id: $id, Name: $name, Description: $description, Source: $source, Vid: $vid, Post_time: $posted})`;
+        let params = {id, name, description, vid, "posted": posted_timestamp, source: 'YouTube'};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1489,11 +1497,11 @@ const db = {
      * @param {*} id the module id
      * @param {*} name the name of the id
      */
-    createModule: async (course, id, name) => {
+    createModule: async (courseName, moduleId, moduleName, timestamp) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (c:course {Name: $courseName}) 
-                     MERGE (c)-[:HAS_MODULE]->(:module {Course: $course, Id: $id, Name: $name})`;
-        let params = {"courseName": course, "course": course, "id": id, "name": name};
+                     MERGE (c)-[:HAS_MODULE]->(:module {Id: $moduleId, Name: $moduleName, CreatedAt: $timestamp})`;
+        let params = {courseName, moduleId, moduleName, timestamp};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1675,9 +1683,17 @@ const db = {
      */
     getAllModules: async (course) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (m:module {Course: $course})
-                     RETURN m`;
-        let params = {"course": course};
+        let query = 
+        `
+        MATCH 
+            (c:course {Name: $course}),
+            (c)-[:HAS_MODULE]->(m:module)
+        OPTIONAL MATCH 
+            (m)-[:HAS_CONTENT]->(content)
+        RETURN  
+            m, collect(content) AS contents ORDER BY m.CreatedAt
+        `;
+        let params = { course };
         let result;
         try {
             result = await session.run(query, params);
@@ -1685,20 +1701,50 @@ const db = {
         } catch (err) {
             console.log(err);
         }
-        var moduleSet = [];
-        if (records.length == 0) {
-            return null;
-        }else {
-            for (let i = 0; i < records.length; i++) {
-                let module = records[i].get(0);
-                moduleSet.push({
-                    name: module.properties.Name,
-                    content: await this.getModule(module.properties.Id)
-                })
+        let modules = []; 
+        /*
+            Record structure: 
+                .get('m') => module info
+                .get('contents') => array of content info that belongs to the module 
+        */
+        for (const record of result.records) {
+            let moduleRecord = record.get('m');
+            let moduleInfo = {
+                id: moduleRecord.properties.Id,
+                name: moduleRecord.properties.Name,
+                contents: []
             }
+            let contents = record.get('contents'); 
+            moduleInfo.contents = [];
+            for (const content of contents) {
+                let type = content.labels[0]; 
+                let contentInfo = {
+                    id: content.properties.Id,
+                    name: content.properties.Name,
+                    description: content.properties.Description, 
+                    type
+                }
+                // Type specific fields
+                switch (type) {
+                    case 'reading': 
+                        contentInfo.path = content.properties.Path; 
+                        break; 
+                    case 'video': 
+                        contentInfo.source = content.properties.Source;
+                        contentInfo.vid = content.properties.Vid;  
+                        break; 
+                    case 'deliverable': 
+                        contentIndo.due = content.properties.Due_time; 
+                        break; 
+                    default: break; 
+                }
+                moduleInfo.contents.push(contentInfo); 
+            }
+            modules.push(moduleInfo); 
         }
+
         session.close();
-        return moduleSet;
+        return modules;
     },
 
     /**
@@ -1842,10 +1888,14 @@ const db = {
      * @param {*} name the name of the course
      */
     deleteCourse: async (name) => {
-        await db.deleteAllModule(name);
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (c:course {Name: $name})
-                     DETACH DELETE c`;
+        let query = 
+        `
+        MATCH (c: course {Name: $name})
+        OPTIONAL MATCH (c)-[:HAS_MODULE]-(m: module)
+        OPTIONAL MATCH (m)-[:HAS_CONTENT]-(content)
+        DETACH DELETE c, m, content
+        `;
         let params = {name};
         try {
             await session.run(query, params);

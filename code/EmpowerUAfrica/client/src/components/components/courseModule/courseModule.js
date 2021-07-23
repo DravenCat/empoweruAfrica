@@ -14,7 +14,8 @@ export default class CourseModule extends Component{
 
     state = {
         expand: true,
-        createMaterial: false
+        createMaterial: false,
+        editModule: false
     }
 
     toggleExpand = () => {
@@ -28,9 +29,25 @@ export default class CourseModule extends Component{
             createMaterial: true
         })
     }
+    collapseCreateMaterialPanel = () => {
+        this.setState({
+            createMaterial: false
+        })
+    }
+
+    editModule = () => {
+        this.setState({
+            editModule: true 
+        }); 
+    }
+    discardEditModule = () => {
+        this.setState({
+            editModule: false 
+        }); 
+    }
 
     render() {
-        const { expand, createMaterial } = this.state; 
+        const { expand, createMaterial, editModule } = this.state; 
         const { view, courseModule } = this.props; 
         const contents = courseModule.contents.map(
             content => {
@@ -47,8 +64,25 @@ export default class CourseModule extends Component{
             <div className="module_deliver">
                 <div style={{cursor: 'pointer'}}>
                     <div onClick={this.toggleExpand}>
-                        <h2>{courseModule.name}</h2>
-
+                        
+                        {
+                            editModule === true? 
+                            <EditModule collapse={this.discardEditModule}/>
+                            :
+                            <>
+                            <h2>{courseModule.name}</h2>
+                            {
+                                view === 'instructor'? 
+                                <img 
+                                alt="edit module" 
+                                src="/icons/edit.png"
+                                className="edit-module-icon"
+                                onClick={(event) => {this.editModule(); event.stopPropagation()}}
+                                ></img>: null
+                            }
+                            </>
+                            
+                        }
                         <button  className="toggle-expand-btn">
                             <div className={expand===true? 'triangle-left': 'triangle-down'}>
 
@@ -61,14 +95,11 @@ export default class CourseModule extends Component{
                     <div className='module_content'>
                         {contents}
                         { view === 'student' ? null :
+                            createMaterial === true ?
+                            <CreateMaterial module={courseModule} collapse={this.collapseCreateMaterialPanel}/>:
                             <button onClick={this.expandCreateMaterialPanel} id='add_deliver'>
                                 +
                             </button>
-                        }
-                        {
-                            createMaterial === true ?
-                            <CreateMaterial />:
-                            null
                         }
                     </div>:
                     null
@@ -77,5 +108,44 @@ export default class CourseModule extends Component{
             </div>
         )
         
+    }
+}
+
+class EditModule extends Component {
+    render() {
+        return (
+            <div className="edit-module" onClick={(event)=> {event.stopPropagation()}}>
+                <table style={{width: '100%', textAlign: 'right'}}>
+                    <colgroup>
+                        <col style={{width: '60%'}}></col>
+                        <col style={{width: '20%'}}></col>
+                        <col style={{width: '20%'}}></col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <input placeholder="New Module Name" id="edit-module-name"></input>
+                            </td>
+                            <td>
+                                <button 
+                                className="cancel-btn"
+                                onClick={this.props.collapse}
+                                >
+                                    <h2>Discard</h2>
+                                </button>
+                            </td>
+                            <td>
+                                <button 
+                                className="confirm-btn"
+                                onClick={this.submitNewModule}
+                                >
+                                    <h2>Done</h2>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>  
+            </div>
+        ); 
     }
 }
