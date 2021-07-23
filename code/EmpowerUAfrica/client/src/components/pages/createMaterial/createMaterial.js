@@ -9,12 +9,21 @@ export default class CreateMaterial extends Component{
     }
 
     setInputType = () => {
-        const newType = document.getElementById('create-material-type-select').value; 
+        const { id: moduleId } = this.props.module; 
+        const newType = document.getElementById(`${moduleId}-new-content-type`).value; 
         this.setState({type: newType}); 
+    }
+
+    discard = () => {
+        this.props.collapse(); 
+    }
+    submit = () => {
+
     }
 
     render() {
         const { type } = this.state; 
+        const { id: moduleId } = this.props.module; 
         let contentUpload = null;
         
         switch (type) {
@@ -22,21 +31,21 @@ export default class CreateMaterial extends Component{
                 contentUpload =
                 <>
                     <h2>Reading file: </h2>
-                    <input type="file"></input>
+                    <input type="file" id={`${moduleId}-new-reading-file`}></input>
                 </>;
                 break;
             case 'video':
                 contentUpload =
                 <>
                     <h2>YouTube link: </h2>
-                    <input type="text"></input>
+                    <input type="text" id={`${moduleId}-new-video-link`}></input>
                 </>;
                 break;
             case 'deliverable':
                 contentUpload =
                 <>
                     <h2>Deadline: </h2>
-                    <input type="datetime-local"></input>
+                    <input type="datetime-local" id={`${moduleId}-new-deliverable-due`}></input>
                 </>;
                 break;
             default: 
@@ -48,12 +57,12 @@ export default class CreateMaterial extends Component{
                 
                 <div>
                     <h2>Name</h2>
-                    <input type='text'></input>
+                    <input type='text' id={`${moduleId}-new-content-name`}></input>
                 </div>
 
                 <div style={{marginTop: '.7em'}}>
                     <h2>Type</h2>
-                    <select onInput={this.setInputType} id="create-material-type-select">
+                    <select onInput={this.setInputType} id={`${moduleId}-new-content-type`}>
                         <option key="reading" value="reading">Reading</option>
                         <option key="video" value="video">YouTube Video</option>
                         <option key="deliverable" value="deliverable">Deliverable</option>
@@ -65,7 +74,7 @@ export default class CreateMaterial extends Component{
                 </div>
                 <div>
                     <div>
-                        <textarea>
+                        <textarea id={`${moduleId}-new-content-description`}>
 
                         </textarea>     
                     </div>
@@ -78,11 +87,11 @@ export default class CreateMaterial extends Component{
                 <div className="create-material-footer">
 
                     <button
-                    className='discard-btn'>Discard</button>
+                    className='discard-btn' onClick={this.discard}>Discard</button>
 
                     <button 
                     id='create-material-submit-btn' 
-                    className='submit-btn'>Submit</button>
+                    className='submit-btn' onClick={this.submit}>Submit</button>
                 </div>
                 
 

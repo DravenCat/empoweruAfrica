@@ -45,7 +45,7 @@ router.put('/createCourse', async (req, res) => {
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
+        res.status(401).json({
             message: 'You have to sign in before creating a course. '
         });
         return;
@@ -108,7 +108,7 @@ router.delete('/deleteCourse', async (req, res) => {
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
         res.status(403).json({
-            message: 'You have to sign in before deleting course. '
+            message: 'You have to sign in before deleting a course. '
         });
         return;
     }
@@ -208,34 +208,33 @@ router.post('/updateCourse', async (req, res) => {
 router.put('/createModule', async(req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    const courseName = req.courseName;
-    const moduleName = req.moduleName;
-    const timestamp = utils.timestamp(); 
-    const moduleId = 'M' + utils.URLSafe(utils.hash(moduleName + timestamp.toString())); 
-
+    const {courseName, moduleName} = req.body; 
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
+        res.status(401).json({
             message: 'You have to sign in before making a course. '
         });
         return;
     }
 
-    const isInstructor = await db.checkIsInstructorFromCourse(courseName, username);
+    const timestamp = utils.timestamp(); 
+    const moduleId = 'M' + utils.URLSafe(utils.hash(moduleName + timestamp.toString())); 
+    const courseInfo = (await db.searchCourses(username, {name_equals: courseName}))[0]; 
+
+    if (courseInfo === undefined) {
+        // The course does not exist. 
+        res.status(404).json({
+            message: 'The course specified does not exist. '
+        });
+        return; 
+    }
+    const isInstructor = courseInfo.instructor === username; 
     if(!isInstructor){
         // The user is not an instructor for this course. 
         res.status(403).json({
-            mesage: 'You are not an instructor for this course. '
+            message: 'You are not an instructor for this course. '
         });
-        return;
-    }
-
-
-    // checks if course username exists
-    let course = await db.searchCourseByName(courseName);
-    if(course === null){
-        res.status(404).json({message: "Course does not exist"});
         return; 
     }
 
@@ -249,7 +248,7 @@ router.put('/createModule', async(req, res) => {
         return; 
     }
 
-    await db.createModule(courseName, moduleId, moduleName); 
+    await db.createModule(courseName, moduleId, moduleName, timestamp); 
     res.json({
         message: 'Success'
     });
@@ -348,29 +347,42 @@ router.post('/deleteModule', async (req, res) => {
 router.get('/getCourseContent', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let courseName = req.courseName;
-    let courseContent = await db.searchCourseByName(courseName);
-    let result;
+    let { courseName } = req.query;
+    let result = {};
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
+        res.status(401).json({
             message: 'You have to sign in before getting course content. '
         });
         return;
     }
-
-    if(courseContent !== null){
-        result.name = courseContent.name;
-        result.instructor = courseContent.instructor;
-        result.description = courseContent.description;
-        result.module = await db.getAllModules(courseName);
-        res.status(200).json(result);
-    }else{
+    
+    if (!(await db.courseExists(courseName))) {
+        // If the course does not exist. 
         res.status(404).json({
             message: 'Course not found'
         });
+        return; 
     }
+    let courseContent = (await db.searchCourses(username, {name_equals: courseName}))[0]; 
+
+    if (!(await admin.isAdmin(username))) {
+        if (courseContent.instructor !== username && courseContent.enrolled !== true) {
+            res.status(403).json({
+                message: 'You do not have the permission to view the contents of this course. Enroll first. '
+            });
+            return;
+        }
+    }
+    // If the user is an admin, skip the enrollment test. 
+
+    result.name = courseContent.name || '';
+    result.instructor = courseContent.instructor || '';
+    result.description = courseContent.description || '';
+    result.modules = await db.getAllModules(courseName);
+    console.log(courseContent); 
+    res.status(200).json(result);
 });
 
 
@@ -380,14 +392,14 @@ router.get('/getCourseContent', async (req, res) => {
         courseName: String
         token: String
 */
-router.get('/enrollCourse', async (req, res) => {
+router.post('/enrollCourse', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let courseName = req.courseName;
+    let { courseName } = req.body;
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
+        res.status(401).json({
             message: 'You have to sign in before enrolling in course. '
         });
         return;
@@ -405,29 +417,17 @@ router.get('/enrollCourse', async (req, res) => {
     Endpoint for when the user wants to drop a course
     Request parameters:
         courseName: String
-        token: String
 */
-router.get('/dropCourse', async (req, res) => {
+router.post('/dropCourse', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let courseName = req.courseName;
+    let { courseName } = req.body;
 
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
+        res.status(401).json({
             message: 'You have to sign in before dropping course. '
-        });
-        return;
-    }
-
-
-    const isEnrolled = await db.checkEnrollment(username, courseName);
-
-    if (!isEnrolled) {
-        // The user havn't logged in, or the token has expired. 
-        res.status(400).json({
-            message: 'You are already not enrolled in the course! '
         });
         return;
     }
