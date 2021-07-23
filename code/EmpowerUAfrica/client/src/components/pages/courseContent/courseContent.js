@@ -64,7 +64,7 @@ export default class courseModule extends Component{
         const courseName = this.props.match.params.course_name; 
         let courseContent = {
             "name": "Course Name", 
-            "instructor": "username",
+            "instructor": "Josiah",
             "description": "course description",
             "modules": [
                 {
@@ -96,6 +96,7 @@ export default class courseModule extends Component{
                 }
             ]
         }
+        return courseContent;
         let res, body; 
         try {
             ( { res, body } = await Utils.ajax(

@@ -22,6 +22,8 @@ import MyCourses from './components/pages/myCourse/myCourse';
 import CourseContent from './components/pages/courseContent/courseContent';
 import CreateMaterial from './components/pages/createMaterial/createMaterial';
 import AddCourse from './components/pages/addCourse/addCourse';
+import SubmitAssignment from './components/pages/submitAssignment/submitAssignment';
+import GradeAssignment from './components/pages/gradeAssignment/gradeAssignment';
 
 // import EditProfile from './components/pages/profile_edit/profile_edit'; 
 
@@ -100,6 +102,14 @@ export default function App() {
         </Route>
 
         <Route exact path="/learning/edit_course/:course_name" key="edit-course" component={AddCourse}>     
+        </Route>
+
+        <Route exact path="/learning/submit_assignment" key="add-course">
+          <SubmitAssignment/>
+        </Route>
+
+        <Route exact path="/learning/grade_assignment" key="add-course">
+          <GradeAssignment/>
         </Route>
         
       </Switch>

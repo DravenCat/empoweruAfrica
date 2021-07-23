@@ -113,9 +113,12 @@ export class Deliverable extends Component {
                 <h3 className="course-module-content-name">{deliverable.name}</h3>
                 <span>{Utils.trimString(deliverable.description,descAbbrivLen)}</span><br />
                 {
-                    overdue === true? 
+                    overdue === false? 
                     <span className="overdue">Due {Utils.timeStampToTime(deliverable.due)}</span>:
-                    <span>Due {Utils.timeStampToTime(deliverable.due)}</span>
+                    <div>
+                        <span>Due {Utils.timeStampToTime(deliverable.due)}</span>
+                        <a href='/learning/submit_assignment' id='submit_assignment'>Submit</a>
+                    </div>
                 }
                 
 
