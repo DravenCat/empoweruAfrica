@@ -301,7 +301,7 @@ router.post('/editModule', async (req, res) => {
         moduleId: String
         token: String
 */
-router.post('/deleteModule', async (req, res) => {
+router.delete('/deleteModule', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
     let moduleId = req.moduleId;
