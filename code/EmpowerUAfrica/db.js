@@ -977,7 +977,7 @@ const db = {
      * @param {*} id the unique id of the submission
      * @param {*} content the content of the submission
      * @param {*} media the submission media
-     * @param {*} posted_timestamp the date when the deliverable is posted
+     * @param {*} posted_timestamp the date when the submission is submitted
      */
     createSubmission: async (username, deliverableId, submissionId, content, media, posted_timestamp) => {
         let session = Neo4jDriver.wrappedSession();
