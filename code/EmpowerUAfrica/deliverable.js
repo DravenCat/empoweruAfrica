@@ -245,29 +245,4 @@ router.post('/createSubmission', async (req, res) => {
 }); 
 
 
-
-
-/* 
-    Endpoint for when the user wants to create an deliverable
-    Request parameters:
-        deliverableId: String
-        moduleId: String
-*/
-router.post('/sendSubmission', async (req, res) => {
-    let token = req.cookies.token; 
-    let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let deliverableId = req.deliverableId;
-
-    if (username === null) {
-        // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
-            message: 'You have to sign in before making a deliverable. '
-        });
-        return;
-    }
-
-
-}); 
-
-
 module.exports = router;
