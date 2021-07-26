@@ -13,13 +13,15 @@ const router = express.Router();
     Request parameters:
         name: String
         description: String
+        total_points: String
         moduleId: String
         dueDate: int
 */
 router.post('/createDeliverable', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let moduleId = req.moduleId;
+    let moduleId = req.body.moduleId;
+    let total_points = req.body.total_points;
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
@@ -44,7 +46,7 @@ router.post('/createDeliverable', async (req, res) => {
     const deliverableId = 'D' + utils.URLSafe(utils.hash(name + timestamp.toString())); 
 
 
-    const dueDate = req.dueDate;
+    const dueDate = req.body.dueDate;
 
     let errCode = 0;
 
@@ -68,7 +70,7 @@ router.post('/createDeliverable', async (req, res) => {
         });
     }
 
-    await db.createDeliverable(deliverableId, name, description, timestamp, dueDate); 
+    await db.createDeliverable(deliverableId, name, description, total_points, timestamp, dueDate); 
     await db.addContentIntoModule("deliverable", deliverableId, moduleId);
     res.json({
         message: 'Success'
@@ -83,17 +85,20 @@ router.post('/createDeliverable', async (req, res) => {
         deliverableId: String
         name: String
         description: String
+        total_points: String
         newDueDate: int
         moduleId: String
 */
 router.post('/editDeliverable', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let deliverableId = req.deliverableId;
-    let moduleId = req.moduleId;
-    let name = req.name;
-    let newDueDate = req.newDueDate;
-    let description = req.description;
+    let deliverableId = req.body.deliverableId;
+    let moduleId = req.body.moduleId;
+    let name = req.body.name;
+    let newDueDate = req.body.newDueDate;
+    let description = req.body.description;
+    let total_points = req.body.total_points;
+
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
@@ -127,7 +132,7 @@ router.post('/editDeliverable', async (req, res) => {
         });
     }
 
-    await db.editDeliverable(deliverableId, name, description);
+    await db.editDeliverable(deliverableId, name, total_points, description);
     await db.setDeliverableDue(deliverableId, newDueDate);
     res.json({
         message: 'Success'
@@ -145,8 +150,8 @@ router.post('/editDeliverable', async (req, res) => {
 router.post('/deleteDeliverable', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let moduleId = req.moduleId;
-    let deliverableId = req.deliverableId;
+    let moduleId = req.body.moduleId;
+    let deliverableId = req.body.deliverableId;
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 

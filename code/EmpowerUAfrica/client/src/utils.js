@@ -82,6 +82,24 @@ const Utils = {
     },
     getY2bVideoId(url) {
         
+    },
+    /**
+     * A wrapper for fetch() to reduce repeated code in ajax requests. 
+     * @param url: string, the target url of this request. 
+     * @param req: object, the request object to be passed into fetch()
+     * 
+     * @returns object {res, body}
+     */
+    ajax: async (url, req) => {
+        let res = await fetch(url, req); 
+        let body; 
+        if (res.headers.get('Content-Type').indexOf('application/json') !== -1) {
+            body = await res.json(); 
+        }
+        else {
+            body = await res.text(); 
+        }
+        return {res, body}
     }
 }
 
