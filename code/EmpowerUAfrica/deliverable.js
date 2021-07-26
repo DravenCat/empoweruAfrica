@@ -250,4 +250,46 @@ router.post('/createSubmission', async (req, res) => {
 }); 
 
 
+
+/* 
+    Endpoint for when the user wants to get feedback for a submission
+    Request parameters:
+        submissionId: String
+*/
+router.get('/getFeedback', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    let courseName = req.body.courseName;
+    let submissionId = req.body.submissionId;
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            message: 'You have to sign in before making a deliverable. '
+        });
+        return;
+    }
+
+    const isEnrolled = await db.checkEnrollment(courseName, username);
+    if(!isEnrolled){
+        // The user is not an enrolled in this course. 
+        res.status(403).json({
+            mesage: 'You are not an enrolled in this course. '
+        });
+        return;
+    }
+
+    // need to check if submission exists
+    submissionGrade = await db.getSubmissionGrade(submissionId);
+
+
+    if(submissionGrade != null){
+        res.status(200).json({submissionGrade});
+    }else{
+        res.status(400).json({
+            message: 'Submission not found.'
+        });
+    }
+});
+
 module.exports = router;

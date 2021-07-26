@@ -1018,7 +1018,7 @@ const db = {
      * @param {*} id the submission id
      * @returns the grade of the submission
      */
-    getSubMissionGrade: async (id) => {
+    getSubmissionGrade: async (id) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (s:submission {Id: $id}) 
                      RETURN s.Grade AS grade`;
