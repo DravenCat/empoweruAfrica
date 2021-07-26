@@ -181,6 +181,93 @@ router.post('/deleteDeliverable', async (req, res) => {
 }); 
 
 
+/* 
+    Endpoint for when the user wants to create a submission
+    Request parameters:
+        deliverableId: String
+        courseName: String
+        content: String
+        media: File
+        
+*/
+router.post('/createSubmission', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    let courseName = req.body.courseName;
+    let deliverableId = req.body.deliverableId;
+    
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            message: 'You have to sign in before making a deliverable. '
+        });
+        return;
+    }
+
+    const isEnrolled = await db.checkEnrollment(courseName, username);
+    if(!isEnrolled){
+        // The user is not an enrolled in this course. 
+        res.status(403).json({
+            mesage: 'You are not an enrolled in this course. '
+        });
+        return;
+    }
+
+    let submissionFile = "None";
+    if (req.files && Object.keys(req.files).length !== 0) {
+        submissionFile = req.files[Object.keys(req.files)[0]]; 
+        let extensionNames = [null, '.pdf', '.txt'];
+        let extension = submissionFile.name.slice(-3) === 'png'? 2: 1;
+        let path = 'client/public/files/users/' + username + extensionNames[extension];
+        try {
+            await submissionFile.mv(path); 
+        }
+        catch (err) {
+            console.error(err); 
+            res.status(500).json({
+                message: 'Error when moving the file onto server. '
+            });
+            return; 
+        }
+    }
+
+
+    const content  = req.body.content; 
+    const timestamp = utils.timestamp(); 
+    const submissionId = utils.URLSafe(utils.hash(name + timestamp.toString())); 
+
+
+    await db.createSubmission(username, deliverableId, submissionId, content, submissionFile, timestamp); 
+    res.json({
+        message: 'Success'
+    });
+}); 
+
+
+
+
+/* 
+    Endpoint for when the user wants to create an deliverable
+    Request parameters:
+        deliverableId: String
+        moduleId: String
+*/
+router.post('/sendSubmission', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    let deliverableId = req.deliverableId;
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            message: 'You have to sign in before making a deliverable. '
+        });
+        return;
+    }
+
+
+}); 
 
 
 module.exports = router;
