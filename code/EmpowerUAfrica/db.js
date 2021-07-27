@@ -998,13 +998,14 @@ const db = {
     /**
      * Set the grade of the submission to the new grade. If missing the second paramaters, it will be set to 0
      * @param {*} id the id of the submission
+     * @param {*} comment the comments for the submission
      * @param {*} grade the grade of the submission
      */
-    gradeSubmission: async (id, grade = -1) => {
+    gradeSubmission: async (id, comment, grade = -1) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (s:submission {Id: $id}) 
-                     SET s.Grade = $grade`;
-        let params = {"id": id, "grade": neo4j.int(grade)};
+                     SET s.Grade = $grade, s.Comment = $comment`;
+        let params = {"id": id, "grade": neo4j.int(grade), "comment":comment};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1032,6 +1033,27 @@ const db = {
         let grade = result.records[0].get('grade');
         session.close();
         return grade;
+    },
+
+    /**
+     * Get the comment of the submission
+     * @param {*} id the submission id
+     * @returns the comment of the submission
+     */
+    getSubmissionComments: async (id) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (s:submission {Id: $id}) 
+                     RETURN s.Comment AS comment`;
+        let params = {"id": id};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.error(err);
+        }
+        let comment = result.records[0].get('comment');
+        session.close();
+        return comment;
     },
 
     /**
