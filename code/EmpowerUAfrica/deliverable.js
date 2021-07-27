@@ -279,7 +279,16 @@ router.get('/getFeedback', async (req, res) => {
         return;
     }
 
-    // need to check if submission exists
+    const subExists = await db.checkSubmissionExist(submissionId);
+    if(!subExists){
+        // The user is not an enrolled in this course. 
+        res.status(400).json({
+            mesage: 'Submission does not exist. '
+        });
+        return;
+    }
+
+
     submissionGrade = await db.getSubmissionGrade(submissionId);
 
 
