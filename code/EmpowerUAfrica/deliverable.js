@@ -250,6 +250,46 @@ router.post('/createSubmission', async (req, res) => {
 }); 
 
 
+
+/* 
+    Endpoint for when the user wants to get feedback for a submission
+    Request parameters:
+        submissionId: String
+*/
+router.get('/getFeedback', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    let courseName = req.body.courseName;
+    let submissionId = req.body.submissionId;
+  
+    const isEnrolled = await db.checkEnrollment(courseName, username);
+    if(!isEnrolled){
+        // The user is not an enrolled in this course. 
+        res.status(403).json({
+            mesage: 'You are not an enrolled in this course. '
+        });
+        return;
+    }
+
+    const subExists = await db.checkSubmissionExist(submissionId);
+    if(!subExists){
+        // The user is not an enrolled in this course. 
+        res.status(400).json({
+            mesage: 'Submission does not exist. '
+          
+    submissionGrade = await db.getSubmissionGrade(submissionId);
+
+
+    if(submissionGrade != null){
+        res.status(200).json({submissionGrade});
+    }else{
+        res.status(400).json({
+            message: 'Submission not found.'
+        });
+    }
+});
+  
+  
 /* 
     Endpoint for when an instructor sends feedback
     Request parameters:
@@ -269,6 +309,7 @@ router.post('/sendFeedback', async (req, res) => {
         });
         return;
     }
+
 
     const isInstructor = await db.checkIsInstructor(moduleId, username);
     if(!isInstructor){

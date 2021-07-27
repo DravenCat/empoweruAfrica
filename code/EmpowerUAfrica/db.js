@@ -1018,7 +1018,7 @@ const db = {
      * @param {*} id the submission id
      * @returns the grade of the submission
      */
-    getSubMissionGrade: async (id) => {
+    getSubmissionGrade: async (id) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (s:submission {Id: $id}) 
                      RETURN s.Grade AS grade`;
@@ -1956,6 +1956,26 @@ const db = {
         let exists = result.records[0].get('exists').low !== 0; 
         session.close(); 
         return exists; 
+    },
+
+    /**
+     * Check whether the submission exist
+     * @param {*} id the id of the submission
+     * @returns True if exists. False o/w
+     */
+    checkSubmissionExist: async (id) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (s:submission {Ud: $id}) 
+                     RETURN s`;
+        let params = {"id": id};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+        return result.records.length > 0;
     }
 
 
