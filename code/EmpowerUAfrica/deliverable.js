@@ -261,15 +261,7 @@ router.get('/getFeedback', async (req, res) => {
     let username = token === undefined? null: await db.getUsernameByToken(token); 
     let courseName = req.body.courseName;
     let submissionId = req.body.submissionId;
-
-    if (username === null) {
-        // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
-            message: 'You have to sign in before making a deliverable. '
-        });
-        return;
-    }
-
+  
     const isEnrolled = await db.checkEnrollment(courseName, username);
     if(!isEnrolled){
         // The user is not an enrolled in this course. 
@@ -284,11 +276,7 @@ router.get('/getFeedback', async (req, res) => {
         // The user is not an enrolled in this course. 
         res.status(400).json({
             mesage: 'Submission does not exist. '
-        });
-        return;
-    }
-
-
+          
     submissionGrade = await db.getSubmissionGrade(submissionId);
 
 
@@ -300,5 +288,48 @@ router.get('/getFeedback', async (req, res) => {
         });
     }
 });
+  
+  
+/* 
+    Endpoint for when an instructor sends feedback
+    Request parameters:
+        submissionId: String
+        grade: int
+*/
+router.post('/sendFeedback', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    let submissionId = req.body.submissionId;
+    let grade = req.body.grade;
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            message: 'You have to sign in before making a deliverable. '
+        });
+        return;
+    }
+
+
+    const isInstructor = await db.checkIsInstructor(moduleId, username);
+    if(!isInstructor){
+        // The user is not an instructor for this course. 
+        res.status(403).json({
+            mesage: 'You are not an instructor for this course. '
+        });
+        return;
+    }
+
+
+    // need to check if submission exists
+
+    
+    await db.gradeSubmission(submissionId, grade);
+    res.json({
+        message: 'Success'
+    });
+
+});
+
 
 module.exports = router;
