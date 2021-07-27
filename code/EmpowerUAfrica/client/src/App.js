@@ -104,11 +104,11 @@ export default function App() {
         <Route exact path="/learning/edit_course/:course_name" key="edit-course" component={AddCourse}>     
         </Route>
 
-        <Route exact path="/learning/submit_assignment" key="add-course">
+        <Route exact path="/learning/submit_assignment" key="submit_assignmen">
           <SubmitAssignment/>
         </Route>
 
-        <Route exact path="/learning/grade_assignment" key="add-course">
+        <Route exact path="/learning/grade_assignment" key="grade_assignment">
           <GradeAssignment/>
         </Route>
         
