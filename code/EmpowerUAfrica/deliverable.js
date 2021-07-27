@@ -276,12 +276,14 @@ router.get('/getFeedback', async (req, res) => {
         // The user is not an enrolled in this course. 
         res.status(400).json({
             mesage: 'Submission does not exist. '
-          
-    submissionGrade = await db.getSubmissionGrade(submissionId);
+        });
+    }
 
+    let submissionGrade = await db.getSubmissionGrade(submissionId);
+    let submissionComment = await db.getSubmissionComments(submissionId);
 
     if(submissionGrade != null){
-        res.status(200).json({submissionGrade});
+        res.status(200).json({grade: submissionGrade, comment: submissionComment});
     }else{
         res.status(400).json({
             message: 'Submission not found.'
@@ -294,6 +296,7 @@ router.get('/getFeedback', async (req, res) => {
     Endpoint for when an instructor sends feedback
     Request parameters:
         submissionId: String
+        comments: String
         grade: int
 */
 router.post('/sendFeedback', async (req, res) => {
@@ -301,6 +304,7 @@ router.post('/sendFeedback', async (req, res) => {
     let username = token === undefined? null: await db.getUsernameByToken(token); 
     let submissionId = req.body.submissionId;
     let grade = req.body.grade;
+    let comment = req.body.comments;
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
@@ -321,10 +325,15 @@ router.post('/sendFeedback', async (req, res) => {
     }
 
 
-    // need to check if submission exists
-
+    const subExists = await db.checkSubmissionExist(submissionId);
+    if(!subExists){
+        // The submission does not exist. 
+        res.status(400).json({
+            mesage: 'Submission does not exist. '
+        });
+    }
     
-    await db.gradeSubmission(submissionId, grade);
+    await db.gradeSubmission(submissionId, comment, grade);
     res.json({
         message: 'Success'
     });
