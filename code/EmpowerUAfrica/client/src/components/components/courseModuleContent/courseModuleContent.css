@@ -41,3 +41,8 @@
     float: right;
     background: none;
 }
+
+.course-module-content .icon {
+    height: 1.2em !important;
+    width: 1.2em !important;
+}

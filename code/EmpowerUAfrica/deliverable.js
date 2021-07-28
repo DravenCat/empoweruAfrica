@@ -145,42 +145,39 @@ router.post('/editDeliverable', async (req, res) => {
         deliverableId: String
         moduleId: String
 */
-router.post('/deleteDeliverable', async (req, res) => {
+router.delete('/deleteDeliverable', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let moduleId = req.body.moduleId;
-    let deliverableId = req.body.deliverableId;
-
+    const { id: deliverableId } = req.body;
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
-            message: 'You have to sign in before making a deliverable. '
+        res.status(401).json({
+            message: 'You have to sign in before you can modify course content. '
         });
         return;
     }
 
-    const isInstructor = await db.checkIsInstructor(moduleId, username);
-    if(!isInstructor){
+    let course = (await db.searchCourses(null, {has_content: deliverableId}))[0];
+    // If such course does not exist, db.searchCourses should return empty Array. 
+    if (course === undefined) {
+        res.status(404).json({
+            message: 'Deliverable does not exist. '
+        });
+        return;
+    } 
+
+    if(course.instructor !== username){
         // The user is not an instructor for this course. 
         res.status(403).json({
-            mesage: 'You are not an instructor for this course. '
+            message: 'You are not an instructor for this course. '
         });
         return;
     }
-
-    const deliverable = await db.searchDeliverableById(deliverableId);
-
-    if(deliverable === null){
-        res.status(404).json({
-            message: 'Deliverable not found'
-        });
-    }
-
     await db.deleteDeliverable(deliverableId);
+
     res.json({
         message: 'Success'
     });
-
 }); 
 
 

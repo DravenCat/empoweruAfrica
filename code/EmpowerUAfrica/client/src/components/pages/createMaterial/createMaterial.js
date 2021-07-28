@@ -41,7 +41,7 @@ export default class CreateMaterial extends Component{
                 url = createVideoURL; 
                 const videoURL = document.getElementById(`${moduleId}-new-video-link`).value; 
                 const vid = Utils.getY2bVideoId(videoURL); 
-                if (vid === undefined) {
+                if (vid === null) {
                     alert('Invalid YouTube video link. '); 
                     return; 
                 }
@@ -64,7 +64,7 @@ export default class CreateMaterial extends Component{
                     dueTimestamp = Math.round( Date.parse(dueTimeString) / 1000); 
                 }
                 newContent.dueTimestamp = dueTimestamp; 
-                newContent.maxPoints = maxPoints; 
+                newContent.totalPoints = maxPoints; 
                 break; 
             case 'reading':
                 url = `${createReadingURL}?name=${name}&description=${description}&moduleId=${moduleId}`; 

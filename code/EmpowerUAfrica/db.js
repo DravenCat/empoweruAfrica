@@ -885,9 +885,13 @@ const db = {
      */
     deleteDeliverable: async (id) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (s:submission)-[:SUBMIT_TO]->(a:deliverable {Id: $id}) 
-                     DETACH DELETE s, a`;
-        let params = {"id": id};
+        let query = 
+        `
+        MATCH (d: deliverable {Id: $id})
+        OPTIONAL MATCH (s: submission)-[:SUBMIT_TO]->(d)
+        DETACH DELETE d, s
+        `;
+        let params = { id };
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1374,10 +1378,9 @@ const db = {
      */
     deleteVideo: async (id) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (v:video {Id: $id}), 
-                           (:module)-[hs:HAS_CONTENT]-(v) 
-                     DELETE hs, v`;
-        let params = {"id": id};
+        let query = `MATCH (v:video {Id: $id})
+                     DETACH DELETE v`;
+        let params = { id };
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1465,9 +1468,8 @@ const db = {
      */
     deleteReading: async (id) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (r:reading {Id: $id}), 
-                           (:module)-[hs:HAS_CONTENT]-(r) 
-                     DELETE hs, r`;
+        let query = `MATCH (r:reading {Id: $id})
+                     DETACH DELETE r`;
         let params = {"id": id};
         try {
             await session.run(query, params);

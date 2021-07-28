@@ -145,36 +145,48 @@ router.post('/editReading', async (req, res) => {
 
 */
 router.post('/deleteReading', async (req, res) => {
-
-    const readingId = req.readingId;
+    const { id: readingId } = req.body;
 
     let token = req.cookies.token;
     let username = token === undefined? null: await db.getUsernameByToken(token); 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
-            mesage: 'You have to sign in before you can modify course content. '
+        res.status(401).json({
+            message: 'You have to sign in before you can modify course content. '
         });
         return;
     }
 
-    if(db.searchModuleById(moduleId) === null){
-        res.status(400).json({
-            mesage: 'Module does not exist. '
+    let promises = [db.searchReadingById(readingId), db.searchCourses(null, {has_content: readingId})];
+    let [reading, courses] = await Promise.all(promises); 
+    let course = courses[0]; 
+
+    // If such course does not exist, db.searchCourses should return empty Array. 
+    // If such reading does not exist, db.searchReadingById should return null. 
+    if (reading === null || course === undefined) {
+        res.status(404).json({
+            message: 'Reading does not exist. '
         });
         return;
     }
+    
 
-    if(!db.checkIsInstructor(moduleId, username)){
+    if (course.instructor !== username){
         // The user is not an instructor for this course. 
         res.status(403).json({
-            mesage: 'You are not an instructor for this course. '
+            message: 'You are not an instructor for this course. '
         });
         return;
     }
 
+    promises = [db.deleteReading(readingId), fs.unlink(`/client/public/${reading.path}`)]; 
+    try {
+        Promise.all(promises); 
+    }
+    catch (err) {
+        console.error(err);
+    }
 
-    await db.deleteReading(readingId);
     res.json({
         message: 'Success'
     });

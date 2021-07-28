@@ -8,6 +8,55 @@ import './courseModuleContent.css';
 */
 
 const descAbbrivLen = 100; 
+const deleteVideoURL = '/learning/deleteVideo';
+const deleteDeliverableURL = '/learning/deleteDeliverable';
+const deleteReadingURL = '/learning/deleteReading'; 
+
+/**
+ * 
+ * @param {string} id    id of the content. 
+ * @param {number} type  type of the content. 
+ *    0: reading, 1: video, 2: deliverable
+ * @returns 
+ */
+const deleteContent = async (id, type) => {
+    if (!window.confirm('Are you sure you want to delete this content? ')) {
+        return; 
+    }
+    let urls = [deleteReadingURL, deleteVideoURL, deleteDeliverableURL];
+    let url = urls[type]; 
+    if (url === undefined) {
+        return; 
+    }
+
+    let res, body; 
+    try {
+        ({ res, body } = await Utils.ajax(
+            url,
+            {
+                method: 'DELETE',
+                body: JSON.stringify({
+                    id
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+        )); 
+    }
+    catch(err) {
+        console.error(err); 
+        alert('Internet Failure'); 
+        return; 
+    }
+    if (!res.ok) {
+        alert(body.message); 
+        console.log(body); 
+    }
+    else {
+        window.location.reload(); 
+    }
+}
 
 export class Reading extends Component {
 
@@ -66,6 +115,10 @@ export class Video extends Component {
         })
     }
 
+    openVideoInNewWindow = () => {
+        window.open(`https://www.youtube.com/watch?v=${this.props.content.vid}`); 
+    }
+
     render() {
         const video = this.props.content;
         const expand = this.state.expand; 
@@ -78,12 +131,17 @@ export class Video extends Component {
             <div className="course-module-content">
                 <div onClick={this.toggleExpand} style={{cursor: 'pointer'}}>
                     <h3 className="course-module-content-name">{video.name}
+                    <img 
+                    alt="delete" 
+                    className="icon" 
+                    src="/icons/garbage.png" 
+                    onClick={(event) => {deleteContent(video.id, 1); event.stopPropagation()}}></img>
                     <button  className="toggle-expand-btn">
                         <div className={expand===true? 'triangle-left': 'triangle-down'}>
 
                         </div>
                     </button>
-                    <button onClick={(e) => {window.open(this.props.content.path); e.stopPropagation()}}>Open in new window</button>
+                    <button onClick={(e) => {this.openVideoInNewWindow(); e.stopPropagation()}}>Open in new window</button>
                     </h3>
                     {
                         expand === true? 
@@ -110,7 +168,13 @@ export class Deliverable extends Component {
         const overdue = Math.round(Date.now() / 1000) > deliverable.due && !deliverable.submitted; 
         return (
             <div className="course-module-content">
-                <h3 className="course-module-content-name">{deliverable.name}</h3>
+                <h3 className="course-module-content-name">{deliverable.name}
+                <img 
+                    alt="delete" 
+                    className="icon" 
+                    src="/icons/garbage.png" 
+                    onClick={(event) => {deleteContent(deliverable.id, 2); event.stopPropagation()}}></img>
+                </h3>
                 <span>{Utils.trimString(deliverable.description,descAbbrivLen)}</span><br />
                 {
                     overdue === true? 

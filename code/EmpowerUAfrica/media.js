@@ -118,43 +118,37 @@ router.post('/editVideo', async (req, res) => {
         token: String
         videoId: String
 */
-router.post('/deleteVideo', async (req, res) => {
+router.delete('/deleteVideo', async (req, res) => {
 
 
-    const videoId = req.videoId;
+    const { id: videoId } = req.body;
 
     let token = req.cookies.token;
     let username = token === undefined? null: await db.getUsernameByToken(token); 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
-            mesage: 'You have to sign in before you can modify course content. '
+        res.status(401).json({
+            message: 'You have to sign in before you can modify course content. '
         });
         return;
     }
 
-    if(db.getModule(moduleId) === null){
-        res.status(400).json({
-            mesage: 'Module does not exist. '
+    let course = (await db.searchCourses(null, {has_content: videoId}))[0];
+    // If such course does not exist, db.searchCourses should return empty Array. 
+    if (course === undefined) {
+        res.status(404).json({
+            message: 'Video does not exist. '
         });
         return;
-    }
+    } 
 
-    if(!db.checkIsInstructor(moduleId, username)){
+    if(course.instructor !== username){
         // The user is not an instructor for this course. 
         res.status(403).json({
-            mesage: 'You are not an instructor for this course. '
+            message: 'You are not an instructor for this course. '
         });
         return;
     }
-
-    if(db.searchVideoById(videoId) === null){
-        res.status(400).json({
-            mesage: 'Video does not exist. '
-        });
-        return;
-    }
-
     await db.deleteVideo(videoId);
 
     res.json({
