@@ -77,7 +77,12 @@ export class Reading extends Component {
             <div className="course-module-content">
                 <div onClick={this.toggleExpand} style={{cursor: 'pointer'}}>
                     <h3 className="course-module-content-name">{reading.name}
-                    
+                    <img 
+                    alt="delete" 
+                    className="icon" 
+                    src="/icons/garbage.png" 
+                    onClick={(event) => {deleteContent(reading.id, 0); event.stopPropagation()}}>
+                    </img>
                     <button  className="toggle-expand-btn">
                         <div className={expand===true? 'triangle-left': 'triangle-down'}>
                             

@@ -120,7 +120,6 @@ router.post('/editVideo', async (req, res) => {
 */
 router.delete('/deleteVideo', async (req, res) => {
 
-
     const { id: videoId } = req.body;
 
     let token = req.cookies.token;

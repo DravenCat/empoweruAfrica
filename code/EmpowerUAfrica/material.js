@@ -144,7 +144,7 @@ router.post('/editReading', async (req, res) => {
         readingId: String
 
 */
-router.post('/deleteReading', async (req, res) => {
+router.delete('/deleteReading', async (req, res) => {
     const { id: readingId } = req.body;
 
     let token = req.cookies.token;
@@ -181,7 +181,7 @@ router.post('/deleteReading', async (req, res) => {
 
     promises = [db.deleteReading(readingId), fs.unlink(`/client/public/${reading.path}`)]; 
     try {
-        Promise.all(promises); 
+        await Promise.all(promises); 
     }
     catch (err) {
         console.error(err);
