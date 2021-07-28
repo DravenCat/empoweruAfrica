@@ -59,7 +59,6 @@ router.put('/createVideo', async (req, res) => {
 /* 
     Endpoint to edit a video
     Request parameters:
-        token: String
         videoId: String
         moduleId: String
         name: String
@@ -68,30 +67,32 @@ router.put('/createVideo', async (req, res) => {
 */
 router.post('/editVideo', async (req, res) => {
 
-    const name = req.name;
-    const description = req.description;
-    const videoId = req.videoId;
-    const url = req.url;
-    const moduleId = req.moduleId;
+    // const name = req.name;
+    // const description = req.description;
+    // const videoId = req.videoId;
+    // const url = req.url;
+    // const moduleId = req.moduleId;
+    const { name, description, id: videoId, vid } = req.body; 
 
     let token = req.cookies.token;
     let username = token === undefined? null: await db.getUsernameByToken(token); 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
+        res.status(401).json({
             mesage: 'You have to sign in before you can modify course content. '
         });
         return;
     }
   
-    if(db.getModule(moduleId) === null){
-        res.status(400).json({
-            mesage: 'Module does not exist. '
+    const course = (await db.searchCourses(null, {has_content: videoId}))[0];
+    if (course === undefined) {
+        res.status(404).json({
+            mesage: 'Video does not exist. '
         });
         return;
     }
 
-    if(!db.checkIsInstructor(moduleId, username)){
+    if(course.instructor !== username){
         // The user is not an instructor for this course. 
         res.status(403).json({
             mesage: 'You are not an instructor for this course. '
@@ -99,13 +100,8 @@ router.post('/editVideo', async (req, res) => {
         return;
     }
 
-    if(db.searchVideoById(videoId) === null){
-        res.status(400).json({
-            mesage: 'Video does not exist. '
-        });
-        return;
-    }
-    await db.editVideo(videoId, name, description, url) ;
+    await db.editVideo(videoId, name, description, vid);
+
     res.json({
         message: 'Success'
     });

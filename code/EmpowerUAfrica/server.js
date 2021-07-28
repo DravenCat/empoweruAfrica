@@ -42,7 +42,9 @@ const expectedFields = {
     '/api/learning/searchCourse': ['name'],
     '/api/learning/deleteCourse': ['name'],
     '/api/learning/editModule': ['id', 'name'],
-    '/api/learning/deleteVideo': ['id']
+    '/api/learning/deleteVideo': ['id'],
+    '/api/learning/editVideo': ['name', 'description', 'videoId', 'vid'],
+    '/api/learning/editReading': ['name', 'description', 'readingId']
 };
 
 // parse the request body as json. 

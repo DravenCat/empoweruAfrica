@@ -846,13 +846,13 @@ const db = {
      * @param {*} total_points total amount of points available to award for the deliverable
      * @param {*} description the new description
      */
-    editDeliverable: async (id, title, total_points, description) => {
+    editDeliverable: async (id, title, totalPoints, description) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (a:deliverable {Id: $id}) 
                      SET a.Title = $title, 
-                         a.Content = $content,
-                         a.Total_points = $total_points`;
-        let params = {"id": id, "title": title, "total_points": total_points, "content": description};
+                         a.Description = $description,
+                         a.TotalPoints = $totalPoints`;
+        let params = { id, title, totalPoints, description };
         try {
             await session.run(query, params);
         } catch (err) {
@@ -869,8 +869,8 @@ const db = {
     setDeliverableDue: async (id, due = -1) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (a:deliverable {Id: $id}) 
-                     SET a.Due_time = $due`;
-        let params = {"id": id, "due": neo4j.int(due)};
+                     SET a.DueAt = $due`;
+        let params = { id , "due": neo4j.int(due)};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1060,7 +1060,7 @@ const db = {
      *          'has_content': string
      *      }
      */
-    searchCourses:  async(username, criteria) =>{
+    searchCourses:  async(username, criteria) => {
         var courseSet = [];
         let session = Neo4jDriver.wrappedSession();
 
@@ -1358,12 +1358,13 @@ const db = {
      * @param {*} description the new description
      * @param {*} url the new url
      */
-    editVideo: async (id, description, url) => {
+    editVideo: async (id, name, description, vid) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (v:video {Id: $id}) 
                      SET v.Description = $description, 
-                         v.Url = $url`;
-        let params = {"id": id, "description": description, "url": url};
+                         v.Name = $name,
+                         v.Vid = $vid`;
+        let params = { id, description, vid, name };
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1451,8 +1452,8 @@ const db = {
     editReading: async (id, name, description) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (r:reading {Id: $id}) 
-                     SET v.Name = $name, 
-                         v.Description = $description`;
+                     SET r.Name = $name, 
+                         r.Description = $description`;
         let params = {"id": id, "name": name, "description": description};
         try {
             await session.run(query, params);
@@ -1755,7 +1756,12 @@ const db = {
                         contentInfo.vid = content.properties.Vid;  
                         break; 
                     case 'deliverable': 
-                        contentInfo.due = content.properties.DueAt; 
+                        if (typeof content.properties.DueAt === 'number') {
+                            contentInfo.due = content.properties.DueAt;
+                        }
+                        else {
+                            contentInfo.due = content.properties.DueAt.low; 
+                        }
                         break; 
                     default: break; 
                 }

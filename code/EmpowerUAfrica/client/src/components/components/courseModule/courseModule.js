@@ -105,7 +105,7 @@ export default class CourseModule extends Component{
                         
                         {
                             editModule === true? 
-                            <EditModule collapse={this.discardEditModule} moduleId={courseModule.id} moduleName={courseModule.name}/>
+                            <EditModule collapse={this.discardEditModule} moduleId={courseModule.id} moduleName={courseModule.name} view={view}/>
                             :
                             <>
                             <h2>{courseModule.name}</h2>

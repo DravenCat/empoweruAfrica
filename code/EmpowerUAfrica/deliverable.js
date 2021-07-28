@@ -83,19 +83,15 @@ router.put('/createDeliverable', async (req, res) => {
         deliverableId: String
         name: String
         description: String
-        total_points: String
-        newDueDate: int
+        totalPoints: String
+        dueTimestamp: int
         moduleId: String
 */
 router.post('/editDeliverable', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let deliverableId = req.body.deliverableId;
-    let moduleId = req.body.moduleId;
-    let name = req.body.name;
-    let newDueDate = req.body.newDueDate;
-    let description = req.body.description;
-    let total_points = req.body.total_points;
+
+    const { id: deliverableId, name, dueTimestamp, totalPoints, description } = req.body;
 
 
     if (username === null) {
@@ -106,8 +102,14 @@ router.post('/editDeliverable', async (req, res) => {
         return;
     }
 
-    const isInstructor = await db.checkIsInstructor(moduleId, username);
-    if(!isInstructor){
+    const course = (await db.searchCourses(null, {has_content: deliverableId}))[0];
+    if (course === undefined) {
+        res.status(404).json({
+            message: 'Deliverable not found'
+        });
+    }
+
+    if (course.instructor !== username) {
         // The user is not an instructor for this course. 
         res.status(403).json({
             mesage: 'You are not an instructor for this course. '
@@ -115,23 +117,18 @@ router.post('/editDeliverable', async (req, res) => {
         return;
     }
 
-    const deliverable = await db.searchDeliverableById(deliverableId);
-
-    if(deliverable === null){
-        res.status(404).json({
-            message: 'Deliverable not found'
-        });
-    }
-
     const timestamp = utils.timestamp(); 
-    if(timestamp - newDueDate <= 0){
+    if(timestamp - dueTimestamp <= 0){
         res.status(400).json({
             message: 'Your new due date is in the past!'
         });
     }
 
-    await db.editDeliverable(deliverableId, name, total_points, description);
-    await db.setDeliverableDue(deliverableId, newDueDate);
+    await Promise.all([
+        db.editDeliverable(deliverableId, name, totalPoints, description),
+        db.setDeliverableDue(deliverableId, dueTimestamp)
+    ]);
+
     res.json({
         message: 'Success'
     });
@@ -173,6 +170,7 @@ router.delete('/deleteDeliverable', async (req, res) => {
         });
         return;
     }
+
     await db.deleteDeliverable(deliverableId);
 
     res.json({
