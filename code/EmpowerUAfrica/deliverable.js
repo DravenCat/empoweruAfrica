@@ -87,13 +87,13 @@ router.post('/createDeliverable', async (req, res) => {
         description: String
         total_points: String
         newDueDate: int
-        moduleId: String
+        courseName: String
 */
 router.post('/editDeliverable', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
     let deliverableId = req.body.deliverableId;
-    let moduleId = req.body.moduleId;
+    let courseName = req.body.courseName;
     let name = req.body.name;
     let newDueDate = req.body.newDueDate;
     let description = req.body.description;
@@ -108,7 +108,7 @@ router.post('/editDeliverable', async (req, res) => {
         return;
     }
 
-    const isInstructor = await db.checkIsInstructor(moduleId, username);
+    const isInstructor = await db.checkIsInstructor(courseName, username);
     if(!isInstructor){
         // The user is not an instructor for this course. 
         res.status(403).json({
@@ -145,12 +145,12 @@ router.post('/editDeliverable', async (req, res) => {
     Endpoint for when the user wants to create an deliverable
     Request parameters:
         deliverableId: String
-        moduleId: String
+        courseName: String
 */
 router.post('/deleteDeliverable', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let moduleId = req.body.moduleId;
+    let courseName = req.body.courseName;
     let deliverableId = req.body.deliverableId;
 
     if (username === null) {
@@ -161,7 +161,7 @@ router.post('/deleteDeliverable', async (req, res) => {
         return;
     }
 
-    const isInstructor = await db.checkIsInstructor(moduleId, username);
+    const isInstructor = await db.checkIsInstructorFromCourse(courseName, username);
     if(!isInstructor){
         // The user is not an instructor for this course. 
         res.status(403).json({
@@ -255,6 +255,7 @@ router.post('/createSubmission', async (req, res) => {
     Endpoint for when the user wants to get feedback for a submission
     Request parameters:
         submissionId: String
+        courseName: String
 */
 router.get('/getFeedback', async (req, res) => {
     let token = req.cookies.token; 
@@ -298,6 +299,7 @@ router.get('/getFeedback', async (req, res) => {
         submissionId: String
         comments: String
         grade: int
+        courseName: String
 */
 router.post('/sendFeedback', async (req, res) => {
     let token = req.cookies.token; 
@@ -315,7 +317,7 @@ router.post('/sendFeedback', async (req, res) => {
     }
 
 
-    const isInstructor = await db.checkIsInstructor(moduleId, username);
+    const isInstructor = await db.checkIsInstructorFromCourse(courseName, username);
     if(!isInstructor){
         // The user is not an instructor for this course. 
         res.status(403).json({
@@ -337,6 +339,53 @@ router.post('/sendFeedback', async (req, res) => {
     res.json({
         message: 'Success'
     });
+
+});
+
+
+/* 
+    Endpoint for when the user wants to get feedback for a submission
+    Request parameters:
+        deliverableId: String
+        courseName: String
+*/
+router.get('/getSubmissions', async (req, res) => {
+
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    let deliverableId = req.body.deliverableId;
+
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            message: 'You have to sign in before making a deliverable. '
+        });
+        return;
+    }
+
+
+    const isInstructor = await db.checkIsInstructorFromCourse(courseName, username);
+    if(!isInstructor){
+        // The user is not an instructor for this course. 
+        res.status(403).json({
+            mesage: 'You are not an instructor for this course. '
+        });
+        return;
+    }
+
+    let deliverable = await db.searchDeliverableById(deliverableId);
+    if(deliverable === null){
+        res.status(404).json({
+            mesage: 'Deliverable does not exist. '
+        });
+        return;
+    }
+
+    let late = await db.getLateSubmission(deliverableId);
+    let onTime = await db.getInTimeSubmission(deliverableId);
+
+    res.status(200).json({onTime: onTime, late: late});
 
 });
 
