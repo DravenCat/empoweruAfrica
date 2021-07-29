@@ -846,13 +846,13 @@ const db = {
      * @param {*} total_points total amount of points available to award for the deliverable
      * @param {*} description the new description
      */
-    editDeliverable: async (id, title, totalPoints, description) => {
+    editDeliverable: async (id, name, totalPoints, description) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (a:deliverable {Id: $id}) 
-                     SET a.Title = $title, 
+                     SET a.Name = $name, 
                          a.Description = $description,
                          a.TotalPoints = $totalPoints`;
-        let params = { id, title, totalPoints, description };
+        let params = { id, name, totalPoints, description };
         try {
             await session.run(query, params);
         } catch (err) {
@@ -866,7 +866,7 @@ const db = {
      * @param {*} id the id of the deliverable
      * @param {*} due the new due of the deliverable
      */
-    setDeliverableDue: async (id, due = -1) => {
+    setDeliverableDue: async (id, due) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (a:deliverable {Id: $id}) 
                      SET a.DueAt = $due`;
@@ -1762,6 +1762,7 @@ const db = {
                         else {
                             contentInfo.due = content.properties.DueAt.low; 
                         }
+                        contentInfo.totalPoints = content.properties.TotalPoints; 
                         break; 
                     default: break; 
                 }

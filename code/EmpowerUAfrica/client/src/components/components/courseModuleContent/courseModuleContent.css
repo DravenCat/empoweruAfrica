@@ -34,7 +34,7 @@
     color: gray;
 }
 
-.course-module-content button {
+.course-module-content > div > h3 > button {
     border: 0;
     cursor: pointer;
     padding: .4em;

@@ -19,7 +19,7 @@ export default class CreateMaterial extends Component{
     }
 
     discard = () => {
-        if (!window.confirm('Discard all chanegs? ')) {
+        if (!window.confirm('Discard all changes? ')) {
             return; 
         }
         this.props.collapse(); 
@@ -138,7 +138,7 @@ export default class CreateMaterial extends Component{
                     </div>
                     <div style={{marginTop: '.4em'}}>
                         <h2>Deadline: </h2>
-                        <input type="datetime-local" id={`${moduleId}-new-deliverable-due`}></input>
+                        <input type="datetime-local" id={`${moduleId}-new-deliverable-due`} className="new-deliverable-due"></input>
                         {/* TODO: Change this to date and time, since firefox does not support datetime-local*/}
                     </div>
                 </>;
@@ -188,11 +188,7 @@ export default class CreateMaterial extends Component{
                     id='create-material-submit-btn' 
                     className='confirm-btn' onClick={this.submit}>Submit</button>
                 </div>
-                
-
-            
             </div>
         )
-        
     }
 }

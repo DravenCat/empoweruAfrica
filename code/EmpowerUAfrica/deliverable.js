@@ -118,7 +118,7 @@ router.post('/editDeliverable', async (req, res) => {
     }
 
     const timestamp = utils.timestamp(); 
-    if(timestamp - dueTimestamp <= 0){
+    if(timestamp - dueTimestamp > 0 && dueTimestamp > 0){
         res.status(400).json({
             message: 'Your new due date is in the past!'
         });

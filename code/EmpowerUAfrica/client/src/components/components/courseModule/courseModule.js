@@ -6,7 +6,7 @@ import './courseModule.css';
 
 /*
     props:
-        - view: 'teacher' | 'student'
+        - view: 'instructor' | 'student'
         - module: object
 */
 const editModuleURL = '/learning/editModule'; 
@@ -87,12 +87,13 @@ export default class CourseModule extends Component{
     render() {
         const { expand, createMaterial, editModule } = this.state; 
         const { view, courseModule } = this.props; 
+        console.log(view); 
         const contents = courseModule.contents.map(
             content => {
                 switch (content.type) {
-                    case 'reading': return <Reading content={content} key={content.id}/>;
-                    case 'video': return <Video content={content} key={content.id}/>;
-                    case 'deliverable': return <Deliverable content={content} key={content.id}/>; 
+                    case 'reading': return <Reading content={content} key={content.id} view={view}/>;
+                    case 'video': return <Video content={content} key={content.id} view={view}/>;
+                    case 'deliverable': return <Deliverable content={content} key={content.id} view={view}/>; 
                     default: return <></>
                 }
             }
@@ -105,7 +106,7 @@ export default class CourseModule extends Component{
                         
                         {
                             editModule === true? 
-                            <EditModule collapse={this.discardEditModule} moduleId={courseModule.id} moduleName={courseModule.name} view={view}/>
+                            <EditModule collapse={this.discardEditModule} moduleId={courseModule.id} moduleName={courseModule.name}/>
                             :
                             <>
                             <h2>{courseModule.name}</h2>

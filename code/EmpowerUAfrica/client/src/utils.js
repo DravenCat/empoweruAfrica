@@ -22,6 +22,20 @@ const Utils = {
         let time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min ;
         return time;
     },
+    timeStampToLocalDatetime(timestamp) {
+        let d = new Date(timestamp * 1000);
+        let year = d.getFullYear();
+        let month = d.getMonth() + 1;
+        let date = d.getDate();
+        let hour = d.getHours();
+        let min = d.getMinutes();
+
+        month = month < 10? `0${month}`: month; 
+        date = date < 10? `$0{date}`: date; 
+        hour = hour < 10? `0${hour}`: hour; 
+        min = min < 10? `0${min}`: min; 
+        return `${year}-${month}-${date}T${hour}:${min}`; 
+    },
 
     async getUsersAbstract(users) {
         let res;

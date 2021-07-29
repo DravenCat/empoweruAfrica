@@ -1,5 +1,6 @@
 import React, { Component } from 'react'; 
 import Utils from '../../../utils'; 
+import CreateMaterial from '../../pages/createMaterial/createMaterial';
 import './courseModuleContent.css';
 
 /*
@@ -11,6 +12,9 @@ const descAbbrivLen = 100;
 const deleteVideoURL = '/learning/deleteVideo';
 const deleteDeliverableURL = '/learning/deleteDeliverable';
 const deleteReadingURL = '/learning/deleteReading'; 
+const editVideoURL = '/learning/editVideo';
+const editReadingURL = '/learning/editReading';
+const editDeliverableURL = '/learning/editDeliverable'; 
 
 /**
  * 
@@ -61,28 +65,54 @@ const deleteContent = async (id, type) => {
 export class Reading extends Component {
 
     state = {
-        expand: false
+        expand: false,
+        edit: false
     }
 
     toggleExpand = () => {
+        if (this.state.edit) {
+            return; 
+        }
         this.setState({
             expand: !this.state.expand
-        })
+        }); 
+    }
+
+    openEdit = () => {
+        this.setState({
+            expand: false,
+            edit: true
+        }); 
+    }
+    discardEdit = () => {
+        this.setState({
+            edit: false
+        }); 
     }
 
     render() {
-        const reading = this.props.content; 
-        const { expand } = this.state; 
+        const { content: reading, view } = this.props; 
+        const { expand, edit } = this.state; 
         return (
             <div className="course-module-content">
                 <div onClick={this.toggleExpand} style={{cursor: 'pointer'}}>
                     <h3 className="course-module-content-name">{reading.name}
-                    <img 
-                    alt="delete" 
-                    className="icon" 
-                    src="/icons/garbage.png" 
-                    onClick={(event) => {deleteContent(reading.id, 0); event.stopPropagation()}}>
-                    </img>
+                    {
+                        view === 'instructor'? 
+                        <><img 
+                            alt="edit" 
+                            className="icon" 
+                            src="/icons/edit.png" 
+                            onClick={(event) => {this.openEdit(); event.stopPropagation()}}>
+                        </img>
+                        <img 
+                            alt="delete" 
+                            className="icon" 
+                            src="/icons/garbage.png" 
+                            onClick={(event) => {deleteContent(reading.id, 0); event.stopPropagation()}}>
+                        </img></>: null
+                    }
+                    
                     <button  className="toggle-expand-btn">
                         <div className={expand===true? 'triangle-left': 'triangle-down'}>
                             
@@ -104,6 +134,10 @@ export class Reading extends Component {
                     null
                 }
                 </div>
+                {
+                    edit === true? 
+                    <EditMaterial content={reading} type='reading' collapse={this.discardEdit}/>: null
+                }
             </div>
         ); 
     }
@@ -115,9 +149,24 @@ export class Video extends Component {
     }
 
     toggleExpand = () => {
+        if (this.state.edit) {
+            return; 
+        }
         this.setState({
             expand: !this.state.expand
-        })
+        }); 
+    }
+
+    openEdit = () => {
+        this.setState({
+            expand: false,
+            edit: true
+        }); 
+    }
+    discardEdit = () => {
+        this.setState({
+            edit: false
+        }); 
     }
 
     openVideoInNewWindow = () => {
@@ -125,8 +174,8 @@ export class Video extends Component {
     }
 
     render() {
-        const video = this.props.content;
-        const expand = this.state.expand; 
+        const { content: video, view } = this.props;
+        const { expand, edit } = this.state; 
         const { source, vid } = video; 
         let embeddedVideo; 
         if (source === 'YouTube') {
@@ -136,11 +185,21 @@ export class Video extends Component {
             <div className="course-module-content">
                 <div onClick={this.toggleExpand} style={{cursor: 'pointer'}}>
                     <h3 className="course-module-content-name">{video.name}
-                    <img 
-                    alt="delete" 
-                    className="icon" 
-                    src="/icons/garbage.png" 
-                    onClick={(event) => {deleteContent(video.id, 1); event.stopPropagation()}}></img>
+                    {
+                        view === 'instructor'? 
+                        <><img 
+                            alt="edit" 
+                            className="icon" 
+                            src="/icons/edit.png" 
+                            onClick={(event) => {this.openEdit(); event.stopPropagation()}}>
+                        </img>
+                        <img 
+                            alt="delete" 
+                            className="icon" 
+                            src="/icons/garbage.png" 
+                            onClick={(event) => {deleteContent(video.id, 1); event.stopPropagation()}}>
+                        </img></>: null
+                    }
                     <button  className="toggle-expand-btn">
                         <div className={expand===true? 'triangle-left': 'triangle-down'}>
 
@@ -162,32 +221,235 @@ export class Video extends Component {
                     null
                 }
                 </div>
+                {
+                    edit === true? 
+                    <EditMaterial content={video} type='video' collapse={this.discardEdit}/>: null
+                }
             </div>
         )
     }
 }
 
 export class Deliverable extends Component {
+    state = {
+        edit: false
+    }
+
+    openEdit = () => {
+        this.setState({
+            edit: true
+        }); 
+    }
+    discardEdit = () => {
+        this.setState({
+            edit: false
+        }); 
+    }
+
     render() {
-        const deliverable = this.props.content; 
-        const overdue = Math.round(Date.now() / 1000) > deliverable.due && !deliverable.submitted; 
+        const { content: deliverable, view } = this.props; 
+        const { edit } = this.state; 
+        let overdue, dueTimeString; 
+        console.log(deliverable); 
+        if (deliverable.due < 0) {
+            dueTimeString = 'No due time specified'
+            overdue = false; 
+        }
+        else {
+            dueTimeString = `Due ${Utils.timeStampToTime(deliverable.due)}`;
+            overdue = Math.round(Date.now() / 1000) > deliverable.due && !deliverable.submitted;
+        }
         return (
             <div className="course-module-content">
                 <h3 className="course-module-content-name">{deliverable.name}
-                <img 
-                    alt="delete" 
-                    className="icon" 
-                    src="/icons/garbage.png" 
-                    onClick={(event) => {deleteContent(deliverable.id, 2); event.stopPropagation()}}></img>
+                {
+                        view === 'instructor'? 
+                        <><img 
+                            alt="edit" 
+                            className="icon" 
+                            src="/icons/edit.png" 
+                            onClick={(event) => {this.openEdit(); event.stopPropagation()}}>
+                        </img>
+                        <img 
+                            alt="delete" 
+                            className="icon" 
+                            src="/icons/garbage.png" 
+                            onClick={(event) => {deleteContent(deliverable.id, 2); event.stopPropagation()}}>
+                        </img></>: null
+                    }
                 </h3>
                 <span>{Utils.trimString(deliverable.description,descAbbrivLen)}</span><br />
                 {
                     overdue === true? 
-                    <span className="overdue">Due {Utils.timeStampToTime(deliverable.due)}</span>:
-                    <span>Due {Utils.timeStampToTime(deliverable.due)}</span>
+                    <span className="overdue">Due {dueTimeString}</span>:
+                    <span>{dueTimeString}</span>
                 }
-                
+                {
+                    edit === true? 
+                    <EditMaterial content={deliverable} type='deliverable' collapse={this.discardEdit}/>: null
+                }
+            </div>
+        )
+    }
+}
 
+class EditMaterial extends Component {
+
+    discard = () => {
+        if (!window.confirm('Discard all changes? ')) {
+            return; 
+        }
+        this.props.collapse(); 
+    }
+    submit = async () => {
+        const { type, content } = this.props; 
+        let url, reqBody; 
+
+        const name = document.getElementById(`${content.id}-new-content-name`).value; 
+        const description = document.getElementById(`${content.id}-new-content-description`).value;
+        if (name.length === 0 || description.length === 0) {
+            alert('Name and description cannot be blank. ');
+            return; 
+        } 
+        reqBody = {
+            id: content.id,
+            name,
+            description
+        }
+        switch (type) {
+            case 'reading': 
+                url = editReadingURL;
+                break; 
+            case 'video':
+                url = editVideoURL;
+                const link = document.getElementById(`${content.id}-new-video-link`).value;
+                const vid = Utils.getY2bVideoId(link); 
+                if (vid === null) {
+                    alert('Invalid YouTube link. ');
+                    return; 
+                }
+                reqBody.vid = vid; 
+                break; 
+            case 'deliverable':
+                url = editDeliverableURL; 
+                const dueTimeString = document.getElementById(`${content.id}-new-deliverable-due`).value;
+                const maxPointsStr = document.getElementById(`${content.id}-new-deliverable-maxpts`).value;
+                const maxPoints = parseFloat(maxPointsStr); 
+                let dueTimestamp; 
+                if (isNaN(maxPoints)) {
+                    alert('Max points should be a number. '); 
+                    return;
+                }
+                if (dueTimeString.length === 0) {
+                    dueTimestamp = -1;
+                }
+                else {
+                    dueTimestamp = Math.round( Date.parse(dueTimeString) / 1000); 
+                }
+                reqBody.dueTimestamp = dueTimestamp; 
+                reqBody.totalPoints = maxPoints; 
+                break; 
+            default: return; 
+        }
+
+        let res, body; 
+        try {
+            ({ res, body } = await Utils.ajax(
+                url,
+                {
+                    method: 'POST',
+                    body: JSON.stringify(reqBody),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            ))
+        }
+        catch (err) {
+            console.error(err);
+            alert('Internet failure');
+            return; 
+        }
+
+        if (!res.ok) {
+            alert(body.message);
+            console.log(body.message); 
+            return; 
+        }
+        else {
+            window.location.reload(); 
+        }
+    }
+
+    render() {
+        const { content, type } = this.props; 
+        let contentUpload = null;
+        
+        switch (type) {
+            case 'reading': 
+                contentUpload =
+                <>
+                    {/* <h2>Reading file: </h2>
+                    <input type="file" id={`${id}-new-reading-file`}></input> */}
+                </>;
+                break;
+            case 'video':
+                contentUpload =
+                <>
+                    <h2>YouTube link: </h2>
+                    <input type="text" id={`${content.id}-new-video-link`} defaultValue={`https://www.youtube.com/watch?v=${content.vid}`}></input>
+                </>;
+                break;
+            case 'deliverable':
+                const defaultDueTime = content.due < 0? '': Utils.timeStampToLocalDatetime(content.due); 
+                contentUpload = <>  
+                    <div>
+                        <h2>Max points</h2>
+                        <input type="text" id={`${content.id}-new-deliverable-maxpts`} defaultValue={content.totalPoints}></input><br />
+                    </div>
+                    <div style={{marginTop: '.4em'}}>
+                        <h2>Deadline: </h2>
+                        <input type="datetime-local" id={`${content.id}-new-deliverable-due`} defaultValue={defaultDueTime}></input>
+                        {/* TODO: Change this to date and time, since firefox does not support datetime-local*/}
+                    </div>
+                </>;
+                break;
+            default: 
+                contentUpload = null;
+        }
+
+        return (
+            <div className="addDeliver">
+                
+                <div>
+                    <h2>Name</h2>
+                    <input type='text' id={`${content.id}-new-content-name`} defaultValue={content.name}></input>
+                </div>
+
+                <div style={{marginTop: '.7em'}}>
+                    <h2>Description</h2>
+                </div>
+                <div>
+                    <div>
+                        <textarea className="new-content-description" id={`${content.id}-new-content-description`} defaultValue={content.description}>
+
+                        </textarea>     
+                    </div>
+                </div><br />
+                
+                <div className="create-material-content">
+                    {contentUpload}
+                </div><br />
+
+                <div className="create-material-footer">
+
+                    <button
+                    className='cancel-btn' onClick={this.discard}>Discard</button>
+
+                    <button 
+                    id='create-material-submit-btn' 
+                    className='confirm-btn' onClick={this.submit}>Submit</button>
+                </div>
             </div>
         )
     }

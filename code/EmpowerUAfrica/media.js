@@ -92,7 +92,7 @@ router.post('/editVideo', async (req, res) => {
         return;
     }
 
-    if(course.instructor !== username){
+    if (course.instructor !== username){
         // The user is not an instructor for this course. 
         res.status(403).json({
             mesage: 'You are not an instructor for this course. '

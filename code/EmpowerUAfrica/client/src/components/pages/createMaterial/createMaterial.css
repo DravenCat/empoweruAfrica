@@ -20,7 +20,7 @@
     margin: 0 auto;
 }
 
-.addDeliver>div:nth-child(4) textarea {
+.addDeliver>div:nth-child(4) textarea, .new-content-description {
     resize: none;
     width: 100%;
     min-height: 200px;
@@ -36,7 +36,7 @@
 
 }
 
-.create-material-footer button {
+.create-material-footer > button {
     font-size: 1.3em;
     border: 1px solid darkgreen;
     border-radius: 7px;
