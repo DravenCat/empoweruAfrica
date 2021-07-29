@@ -1,9 +1,9 @@
 import React, { Component} from 'react'; 
 import './myCourse.css';
 import CourseOverview from '../../components/courseOverview/courseOverview';
+import Utils from '../../../utils';
 
-
-
+const searchCourseURL = '/learning/getCourses'
 
 export default class MyCourses extends Component{
     state = {
@@ -11,21 +11,27 @@ export default class MyCourses extends Component{
     }
     getMyCourses = async () => {
         // TODO: ajax
-        let myCourses = [
-            {
-                "instructor": "Dr. A", 
-                "name": "Introduction to Software Engineering",
-                "description": "This course will teach you how to become a software engineer. ",
-                "enrolled": true
-            }, 
-            {
-                "instructor": "Dr. A", 
-                "name": "Introduction to software",
-                "description": "This course will teach you how to become a software engineer. ",
-                "enrolled": true
-            }
-        ]
-        return myCourses; 
+        let res, body; 
+
+        try {
+            ({ res, body } = await Utils.ajax(
+                `${searchCourseURL}?enrolled_by=${localStorage.getItem('username')}`,
+                {
+                    method: 'GET'
+                }
+            )); 
+        }
+        catch (err) {
+            console.error(err);
+            alert('Internet failure. '); 
+        }
+        if (!res.ok) {
+            alert(body.message); 
+            window.history.back(); 
+            return; 
+        }
+
+        return body; 
     }
     async componentDidMount() {
         const courses = await this.getMyCourses();
@@ -36,8 +42,12 @@ export default class MyCourses extends Component{
     }
 
     render() {
+        if (localStorage.getItem('signedIn') !== 'true') {
+            window.history.back(); 
+            return null; 
+        }
         if (this.state.courses === undefined) {
-            return <></>
+            return null; 
         }
         let courses = this.state.courses.map(course => <CourseOverview course={course} key={course.name}/>);
 
@@ -48,7 +58,11 @@ export default class MyCourses extends Component{
                     <h2>
                         My Courses
                     </h2>
+                    <a href='/start_to_learn'>
+                        See all courses
+                    </a>
                 </div>
+                
 
                 <div className='course_enrol clearfix'>
                     {courses}

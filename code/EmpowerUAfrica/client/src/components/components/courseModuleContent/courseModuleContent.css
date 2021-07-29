@@ -34,7 +34,7 @@
     color: gray;
 }
 
-.course-module-content button {
+.course-module-content > div > h3 > button {
     border: 0;
     cursor: pointer;
     padding: .4em;
@@ -54,4 +54,9 @@
 
 #submit_assignment:hover {
     background-color: rgb(34, 34, 34);
+}
+
+.course-module-content .icon {
+    height: 1.2em !important;
+    width: 1.2em !important;
 }

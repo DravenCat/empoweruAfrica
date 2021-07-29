@@ -22,6 +22,20 @@ const Utils = {
         let time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min ;
         return time;
     },
+    timeStampToLocalDatetime(timestamp) {
+        let d = new Date(timestamp * 1000);
+        let year = d.getFullYear();
+        let month = d.getMonth() + 1;
+        let date = d.getDate();
+        let hour = d.getHours();
+        let min = d.getMinutes();
+
+        month = month < 10? `0${month}`: month; 
+        date = date < 10? `$0{date}`: date; 
+        hour = hour < 10? `0${hour}`: hour; 
+        min = min < 10? `0${min}`: min; 
+        return `${year}-${month}-${date}T${hour}:${min}`; 
+    },
 
     async getUsersAbstract(users) {
         let res;
@@ -81,7 +95,13 @@ const Utils = {
             str;
     },
     getY2bVideoId(url) {
-        
+        let matches = url.match(/(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/);
+        if (matches === null) {
+            return null;
+        }
+        return matches[1]; 
+        // RegEx from 
+        // https://stackoverflow.com/questions/3452546/how-do-i-get-the-youtube-video-id-from-a-url/3452617#3452617 
     },
     /**
      * A wrapper for fetch() to reduce repeated code in ajax requests. 
