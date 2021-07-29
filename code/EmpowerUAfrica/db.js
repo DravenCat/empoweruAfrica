@@ -988,7 +988,7 @@ const db = {
      * @param {*} id the unique id of the submission
      * @param {*} content the content of the submission
      * @param {*} media the submission media
-     * @param {*} posted_timestamp the date when the deliverable is posted
+     * @param {*} posted_timestamp the date when the submission is submitted
      */
     createSubmission: async (username, deliverableId, submissionId, content, media, posted_timestamp) => {
         let session = Neo4jDriver.wrappedSession();
@@ -1009,13 +1009,14 @@ const db = {
     /**
      * Set the grade of the submission to the new grade. If missing the second paramaters, it will be set to 0
      * @param {*} id the id of the submission
+     * @param {*} comment the comments for the submission
      * @param {*} grade the grade of the submission
      */
-    gradeSubmission: async (id, grade = -1) => {
+    gradeSubmission: async (id, comment, grade = -1) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (s:submission {Id: $id}) 
-                     SET s.Grade = $grade`;
-        let params = {"id": id, "grade": neo4j.int(grade)};
+                     SET s.Grade = $grade, s.Comment = $comment`;
+        let params = {"id": id, "grade": neo4j.int(grade), "comment":comment};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1029,7 +1030,7 @@ const db = {
      * @param {*} id the submission id
      * @returns the grade of the submission
      */
-    getSubMissionGrade: async (id) => {
+    getSubmissionGrade: async (id) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (s:submission {Id: $id}) 
                      RETURN s.Grade AS grade`;
@@ -1043,6 +1044,27 @@ const db = {
         let grade = result.records[0].get('grade');
         session.close();
         return grade;
+    },
+
+    /**
+     * Get the comment of the submission
+     * @param {*} id the submission id
+     * @returns the comment of the submission
+     */
+    getSubmissionComments: async (id) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (s:submission {Id: $id}) 
+                     RETURN s.Comment AS comment`;
+        let params = {"id": id};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.error(err);
+        }
+        let comment = result.records[0].get('comment');
+        session.close();
+        return comment;
     },
 
     /**
@@ -1818,8 +1840,6 @@ const db = {
      * @returns an object that contains the course, id and name of a module
      */
     searchModuleById: async (id) => {
-
-
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (m:module {Id: $id}) 
                      RETURN m`;
@@ -1836,13 +1856,35 @@ const db = {
             return null;
         }else {
             module = {
-                course: result.records[0].get(0).properties.Course,
                 id: result.records[0].get(0).properties.Id,
                 name: result.records[0].get(0).properties.Name,
             }
         }
         session.close();
         return module;
+    },
+
+    /**
+     * Return the course of the module
+     * @param {*} moduleId module id
+     * @returns the course name
+     */
+    searchCourseByModule: async (moduleId) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (c:course)-[:HAS_MODULE]->(:module {Id: $id}) 
+                     RETURN c.Name as name`;
+        let params = {"id": moduleId};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        if (result.records.length == 0) {
+            return null;
+        }
+        session.close();
+        return result.records[0].get("name");
     },
 
       
@@ -1854,8 +1896,8 @@ const db = {
      *          false if not
      */
     checkIsInstructor: async (moduleId, instructor) => {
-        let module = await db.searchModuleById(moduleId);
-        let courseName = module.course;
+        let courseName = await db.searchCourseByModule(moduleId);
+
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (u:user {Username: $instructor})-[cc:TEACH_COURSE]->(c:course {Name: $courseName}) 
                      RETURN cc`;
@@ -1965,6 +2007,26 @@ const db = {
         let exists = result.records[0].get('exists').low !== 0; 
         session.close(); 
         return exists; 
+    },
+
+    /**
+     * Check whether the submission exist
+     * @param {*} id the id of the submission
+     * @returns True if exists. False o/w
+     */
+    checkSubmissionExist: async (id) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (s:submission {Ud: $id}) 
+                     RETURN s`;
+        let params = {"id": id};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        session.close();
+        return result.records.length > 0;
     }
 
 
