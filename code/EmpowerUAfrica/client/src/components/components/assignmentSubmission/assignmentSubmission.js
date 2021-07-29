@@ -24,8 +24,9 @@ export default class AssignmentSubmission extends Component{
 
                 <table className='grade_section'>
                     <colgroup>
-                        <col style={{width: '20%'}}></col>
-                        <col style={{width: '80%'}}></col>
+                        <col style={{width: '15%'}}></col>
+                        <col style={{width: '60%'}}></col>
+                        <col style={{width: '25%'}}></col>
                     </colgroup>
                     <tbody>
                         <tr>
@@ -43,12 +44,16 @@ export default class AssignmentSubmission extends Component{
                             <td>
                                 <textarea id="grade_comment"></textarea>
                             </td>
+                            <td className="grading-buttons">
+                                <button>Previous Submission</button>
+                                <button>Submit Feedback</button>
+                                <button>Submit and Move to Next</button>
+                                <button>Next Submission</button>
+                                <button>Discard Feedback</button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
-
-                <button id='confirm_grade'>Confirm</button>
-
                 </div>
             </div>
         )
