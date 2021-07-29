@@ -1,6 +1,4 @@
 const express = require('express');
-
-const express = require('express'); 
 const fs = require('fs').promises; 
 
 const db = require('./db'); 
@@ -21,12 +19,10 @@ const router = express.Router();
         description: String
         tag: file
 */
-router.post('/createReading', async (req, res) => {
+router.put('/createReading', async (req, res) => {
 
     const timestamp = utils.timestamp(); 
-    const name = req.name;
-    const description = req.description;
-    const moduleId = req.moduleId;
+    const { name, description, moduleId } = req.query; 
     const readingId = utils.URLSafe(utils.hash(name + timestamp.toString())); 
 
 
@@ -48,8 +44,14 @@ router.post('/createReading', async (req, res) => {
         return;
     }
 
-    const isInstructor = await db.checkIsInstructor(moduleId, username);
-    if(!isInstructor){
+    const course = (await db.searchCourses(null, {has_module: moduleId}))[0]; 
+    if(course === undefined){
+        res.status(400).json({
+            mesage: 'Module does not exist. '
+        });
+        return;
+    }
+    if(course.instructor !== username){
         // The user is not an instructor for this course. 
         res.status(403).json({
             mesage: 'You are not an instructor for this course. '
@@ -57,30 +59,28 @@ router.post('/createReading', async (req, res) => {
         return;
     }
 
-
-    if(db.searchModuleById(moduleId) === null){
-        res.status(400).json({
-            mesage: 'Module does not exist. '
-        });
-        return;
-    }
-
     let newReading = req.files[Object.keys(req.files)[0]]; 
-    let extensionNames = [null, '.pdf', '.txt'];
-    let extension = newReading.name.slice(-3) === 'png'? 2: 1;
-    let path = 'client/public/files/users/' + username + extensionNames[extension];
+    let extension = utils.getFileExtension(newReading.name); 
+    let path = `client/public/learning/${course.name}/${readingId}${extension}`;
     try {
         await newReading.mv(path); 
     }
     catch (err) {
-        console.error(err); 
-        res.status(500).json({
-            message: 'Error when moving the file onto server. '
-        });
-        return; 
+        if (err.code === 'ENOENT') {
+            await fs.mkdir(`client/public/learning/${course.name}`);
+            await newReading.mv(path); 
+        }
+        else {
+            console.error(err); 
+            res.status(500).json({
+            message: 'Error when moving the file onto server. '});
+            return;
+        }
+        
     }
-    await db.createReading(readingId, name, description, path, timestamp) ;
-    await db.addContentIntoModule(reading, readingId, moduleId);
+    let publicPath = `/learning/${course.name}/${readingId}${extension}`
+    await db.createReading(readingId, name, description, publicPath, timestamp) ;
+    await db.addContentIntoModule('reading', readingId, moduleId);
     res.json({
         message: 'Success'
     });
@@ -98,36 +98,33 @@ router.post('/createReading', async (req, res) => {
 */
 router.post('/editReading', async (req, res) => {
 
-    const name = req.name;
-    const description = req.description;
-    const readingId = req.readingId;
-    const moduleId = req.moduleId;
+    const { name, description, id: readingId } = req.body; 
 
     let token = req.cookies.token;
     let username = token === undefined? null: await db.getUsernameByToken(token); 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
+        res.status(401).json({
             mesage: 'You have to sign in before you can modify course content. '
         });
         return;
     }
-
-    if(db.searchModuleById(moduleId) === null){
-        res.status(400).json({
-            mesage: 'Module does not exist. '
+    
+    const course = (await db.searchCourses(null, {has_content: readingId}))[0];
+    if ( course === undefined ){
+        res.status(404).json({
+            mesage: 'Reading does not exist. '
         });
         return;
     }
 
-    if(!db.checkIsInstructor(moduleId, username)){
+    if ( course.instructor !== username ){
         // The user is not an instructor for this course. 
         res.status(403).json({
             mesage: 'You are not an instructor for this course. '
         });
         return;
     }
-
 
     await db.editReading(readingId, name, description);
     res.json({
@@ -144,37 +141,49 @@ router.post('/editReading', async (req, res) => {
         readingId: String
 
 */
-router.post('/deleteReading', async (req, res) => {
-
-    const readingId = req.readingId;
+router.delete('/deleteReading', async (req, res) => {
+    const { id: readingId } = req.body;
 
     let token = req.cookies.token;
     let username = token === undefined? null: await db.getUsernameByToken(token); 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
-            mesage: 'You have to sign in before you can modify course content. '
+        res.status(401).json({
+            message: 'You have to sign in before you can modify course content. '
         });
         return;
     }
 
-    if(db.searchModuleById(moduleId) === null){
-        res.status(400).json({
-            mesage: 'Module does not exist. '
+    let promises = [db.searchReadingById(readingId), db.searchCourses(null, {has_content: readingId})];
+    let [reading, courses] = await Promise.all(promises); 
+    let course = courses[0]; 
+
+    // If such course does not exist, db.searchCourses should return empty Array. 
+    // If such reading does not exist, db.searchReadingById should return null. 
+    if (reading === null || course === undefined) {
+        res.status(404).json({
+            message: 'Reading does not exist. '
         });
         return;
     }
+    
 
-    if(!db.checkIsInstructor(moduleId, username)){
+    if (course.instructor !== username){
         // The user is not an instructor for this course. 
         res.status(403).json({
-            mesage: 'You are not an instructor for this course. '
+            message: 'You are not an instructor for this course. '
         });
         return;
     }
 
+    promises = [db.deleteReading(readingId), fs.unlink(`client/public${reading.path}`)]; 
+    try {
+        await Promise.all(promises); 
+    }
+    catch (err) {
+        console.error(err);
+    }
 
-    await db.deleteReading(readingId);
     res.json({
         message: 'Success'
     });

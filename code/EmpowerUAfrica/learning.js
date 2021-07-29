@@ -264,19 +264,25 @@ router.put('/createModule', async(req, res) => {
 router.post('/editModule', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let moduleId = req.moduleId;
-    let module = await db.searchModuleById(moduleId);
-    let moduleName = req.newModuleName;
 
+    const { id: moduleId, name: moduleName} = req.body; 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
         res.status(403).json({
-            mesage: 'You have to sign in before you edit your profile. '
+            mesage: 'You have to sign in before you edit a module.'
         });
         return;
     }
 
-    const isInstructor = await db.checkIsInstructor(moduleId, username);
+    const course = (await db.searchCourses(null, {has_module: moduleId}))[0]; 
+    if (course === undefined) {
+        res.status(404).json({
+            message: 'Module not found'
+        });
+        return; 
+    }
+    const isInstructor = course.instructor === username; 
+
     if(!isInstructor){
         // The user is not an instructor for this course. 
         res.status(403).json({
@@ -285,14 +291,9 @@ router.post('/editModule', async (req, res) => {
         return;
     }
 
-    if(module !== null){
-        await db.editModule(moduleId, moduleName);
-        res.status(200).json({message: "Success"});
-    }else{
-        res.status(404).json({
-            message: 'Module not found'
-        });
-    }
+    await db.editModule(moduleId, moduleName);
+    res.status(200).json({message: "Success"});
+
 }); 
 
 /* 
@@ -304,18 +305,24 @@ router.post('/editModule', async (req, res) => {
 router.delete('/deleteModule', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let moduleId = req.moduleId;
-    let module = await db.searchModuleById(moduleId);
+    let { moduleId } = req.body;
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
         res.status(403).json({
-            message: 'You have to sign in before deleting course. '
+            message: 'You have to sign in before deleting a course. '
         });
         return;
     }
 
-    const isInstructor = await db.checkIsInstructor(moduleId, username);
+    const course = (await db.searchCourses(null, {has_module: moduleId}))[0]; 
+    if (course === undefined) {
+        res.status(404).json({
+            message: 'Module not found'
+        });
+        return; 
+    }
+    const isInstructor = course.instructor === username; 
     if(!isInstructor){
         // The user is not an instructor for this course. 
         res.status(403).json({
@@ -324,16 +331,10 @@ router.delete('/deleteModule', async (req, res) => {
         return;
     }
 
-    if(module === null){
-        res.status(404).json({
-            message: 'Module not found'
-        });
-    }
-
     await db.deleteModule(moduleId);
 
     res.json({
-        message: 'success'
+        message: 'Success'
     });
 });
 

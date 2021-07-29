@@ -78,8 +78,20 @@ let Utils = {
             }
         }
         return safeStr; 
+    },
+    /**
+     * 
+     * @param {*} filename 
+     * @returns the file extension in the filename
+     * example: (a.txt) -> .txt
+     */
+    getFileExtension: (filename) => {
+        let seperated = filename.split('.'); 
+        if (seperated.length === 1) {
+            return ''
+        }
+        return `.${seperated[seperated.length - 1]}`; 
     }
-
 
 }
 module.exports = Utils; 

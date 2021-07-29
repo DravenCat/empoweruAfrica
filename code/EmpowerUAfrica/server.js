@@ -8,6 +8,9 @@ const accountRouter = require('./account');
 const profileRouter = require('./profile');
 const communityRouter = require('./community');
 const learningRouter = require('./learning');
+const mediaRouter = require('./media'); 
+const deliverableRouter = require('./deliverable'); 
+const materialRouter = require('./material'); 
 
 const PORT = 5000; 
 
@@ -37,7 +40,11 @@ const expectedFields = {
     '/api/learning/createCourse': ['name', 'instructor', 'description'],
     '/api/learning/updateCourse': ['name'],
     '/api/learning/searchCourse': ['name'],
-    '/api/learning/deleteCourse': ['name']
+    '/api/learning/deleteCourse': ['name'],
+    '/api/learning/editModule': ['id', 'name'],
+    '/api/learning/deleteVideo': ['id'],
+    '/api/learning/editVideo': ['name', 'description', 'id', 'vid'],
+    '/api/learning/editReading': ['name', 'description', 'id']
 };
 
 // parse the request body as json. 
@@ -81,5 +88,8 @@ app.use('/api/account', accountRouter);
 app.use('/api/profile', profileRouter); 
 app.use('/api/community', communityRouter); 
 app.use('/api/learning', learningRouter); 
+app.use('/api/learning', mediaRouter); 
+app.use('/api/learning', deliverableRouter); 
+app.use('/api/learning', materialRouter); 
 
 app.listen(PORT, () => console.log(`[server]: Server started on port ${PORT}`)); 

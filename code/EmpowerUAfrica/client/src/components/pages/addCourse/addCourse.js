@@ -272,7 +272,7 @@ export default class addCourse extends Component{
                                     </td>
                                     <td>
                                         <button onClick={this.submit} className="submit-change-btn">
-                                            <h3>Sumbit</h3>
+                                            <h3>Submit</h3>
                                             <span className='add_course_mask'></span>
                                         </button>
                                     </td>

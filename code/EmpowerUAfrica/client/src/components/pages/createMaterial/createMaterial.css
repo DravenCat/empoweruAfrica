@@ -20,7 +20,7 @@
     margin: 0 auto;
 }
 
-.addDeliver>div:nth-child(4) textarea {
+.addDeliver>div:nth-child(4) textarea, .new-content-description {
     resize: none;
     width: 100%;
     min-height: 200px;
@@ -36,11 +36,12 @@
 
 }
 
-.create-material-footer button {
-    font-size: 1.2em;
-    background: -webkit-linear-gradient(135deg, rgb(158, 158, 158), #eee);
-    border-radius: 10px;
-    
+.create-material-footer > button {
+    font-size: 1.3em;
+    border: 1px solid darkgreen;
+    border-radius: 7px;
+    padding: .2em;
+    transition: 300ms;
 }
 
 #create-material-submit-btn {
