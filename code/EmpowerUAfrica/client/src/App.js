@@ -108,8 +108,7 @@ export default function App() {
           <SubmitAssignment/>
         </Route>
 
-        <Route exact path="/learning/grade_assignment" key="grade_assignment">
-          <GradeAssignment/>
+        <Route exact path="/learning/grade_assignment/:id" key="grade_assignment" component={GradeAssignment}>
         </Route>
         
       </Switch>

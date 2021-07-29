@@ -9,13 +9,18 @@
     margin-top: 0;
 }
 
+.grad-deliverable-info {
+    grid-row: 1;
+    grid-column: 1/3;
+}
+
 .grade_assignment_form {
-    border-radius: 20px;
-    margin: 150px auto;
+    margin: 0 auto;
     margin-top: 6.5%;
     width: 75%;
-    background: antiquewhite;
-    padding: 50px 100px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px 100px;
+    padding-bottom: 40px;
     box-shadow: 1px 1px 5px 2px gray;
     display: grid;
     grid-template-columns: 20% 80%;
@@ -24,8 +29,7 @@
 
 .switch_student {
     background-color: #eee;
-    max-height: 60vh;
-    border-radius: 10px;
+    max-height: 76vh;
     box-shadow: 0 0 3px 1px black;
     border-top: 1px solid transparent;
     overflow: auto;
@@ -36,6 +40,13 @@
     padding: 2vh 1vw;
     text-align: center;
     border-bottom: 1px solid black;
+}
+.ungraded {
+    background-color: wheat;
+}
+.late {
+    color:darkred;
+    font-weight: 500;
 }
 
 .switch_student_single:hover {

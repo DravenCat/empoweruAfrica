@@ -2,26 +2,22 @@ import React, { Component } from 'react';
 import './assignmentSubmission.css';
 
 // This component is a tag button
-
+/**
+ *  @prop {object} submission: holds all the information of the submission. 
+ *  @prop {object} deliverable: holdsa all the information of the deliverable. 
+ */
 export default class AssignmentSubmission extends Component{
 
-    state = {
-        expand: false
-    }
+    submit = async() => {
 
-    toggleExpand = () => {
-        this.setState({
-            expand: !this.state.expand
-        })
     }
 
     render() {
-        const {expand} = this.state;
         const {assignmentURL} = this.props;
 
         return (
             <div className="assignmentSubmission_component">
-                    <iframe id="embedded_file_window" src={assignmentURL} title="embedded file browser" frameborder="0"></iframe>:
+                    <iframe id="embedded_file_window" src={assignmentURL} title="embedded file browser" frameborder="0"></iframe>
                     <span></span>
                 <br />
                 <div>
@@ -34,10 +30,10 @@ export default class AssignmentSubmission extends Component{
                     <tbody>
                         <tr>
                             <td>
-                                <h3>Score</h3>
+                                <h3 style={{alignItems: 'top'}}>Score</h3>
                             </td>
                             <td>
-                                <input id="grade_score" type='number'></input>
+                                <input id="grade_score" type='number'></input><span> / 20.4</span>
                             </td>
                         </tr>
                         <tr>
