@@ -1025,38 +1025,38 @@ const db = {
         session.close();
     },
 
-      /**
+        /**
      * Get the submission
      * @param {*} id the submission id
      * @returns the username, content, media, posted time, and grade of the submission
      */
-    searchSubmissionById: async (id) => {
-        let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (a:submission {Id: $id}) 
-                     RETURN a`
-        let params = {"id": id};
-        let result;
-        try{
-            result = await session.run(query, params);
-        }catch (err) {
-            console.log(err);
-        }
-        var submission;
-        if (result.records.length == 0) {
-            return null;
-        }else {
-            submission = {
-                username: result.records[0].get(0).properties.Username,
-                content: result.records[0].get(0).properties.Content,
-                media: result.records[0].get(0).properties.Media,
-                posted: result.records[0].get(0).properties.Posted,
-                grade: result.records[0].get(0).properties.Grade
+         searchSubmissionById: async (id) => {
+            let session = Neo4jDriver.wrappedSession();
+            let query = `MATCH (a:submission {Id: $id}) 
+                         RETURN a`
+            let params = {"id": id};
+            let result;
+            try{
+                result = await session.run(query, params);
+            }catch (err) {
+                console.log(err);
             }
-        }
-        session.close();
-        return submission;
-    },
-
+            var submission;
+            if (result.records.length == 0) {
+                return null;
+            }else {
+                submission = {
+                    username: result.records[0].get(0).properties.Username,
+                    content: result.records[0].get(0).properties.Content,
+                    media: result.records[0].get(0).properties.Media,
+                    posted: result.records[0].get(0).properties.Posted,
+                    grade: result.records[0].get(0).properties.Grade
+                }
+            }
+            session.close();
+            return submission;
+        },
+    
     /**
      * Get the grade of the submission
      * @param {*} id the submission id
@@ -1370,7 +1370,7 @@ const db = {
     checkEnrollment: async (username, courseName) => {
 
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (u:user {Username: $username})-[:ENROLL]->(c:course {Name: $courseName}) 
+        let query = `MATCH (u:user {Username: $username})-[:ENROLLED_IN]->(c:course {Name: $courseName}) 
                      RETURN c.Name AS name`;
         let params = {"username": username, "courseName": courseName};
         let result;
@@ -2048,7 +2048,7 @@ const db = {
      */
     checkSubmissionExist: async (id) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (s:submission {Ud: $id}) 
+        let query = `MATCH (s:submission {Id: $id}) 
                      RETURN s`;
         let params = {"id": id};
         let result;
@@ -2059,8 +2059,73 @@ const db = {
         }
         session.close();
         return result.records.length > 0;
-    }
+    },
 
+    /**
+     * Return all the deliverables of a course
+     * @param {*} course course name
+     * @returns a set where each object contains all the feature of a deliverable
+     */
+    getCourseDeliverables: async (course) => {
+        var deliverableSet = [];
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (c:course {Name: $name})-[:HAS_MODULE]->(:module)-[:HAS_CONTENT]->(d:deliverable) 
+                     RETURN d`;
+        let params = {"name": course};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        let records = result.records
+        for (let i = 0; i < records.length; i++) {
+            let deliverable = records[i].get(0);
+            deliverableSet.push({
+                type: "Deliverable",
+                title: deliverable.properties.Title,
+                media: deliverable.properties.Media,
+                content: deliverable.properties.Content,
+                due: deliverable.properties.Due_time
+            })
+        }
+        session.close();
+        return deliverableSet;
+    },
+
+    /**
+     * Return all the deliverables of a course
+     * @param {*} username the username
+     * @returns a set where each object contains all the feature of a deliverable
+     */
+    getUserDeliverables: async (username) => {
+        var deliverableSet = []
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (u: user{UserName: $username}) 
+                     OPTIONAL MATCH (u)-[:ENROLLED_IN]->()-[:HAS_MODULE]->()-[:HAS_CONTENT]->(d0: deliverable) 
+                     OPTIONAL MATCH (u)-[:TEACH_COURSE]->()-[:HAS_MODULE]->()-[:HAS_CONTENT]->(d1: deliverable) 
+                     RETURN d0, d1`;
+        let params = {"username": username};
+        let result;
+        try {
+            result = await session.run(query, params);
+        } catch (err) {
+            console.log(err);
+        }
+        let records = result.records
+        for (let i = 0; i < records.length; i++) {
+            let deliverable = records[i].get(0) != null ? records[i].get(0) : records[i].get(1);
+            deliverableSet.push({
+                type: "Deliverable",
+                title: deliverable.properties.Title,
+                media: deliverable.properties.Media,
+                content: deliverable.properties.Content,
+                due: deliverable.properties.Due_time
+            })
+        }
+        session.close();
+        return deliverableSet;
+    }
 
 }; 
 
