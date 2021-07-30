@@ -23,6 +23,8 @@ import CourseContent from './components/pages/courseContent/courseContent';
 import CreateMaterial from './components/pages/createMaterial/createMaterial';
 import AddCourse from './components/pages/addCourse/addCourse';
 
+import Calendar from './components/pages/calendar/calendar';
+
 // import EditProfile from './components/pages/profile_edit/profile_edit'; 
 
 
@@ -97,6 +99,10 @@ export default function App() {
 
         <Route exact path="/learning/create_course" key="add-course">
           <AddCourse/>
+        </Route>
+
+        <Route exact path="/calendar" key="calendar">
+          <Calendar/>
         </Route>
 
         <Route exact path="/learning/edit_course/:course_name" key="edit-course" component={AddCourse}>     
