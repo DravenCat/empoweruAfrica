@@ -387,4 +387,48 @@ router.get('/getSubmissions', async (req, res) => {
 });
 
 
+
+/* 
+    Endpoint for when the user wants to get feedback for a submission
+    Request parameters:
+        submissionId: String
+        courseName: String
+*/
+router.get('/getSubmission', async (req, res) => {
+
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    let submissionId = req.body.submissionId;
+
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            message: 'You have to sign in before making a deliverable. '
+        });
+        return;
+    }
+
+
+    const isInstructor = await db.checkIsInstructorFromCourse(courseName, username);
+    if(!isInstructor){
+        // The user is not an instructor for this course. 
+        res.status(403).json({
+            mesage: 'You are not an instructor for this course. '
+        });
+        return;
+    }
+
+    let submissionExist = db.checkSubmissionExist(submissionId);
+    if(!submissionExist){
+        res.status(404).json({
+            mesage: 'Submission does not exist. '
+        });
+        return;
+    }
+
+    let submission = db.searchSubmissionById(submissionId);
+    res.status(200).json({submission});
+});
+
 module.exports = router;

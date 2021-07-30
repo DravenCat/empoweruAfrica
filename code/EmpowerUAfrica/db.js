@@ -927,7 +927,7 @@ const db = {
                 media: result.records[0].get(0).properties.Media,
                 content: result.records[0].get(0).properties.Content,
                 postTime: result.records[0].get(0).properties.Post_time,
-                dueTime: result.records[0].get(0).properties.Due_time,
+                dueTime: result.records[0].get(0).properties.Due_time
             }
         }
         session.close();
@@ -1024,7 +1024,39 @@ const db = {
         }
         session.close();
     },
-  
+
+      /**
+     * Get the submission
+     * @param {*} id the submission id
+     * @returns the username, content, media, posted time, and grade of the submission
+     */
+    searchSubmissionById: async (id) => {
+        let session = Neo4jDriver.wrappedSession();
+        let query = `MATCH (a:submission {Id: $id}) 
+                     RETURN a`
+        let params = {"id": id};
+        let result;
+        try{
+            result = await session.run(query, params);
+        }catch (err) {
+            console.log(err);
+        }
+        var submission;
+        if (result.records.length == 0) {
+            return null;
+        }else {
+            submission = {
+                username: result.records[0].get(0).properties.Username,
+                content: result.records[0].get(0).properties.Content,
+                media: result.records[0].get(0).properties.Media,
+                posted: result.records[0].get(0).properties.Posted,
+                grade: result.records[0].get(0).properties.Grade
+            }
+        }
+        session.close();
+        return submission;
+    },
+
     /**
      * Get the grade of the submission
      * @param {*} id the submission id
