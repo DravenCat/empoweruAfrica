@@ -143,7 +143,7 @@ export default class gradeAssignment extends Component{
         let visibleSubmissions = this.filterVisibleSubmissions(submissions, showLate, showOnlyLatest); 
         
         console.log(visibleSubmissions); 
-
+        // Integration
     }
 
     render() {
