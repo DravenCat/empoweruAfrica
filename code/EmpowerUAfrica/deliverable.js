@@ -143,7 +143,6 @@ router.post('/editDeliverable', async (req, res) => {
     Endpoint for when the user wants to create an deliverable
     Request parameters:
         deliverableId: String
-        courseName: String
 */
 router.delete('/deleteDeliverable', async (req, res) => {
     let token = req.cookies.token; 
@@ -187,7 +186,6 @@ router.delete('/deleteDeliverable', async (req, res) => {
     Endpoint for when the user wants to create a submission
     Request parameters:
         deliverableId: String
-        courseName: String
         content: String
         media: File
         
@@ -195,7 +193,6 @@ router.delete('/deleteDeliverable', async (req, res) => {
 router.post('/createSubmission', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let courseName = req.body.courseName;
     let deliverableId = req.body.deliverableId;
     
 
@@ -207,7 +204,15 @@ router.post('/createSubmission', async (req, res) => {
         return;
     }
 
-    const isEnrolled = await db.checkEnrollment(courseName, username);
+    const course = (await db.searchCourses(null, {has_content: deliverableId}))[0];
+    // If such course does not exist, db.searchCourses should return empty Array. 
+    if (course === undefined) {
+        res.status(404).json({
+            message: 'Deliverable does not exist. '
+        });
+        return;
+    } 
+    const isEnrolled = await db.checkEnrollment(course.name, username);
     if(!isEnrolled){
         // The user is not an enrolled in this course. 
         res.status(403).json({
@@ -252,15 +257,22 @@ router.post('/createSubmission', async (req, res) => {
     Endpoint for when the user wants to get feedback for a submission
     Request parameters:
         submissionId: String
-        courseName: String
 */
 router.get('/getFeedback', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let courseName = req.body.courseName;
     let submissionId = req.body.submissionId;
   
-    const isEnrolled = await db.checkEnrollment(courseName, username);
+
+    const course = (await db.searchCourses(null, {has_submission: submissionId}))[0];
+    // If such course does not exist, db.searchCourses should return empty Array. 
+    if (course === undefined) {
+        res.status(404).json({
+            message: 'Submission does not exist. '
+        });
+        return;
+    } 
+    const isEnrolled = await db.checkEnrollment(course.name, username);
     if(!isEnrolled){
         // The user is not an enrolled in this course. 
         res.status(403).json({
@@ -313,8 +325,15 @@ router.post('/sendFeedback', async (req, res) => {
         return;
     }
 
-
-    const isInstructor = await db.checkIsInstructorFromCourse(courseName, username);
+    const course = (await db.searchCourses(null, {has_submission: submissionId}))[0];
+    // If such course does not exist, db.searchCourses should return empty Array. 
+    if (course === undefined) {
+        res.status(404).json({
+            message: 'Submission does not exist. '
+        });
+        return;
+    } 
+    const isInstructor = await db.checkIsInstructorFromCourse(course.name, username);
     if(!isInstructor){
         // The user is not an instructor for this course. 
         res.status(403).json({
@@ -344,7 +363,6 @@ router.post('/sendFeedback', async (req, res) => {
     Endpoint for when the user wants to get feedback for a submission
     Request parameters:
         deliverableId: String
-        courseName: String
 */
 router.get('/getSubmissions', async (req, res) => {
 
@@ -361,8 +379,15 @@ router.get('/getSubmissions', async (req, res) => {
         return;
     }
 
-
-    const isInstructor = await db.checkIsInstructorFromCourse(courseName, username);
+    const course = (await db.searchCourses(null, {has_submission: submissionId}))[0];
+    // If such course does not exist, db.searchCourses should return empty Array. 
+    if (course === undefined) {
+        res.status(404).json({
+            message: 'Submission does not exist. '
+        });
+        return;
+    } 
+    const isInstructor = await db.checkIsInstructorFromCourse(course.name, username);
     if(!isInstructor){
         // The user is not an instructor for this course. 
         res.status(403).json({
@@ -392,7 +417,6 @@ router.get('/getSubmissions', async (req, res) => {
     Endpoint for when the user wants to get feedback for a submission
     Request parameters:
         submissionId: String
-        courseName: String
 */
 router.get('/getSubmission', async (req, res) => {
 
@@ -409,8 +433,16 @@ router.get('/getSubmission', async (req, res) => {
         return;
     }
 
+    const course = (await db.searchCourses(null, {has_submission: submissionId}))[0];
+    // If such course does not exist, db.searchCourses should return empty Array. 
+    if (course === undefined) {
+        res.status(404).json({
+            message: 'Submission does not exist. '
+        });
+        return;
+    } 
 
-    const isInstructor = await db.checkIsInstructorFromCourse(courseName, username);
+    const isInstructor = await db.checkIsInstructorFromCourse(course.name, username);
     if(!isInstructor){
         // The user is not an instructor for this course. 
         res.status(403).json({

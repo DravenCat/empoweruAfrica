@@ -901,7 +901,7 @@ const db = {
     },
     
     /**
-     * Return a object that contains the feature of the assignmeent
+     * Return a object that contains the feature of the deliverable
      * Null o/w
      * @param {*} id the id of the deliverable
      * @returns an object that contains the id, title, media, content, post_time and due_time
@@ -1134,6 +1134,8 @@ const db = {
         }
         if ('enrolled_by' in criteria) {
             constraints.push(`(:user {UserName: $enrolled_by})-[:ENROLLED_IN]->(c)`); 
+        }if ('has_submission' in criteria) {
+            constraints.push(`(c)-[:HAS_MODULE]->()-[:HAS_CONTENT]->(:deliverable)<-[:SUBMIT_TO]-(:submission {Id: $has_submission})`); 
         }
         let constraintStr = constraints.length === 0? 
             '': 
