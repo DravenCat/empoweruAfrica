@@ -361,6 +361,7 @@ router.post('/sendFeedback', async (req, res) => {
 
 /* 
     Endpoint for when the user wants to get feedback for a submission
+    Returned object can be used for any parameter in a submission including grades
     Request parameters:
         deliverableId: String
 */
