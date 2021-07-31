@@ -7,6 +7,10 @@
   pointer-events: none;
 }
 
+textarea {
+  font-family: sans-serif;
+}
+
 :root {
   --link-hover-color: rgb(0, 143, 141);
   --btn-confirm-color: yellowgreen; 

@@ -280,6 +280,7 @@ export class Deliverable extends Component {
                 </h3>
                 <span>{Utils.trimString(deliverable.description,descAbbrivLen)}</span><br />
                 {
+
                     overdue === true? 
                     <span className="overdue">Due {dueTimeString}</span>:
                     <span>{dueTimeString}</span>

@@ -42,6 +42,20 @@
     background: none;
 }
 
+#submit_assignment {
+    background-color: black;
+    color: #eee;
+    border-radius: 10px;
+    padding: 5px 10px;
+    display: block;
+    float: right;
+    text-decoration: none;
+}
+
+#submit_assignment:hover {
+    background-color: rgb(34, 34, 34);
+}
+
 .course-module-content .icon {
     height: 1.2em !important;
     width: 1.2em !important;

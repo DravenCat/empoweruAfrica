@@ -1129,6 +1129,9 @@ const db = {
         if ('has_content' in criteria) {
             constraints.push(`(c)-[:HAS_MODULE]->()-[:HAS_CONTENT]-({Id: $has_content})`); 
         }
+        if ('has_submission' in criteria) {
+            constraints.push(`(c)-[:HAS_MODULE]->()-[:HAS_CONTENT]->(:deliverable)<-[:SUBMIT_TO]-(:submission {Id: $has_submission})`); 
+        }
         if ('name_equals' in criteria) {
             constraints.push(`c.Name = $name_equals`); 
         }
