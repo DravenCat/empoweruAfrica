@@ -9,7 +9,21 @@ export default class gradeAssignment extends Component{
     state = {
         assignmentURL: 'https://cmsweb.utsc.utoronto.ca/cscc01s21/project/AfricanImpactChallenge.pdf',
         id: null,
-        showLateSubmissions: false 
+        submissions: null,
+        deliverable: null, 
+        showLate: false,
+        showOnlyLatest: true
+    }
+
+    setShowLate = () => {
+        this.setState({
+            showLate: document.getElementById('show-late').checked
+        })
+    }
+    setOnlyShowLatest = () => {
+        this.setState({
+            showOnlyLatest: document.getElementById('show-only-latest').checked
+        })
     }
 
     switchStudent = () => {
@@ -18,37 +32,127 @@ export default class gradeAssignment extends Component{
         })
     }
 
+    getDeliverableInfo = async () => {
+        const { id: deliverableId } = this.props.match; 
+        // TODO: ajax
+        // Fake data
+        let deliverable = {
+            name: "Assignment 1",
+            description: "Do this",
+            due: 4000
+        }
+        
+        return deliverable; 
+    }
+
     getSubmissions = async () => {
-        let res, body; 
         // TODO: ajax
         // Fake data
         
-        body = {
+        let submissions = {
+            onTime:[
+                {
+                    username: 'user1',
+                    posted: 114514,
+                },
+                {
+                    username: 'user2',
+                    posted: 114514,
+                    grade: 1919
+                },
+                {
+                    username: 'user2',
+                    posted: 114513
+                },
+                {
+                    username: 'user4',
+                    posted: 114514,
+                    grade: 1919
+                }
+            ],
+            late:[
+                {
+                    username: 'user5',
+                    posted: 1919810
+                },
+                {
+                    username: 'user6',
+                    posted: 1919810
+                },
+                {
+                    username: 'user7',
+                    posted: 1919810,
+                    grade: 514
+                }
+            ]
         }
-        return body; 
+        return submissions; 
     }
 
-    async componentDidMount() {
+    componentDidMount = async () => {
         // Get deliverable id from url
         const { id } = this.props.match; 
-        const submissions = await this.getSubmissions(); 
+        const [ submissions, deliverable ] = await Promise.all([this.getSubmissions(), this.getDeliverableInfo()]); 
+        console.dir(submissions);
         this.setState({
-            id
+            id,
+            submissions,
+            deliverable
         }); 
     }
 
+    filterVisibleSubmissions = (submissions, showLate, showOnlyLatest) => {
+        let visibleSubmissions = []; 
+        let allSubmissions = [...submissions.onTime]; 
+
+        if (showLate) {
+            allSubmissions = [...allSubmissions, ...submissions.late]; 
+        }
+
+        if (showOnlyLatest) {
+            // Leave only latest submission of a user
+            let usernameToLatestSubmission = {}; 
+            // username -> its latest submission (so far)
+            for (const submission of allSubmissions) {
+                const username = submission.username; 
+                if ( !(username in usernameToLatestSubmission)) {
+                    usernameToLatestSubmission[username] = submission; 
+                }
+                else {
+                    if (usernameToLatestSubmission[username].posted < submission.posted) {
+                        usernameToLatestSubmission[username] = submission; 
+                    }
+                }
+            }
+            
+            // Collect every user's latest submission into visibleSubmission 
+            for (const username in usernameToLatestSubmission) {
+                visibleSubmissions.push(usernameToLatestSubmission[username]); 
+            }
+        }
+        else {
+            visibleSubmissions = allSubmissions; 
+        }
+        visibleSubmissions.sort( (a, b) => a.posted - b.posted ); 
+        return visibleSubmissions; 
+    }
+
+    renderSwitchStudent() {
+        const { submissions, deliverable, showLate, showOnlyLatest } = this.state;
+
+        let visibleSubmissions = this.filterVisibleSubmissions(submissions, showLate, showOnlyLatest); 
+        
+        console.log(visibleSubmissions); 
+
+    }
+
     render() {
-        if (this.state.id === null) {
+        if (this.state.deliverable === null) {
             return null; 
         }
         const {assignmentURL} = this.state;
-        const studentInfo = {
-            students: ["student1", "student2", "student3", "student4", "student4", "student4", "student4", "student4", "student4", "student4", "student4", "student4"]
-        }
         
-        let students = studentInfo.students.map( 
-            student => <div className='switch_student_single ungraded late' onClick={this.switchStudent}>{student}</div>
-        )
+        let students = this.renderSwitchStudent(); 
 
         return (
             <div className="grade_assignment_page">
@@ -63,7 +167,11 @@ export default class gradeAssignment extends Component{
                     </div>
                     <div>
                         <h1>Submssions</h1>
-                        <p style={{fontSize: '1.1em'}}>Show late submissions<input type="checkbox"></input></p>
+                        <p style={{fontSize: '1.1em'}}></p>
+                        <p style={{fontSize: '1.1em'}}>
+                            <span><input onInput={this.setShowLate} type="checkbox" id="show-late"></input>Show late submissions</span><br />
+                            <span><input onInput={this.setOnlyShowLatest} type="checkbox" id="show-only-latest"></input>Show only latest submission</span>
+                        </p>
                         <div className='switch_student'>
                             {students}
                         </div>

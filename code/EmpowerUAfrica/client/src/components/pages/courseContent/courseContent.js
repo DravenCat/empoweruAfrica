@@ -62,41 +62,41 @@ export default class courseModule extends Component{
 
     getCourseContent = async () => {
         const courseName = this.props.match.params.course_name; 
-        let courseContent = {
-            "name": "Course Name", 
-            "instructor": "Josiah",
-            "description": "course description",
-            "modules": [
-                {
-                    "name": "First Week!", 
-                    "id": "Masdfajsdf", 
-                    "contents": [
-                        {
-                            "type": "reading",
-                            "id": "R001",
-                            "name": "lec01 reading",
-                            "description": "Read this", 
-                            "path": "https://cmsweb.utsc.utoronto.ca/cscc01s21/project/AfricanImpactChallenge.pdf" 
-                        }, 
-                        {
-                            "type": "video", 
-                            "id": "V001",
-                            "name": "lec01 video" ,
-                            "description": "Watch this If wandered relation no surprise of screened doubtful. Overcame no insisted ye of trifling husbands. Might am order hours on found. Or dissimilar companions friendship impossible at diminution. Did yourself carriage learning she man its replying. Sister piqued living her you enable mrs off spirit really. Parish oppose repair is me misery. Quick may saw style after money mrs. ", 
-                            "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                        },
-                        {
-                            "type": "deliverable",
-                            "id": "D001",
-                            "name": "Assignment 1",
-                            "description": "Do this", 
-                            "due": 1626187198
-                        }
-                    ]
-                }
-            ]
-        }
-        return courseContent;
+        // let courseContent = {
+        //     "name": "Course Name", 
+        //     "instructor": "Josiah",
+        //     "description": "course description",
+        //     "modules": [
+        //         {
+        //             "name": "First Week!", 
+        //             "id": "Masdfajsdf", 
+        //             "contents": [
+        //                 {
+        //                     "type": "reading",
+        //                     "id": "R001",
+        //                     "name": "lec01 reading",
+        //                     "description": "Read this", 
+        //                     "path": "https://cmsweb.utsc.utoronto.ca/cscc01s21/project/AfricanImpactChallenge.pdf" 
+        //                 }, 
+        //                 {
+        //                     "type": "video", 
+        //                     "id": "V001",
+        //                     "name": "lec01 video" ,
+        //                     "description": "Watch this If wandered relation no surprise of screened doubtful. Overcame no insisted ye of trifling husbands. Might am order hours on found. Or dissimilar companions friendship impossible at diminution. Did yourself carriage learning she man its replying. Sister piqued living her you enable mrs off spirit really. Parish oppose repair is me misery. Quick may saw style after money mrs. ", 
+        //                     "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        //                 },
+        //                 {
+        //                     "type": "deliverable",
+        //                     "id": "D001",
+        //                     "name": "Assignment 1",
+        //                     "description": "Do this", 
+        //                     "due": 1626187198
+        //                 }
+        //             ]
+        //         }
+        //     ]
+        // }
+        // return courseContent;
         let res, body; 
         try {
             ( { res, body } = await Utils.ajax(

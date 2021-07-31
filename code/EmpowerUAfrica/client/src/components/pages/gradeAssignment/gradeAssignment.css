@@ -29,7 +29,7 @@
 
 .switch_student {
     background-color: #eee;
-    max-height: 76vh;
+    height: 76vh;
     box-shadow: 0 0 3px 1px black;
     border-top: 1px solid transparent;
     overflow: auto;
