@@ -13,6 +13,7 @@ const router = express.Router();
 /* 
     Endpoint to get all information of all courses
     Params: None
+    
 */
 router.get('/getCourses', async (req, res) => {
     let token = req.cookies.token;
