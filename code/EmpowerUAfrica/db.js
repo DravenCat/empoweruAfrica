@@ -2027,6 +2027,12 @@ const db = {
         };
         return courseContent;
     },
+
+    /**
+     * Check if the course exists
+     * @param {*} courseName the course name
+     * @returns true if exists. false o/w
+     */
     courseExists: async (courseName) => {
         const session = Neo4jDriver.wrappedSession();
         let query = 
