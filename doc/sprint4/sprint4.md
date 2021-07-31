@@ -57,13 +57,15 @@ For the calendar feature, due to the high complexity of making a calendar from s
 
 
 ## Team capacity:
-With a team of 5, our team is able to dedicate 129 hours to this sprint to complete 51 points. 
-Siyang Chen: 4-5 hours per day
-Jiazheng Li: 2 hours per day
-Dezhi Ren: 4 hours per day
-Yuanqian Fang: 4 hours per day
-Jiayu Lu: 4 hours per day
+| Name | Estimated hours of work per day |
+| --- | --- |
+| Siyang Chen | 5 |
+| Jiazheng Li | 2 |
+| Dezhi Ren | 4 |
+| Yuanqian Fang | 4 |
+| Jiayu Lu | 4 |
 
+With a team of 5, our team is able to dedicate 129 hours to this sprint to complete 51 points. 
 
 ## Participants: 
 Dezhi Ren, Jiayu Lu, Jiazheng Li, Siyang Chen, Yuanqian Fang
