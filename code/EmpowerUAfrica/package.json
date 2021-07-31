@@ -13,6 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fullcalendar/daygrid": "^5.8.0",
+    "@fullcalendar/react": "^5.8.0",
     "bootstrap": "^4.6.0",
     "concurrently": "^6.2.0",
     "cookie-parser": "^1.4.5",
