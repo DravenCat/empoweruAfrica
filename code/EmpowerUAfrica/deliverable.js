@@ -408,7 +408,10 @@ router.get('/getSubmissions', async (req, res) => {
     let late = await db.getLateSubmission(deliverableId);
     let onTime = await db.getInTimeSubmission(deliverableId);
 
-    res.status(200).json({onTime: onTime, late: late});
+    let lateSubmissionSet = await db.getAllSubmission(late);
+    let onTimeSubmissionSet = await db.getAllSubmission(onTime);
+
+    res.status(200).json({onTime: onTimeSubmissionSet, late: lateSubmissionSet});
 
 });
 

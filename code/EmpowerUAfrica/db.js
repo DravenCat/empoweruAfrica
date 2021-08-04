@@ -2137,6 +2137,19 @@ const db = {
         }
         session.close();
         return deliverableSet;
+    },
+
+    /**
+     * Return a set of submission where each submission has its own features as in database
+     * @param {*} idSet the set of submission Id
+     * @returns the submission set
+     */
+    getAllSubmission: async (idSet) => {
+        var submissionSet = [];
+        for (let i = 0; i < idSet.length; i++) {
+            submissionSet.push(await db.searchSubmissionById(idSet[i]));
+        }
+        return submissionSet;
     }
 
 }; 
