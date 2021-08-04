@@ -11,6 +11,7 @@ const learningRouter = require('./learning');
 const mediaRouter = require('./media'); 
 const deliverableRouter = require('./deliverable'); 
 const materialRouter = require('./material'); 
+const calendarRouter = require('./calendar');
 
 const PORT = 5000; 
 
@@ -44,7 +45,9 @@ const expectedFields = {
     '/api/learning/editModule': ['id', 'name'],
     '/api/learning/deleteVideo': ['id'],
     '/api/learning/editVideo': ['name', 'description', 'id', 'vid'],
-    '/api/learning/editReading': ['name', 'description', 'id']
+    '/api/learning/editReading': ['name', 'description', 'id'],
+    '/api/deliverable/getSubmission': ['deliverableId'],
+    '/api/calendar/getImportantDates': ['courseName']
 };
 
 // parse the request body as json. 
@@ -91,5 +94,7 @@ app.use('/api/learning', learningRouter);
 app.use('/api/learning', mediaRouter); 
 app.use('/api/learning', deliverableRouter); 
 app.use('/api/learning', materialRouter); 
+app.use('/api/deliverable', deliverableRouter);
+app.use('/api/calendar', calendarRouter);
 
 app.listen(PORT, () => console.log(`[server]: Server started on port ${PORT}`)); 
