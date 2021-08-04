@@ -1936,7 +1936,7 @@ const db = {
         let courseName = await db.searchCourseByModule(moduleId);
 
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (u:user {Username: $instructor})-[cc:TEACH_COURSE]->(c:course {Name: $courseName}) 
+        let query = `MATCH (u:user {UserName: $instructor})-[cc:TEACH_COURSE]->(c:course {Name: $courseName}) 
                      RETURN cc`;
         let params = {"instructor": instructor, "courseName": courseName};
         let result;
@@ -1957,7 +1957,7 @@ const db = {
      */
     checkIsInstructorFromCourse: async (courseName, instructor) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (u:user {Username: $instructor})-[cc:CREATE_COURSE]->(c:course {Name: $courseName}) 
+        let query = `MATCH (u:user {UserName: $instructor})-[cc:TEACH_COURSE]->(c:course {Name: $courseName}) 
                      RETURN cc`;
         let params = {"instructor": instructor, "courseName": courseName};
         let result;
@@ -2131,7 +2131,7 @@ const db = {
                 title: deliverable.properties.Title,
                 media: deliverable.properties.Media,
                 content: deliverable.properties.Content,
-                due: deliverable.properties.Due_time
+                due: deliverable.properties.DueAt
             })
         }
         session.close();
