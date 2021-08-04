@@ -272,7 +272,7 @@ router.get('/getFeedback', async (req, res) => {
         });
         return;
     } 
-    const isEnrolled = await db.checkEnrollment(course.name, username);
+    const isEnrolled = await db.checkEnrollment(username, course.name);
     if(!isEnrolled){
         // The user is not an enrolled in this course. 
         res.status(403).json({

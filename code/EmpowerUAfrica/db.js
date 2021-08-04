@@ -1075,7 +1075,7 @@ const db = {
         }
         let grade = result.records[0].get('grade');
         session.close();
-        return grade;
+        return grade["low"];
     },
 
     /**
