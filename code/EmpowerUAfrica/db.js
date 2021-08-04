@@ -943,7 +943,7 @@ const db = {
         let submissionSet = [];
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (s:submission)-[:SUBMIT_TO]->(a:deliverable {Id: $id}) 
-                     WHERE s.Posted_time <= a.Due_time
+                     WHERE s.Posted_time <= a.DueAt
                      RETURN s.Id AS submissionId`;
         let params = {"id": id};
         let result;
@@ -966,7 +966,7 @@ const db = {
         let submissionSet = [];
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (s:submission)-[:SUBMIT_TO]->(a:deliverable {Id: $id}) 
-                     WHERE s.Posted_time > a.Due_time 
+                     WHERE s.Posted_time > a.DueAt
                      RETURN s.Id AS submissionId`;
         let params = {"id": id};
         let result;
@@ -1032,8 +1032,9 @@ const db = {
      */
          searchSubmissionById: async (id) => {
             let session = Neo4jDriver.wrappedSession();
-            let query = `MATCH (a:submission {Id: $id}) 
-                         RETURN a`
+            let query = `MATCH (a:submission {Id: $id}), 
+                               (u:user)-[:CREATE_SUBMISSION]->(a) 
+                         RETURN a, u.UserName`
             let params = {"id": id};
             let result;
             try{
@@ -1046,11 +1047,11 @@ const db = {
                 return null;
             }else {
                 submission = {
-                    username: result.records[0].get(0).properties.Username,
+                    username: result.records[0].get(1),
                     content: result.records[0].get(0).properties.Content,
                     media: result.records[0].get(0).properties.Media,
-                    posted: result.records[0].get(0).properties.Posted,
-                    grade: result.records[0].get(0).properties.Grade
+                    posted: result.records[0].get(0).properties.Posted_time["low"],
+                    grade: result.records[0].get(0).properties.Grade["low"]
                 }
             }
             session.close();

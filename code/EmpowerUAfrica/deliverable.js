@@ -380,7 +380,7 @@ router.get('/getSubmissions', async (req, res) => {
         return;
     }
 
-    const course = (await db.searchCourses(null, {has_submission: submissionId}))[0];
+    const course = (await db.searchCourses(null, {has_content: deliverableId}))[0];
     // If such course does not exist, db.searchCourses should return empty Array. 
     if (course === undefined) {
         res.status(404).json({
@@ -460,7 +460,7 @@ router.get('/getSubmission', async (req, res) => {
         return;
     }
 
-    let submission = db.searchSubmissionById(submissionId);
+    let submission = await db.searchSubmissionById(submissionId);
     res.status(200).json({submission});
 });
 
