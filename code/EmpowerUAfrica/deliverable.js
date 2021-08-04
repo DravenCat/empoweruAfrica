@@ -212,7 +212,7 @@ router.post('/createSubmission', async (req, res) => {
         });
         return;
     } 
-    const isEnrolled = await db.checkEnrollment(course.name, username);
+    const isEnrolled = await db.checkEnrollment(username, course.name);
     if(!isEnrolled){
         // The user is not an enrolled in this course. 
         res.status(403).json({
@@ -242,7 +242,7 @@ router.post('/createSubmission', async (req, res) => {
 
     const content  = req.body.content; 
     const timestamp = utils.timestamp(); 
-    const submissionId = utils.URLSafe(utils.hash(name + timestamp.toString())); 
+    const submissionId = utils.URLSafe(utils.hash(username + timestamp.toString())); 
 
 
     await db.createSubmission(username, deliverableId, submissionId, content, submissionFile, timestamp); 

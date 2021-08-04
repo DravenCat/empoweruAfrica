@@ -1373,14 +1373,14 @@ const db = {
      * @returns true if enrolled, false otherwise
      */
     checkEnrollment: async (username, courseName) => {
-
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (u:user {Username: $username})-[:ENROLLED_IN]->(c:course {Name: $courseName}) 
+        let query = `MATCH (u:user {UserName: $username})-[:ENROLLED_IN]->(c:course {Name: $courseName}) 
                      RETURN c.Name AS name`;
         let params = {"username": username, "courseName": courseName};
         let result;
         try {
             result = await session.run(query, params);
+            
         } catch (err) {
             console.log(err);
         }
