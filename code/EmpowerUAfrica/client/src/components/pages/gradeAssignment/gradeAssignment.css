@@ -29,7 +29,7 @@
 
 .switch_student {
     background-color: #eee;
-    height: 76vh;
+    height: 78vh;
     box-shadow: 0 0 3px 1px black;
     border-top: 1px solid transparent;
     overflow: auto;
@@ -47,6 +47,10 @@
 .late {
     color:darkred;
     font-weight: 500;
+}
+.focused {
+    background-color: coral !important;
+    font-weight: bold !important;
 }
 
 .switch_student_single:hover {
