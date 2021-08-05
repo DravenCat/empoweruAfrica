@@ -820,7 +820,7 @@ const db = {
     createDeliverable: async (id, name, description, totalPoints, creationTimestamp, dueTimestamp, moduleId) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `CREATE (a:deliverable 
-            {Id: $id, Name: $name, Description: $description, TotalPoints: $totalPoints, CreatedAt: $creationTimestamp, DueAt: $dueTimestamp})`;
+            {Id: $id, Name: $name, Description: $description, TotalPoints: $totalPoints, CreatedAt: $creationTimestamp, DueTime: $dueTimestamp})`;
         let params = {
             id, 
             name, 
@@ -838,6 +838,7 @@ const db = {
         }
         session.close();
     },
+
 
     /**
      * Set the deliverable to new due. If missing the second paramaters, it will be set to -1
@@ -869,7 +870,7 @@ const db = {
     setDeliverableDue: async (id, due) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (a:deliverable {Id: $id}) 
-                     SET a.DueAt = $due`;
+                     SET a.DueTime = $due`;
         let params = { id , "due": neo4j.int(due)};
         try {
             await session.run(query, params);
@@ -927,7 +928,7 @@ const db = {
                 media: result.records[0].get(0).properties.Media,
                 content: result.records[0].get(0).properties.Content,
                 postTime: result.records[0].get(0).properties.Post_time,
-                dueTime: result.records[0].get(0).properties.Due_time
+                dueTime: result.records[0].get(0).properties.DueTime
             }
         }
         session.close();
@@ -943,7 +944,7 @@ const db = {
         let submissionSet = [];
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (s:submission)-[:SUBMIT_TO]->(a:deliverable {Id: $id}) 
-                     WHERE s.Posted_time <= a.DueAt
+                     WHERE s.Posted_time <= a.DueTime
                      RETURN s.Id AS submissionId`;
         let params = {"id": id};
         let result;
@@ -966,7 +967,7 @@ const db = {
         let submissionSet = [];
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (s:submission)-[:SUBMIT_TO]->(a:deliverable {Id: $id}) 
-                     WHERE s.Posted_time > a.DueAt
+                     WHERE s.Posted_time > a.DueTime
                      RETURN s.Id AS submissionId`;
         let params = {"id": id};
         let result;
@@ -1816,11 +1817,11 @@ const db = {
                         contentInfo.vid = content.properties.Vid;  
                         break; 
                     case 'deliverable': 
-                        if (typeof content.properties.DueAt === 'number') {
-                            contentInfo.due = content.properties.DueAt;
+                        if (typeof content.properties.DueTime === 'number') {
+                            contentInfo.due = content.properties.DueTime;
                         }
                         else {
-                            contentInfo.due = content.properties.DueAt.low; 
+                            contentInfo.due = content.properties.DueTime.low; 
                         }
                         contentInfo.totalPoints = content.properties.TotalPoints; 
                         break; 
@@ -2132,7 +2133,7 @@ const db = {
                 title: deliverable.properties.Title,
                 media: deliverable.properties.Media,
                 content: deliverable.properties.Content,
-                due: deliverable.properties.DueAt
+                due: deliverable.properties.DueTime
             })
         }
         session.close();

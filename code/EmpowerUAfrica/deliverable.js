@@ -183,23 +183,71 @@ router.delete('/deleteDeliverable', async (req, res) => {
 
 
 /* 
-    Endpoint for when the user wants to create a submission
+    Endpoint for when the user wants to create an deliverable
+    Request parameters:
+        deliverableId: String
+*/
+router.get('/getDeliverable', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+
+    const { id: deliverableId } = req.body;
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(401).json({
+            message: 'You have to sign in before you can modify course content. '
+        });
+        return;
+    }
+
+    let course = (await db.searchCourses(null, {has_content: deliverableId}))[0];
+    // If such course does not exist, db.searchCourses should return empty Array. 
+    if (course === undefined) {
+        res.status(404).json({
+            message: 'Course does not exist. '
+        });
+        return;
+    } 
+
+    if(course.instructor !== username){
+        // The user is not an instructor for this course. 
+        res.status(403).json({
+            message: 'You are not an instructor for this course. '
+        });
+        return;
+    }
+
+    let deliverable = await db.searchDeliverableById(deliverableId);
+
+    if(deliverable === null){
+        res.status(400).json({
+            message: 'Deliverable not found. '
+        });
+        return;
+    }
+
+    res.status(200).json({ deliverable: deliverable });
+}); 
+
+
+/* 
+    Endpoint for when the user wants to upload a submission
     Request parameters:
         deliverableId: String
         content: String
-        media: File
+        media: path
         
 */
 router.post('/createSubmission', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let deliverableId = req.body.deliverableId;
+    let deliverableId = req.query.deliverableId;
     
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
         res.status(403).json({
-            message: 'You have to sign in before making a deliverable. '
+            message: 'You have to sign in before making a submission. '
         });
         return;
     }
@@ -221,12 +269,55 @@ router.post('/createSubmission', async (req, res) => {
         return;
     }
 
+    const submissionId = utils.URLSafe(utils.hash(username + timestamp.toString())); 
+
+    let submissionFile = req.body.path;
+
+    const content  = req.body.content; 
+    const timestamp = utils.timestamp(); 
+
+
+    await db.createSubmission(username, deliverableId, submissionId, content, submissionFile, timestamp); 
+    res.json({
+        message: 'Success'
+    });
+}); 
+
+
+/* 
+    Endpoint for when the user wants to upload a submission
+    Request parameters:
+        media: File
+        
+*/
+router.post('/uploadSubmissionFile', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(403).json({
+            message: 'You have to sign in before uploading a file. '
+        });
+        return;
+    }
+
+    if (!req.files || Object.keys(req.files).length === 0) {
+        // No file was given in the request
+        res.status(400).json({
+            message: 'No file found in the request body. '
+        });
+        return; 
+    }
+
+    const submissionId = utils.URLSafe(utils.hash(username + timestamp.toString())); 
+    let path;
     let submissionFile = "None";
     if (req.files && Object.keys(req.files).length !== 0) {
         submissionFile = req.files[Object.keys(req.files)[0]]; 
         let extensionNames = [null, '.pdf', '.txt'];
         let extension = submissionFile.name.slice(-3) === 'png'? 2: 1;
-        let path = 'client/public/files/users/' + username + extensionNames[extension];
+        path = 'client/public/learning/' + course.name + '/' + deliverableId + '/' + submissionId + extensionNames[extension];
         try {
             await submissionFile.mv(path); 
         }
@@ -239,15 +330,9 @@ router.post('/createSubmission', async (req, res) => {
         }
     }
 
-
-    const content  = req.body.content; 
-    const timestamp = utils.timestamp(); 
-    const submissionId = utils.URLSafe(utils.hash(username + timestamp.toString())); 
-
-
-    await db.createSubmission(username, deliverableId, submissionId, content, submissionFile, timestamp); 
-    res.json({
-        message: 'Success'
+    res.status(200).json({
+        message: 'Success',
+        location: path
     });
 }); 
 
