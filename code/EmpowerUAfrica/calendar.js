@@ -10,7 +10,7 @@ const router = express.Router();
 /* 
     Endpoint for when the user wants to get all important dates
     Request parameters:
-        courseName: String
+        Token: String
 */
 router.get('/getImportantDates', async (req, res) => {
 
@@ -26,23 +26,12 @@ router.get('/getImportantDates', async (req, res) => {
         });
         return;
     }
-
-
-    const isInstructor = await db.checkIsInstructorFromCourse(courseName, username);
-    if(!isInstructor){
-        // The user is not an instructor for this course. 
-        res.status(403).json({
-            mesage: 'You are not an instructor for this course. '
-        });
-        return;
-    }
-    
     
     let deliverables = await db.getUserDeliverables(username);
     let dates = {dates: []};
 
     for (let i = 0; i < deliverables.length; i++) {
-        dates["dates"].push(deliverables[i].due);
+        dates["dates"].push(deliverables[i].due /1000);
     }
 
     res.status(200).json({dates});
