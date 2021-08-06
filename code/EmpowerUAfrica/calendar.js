@@ -16,7 +16,6 @@ router.get('/getImportantDates', async (req, res) => {
 
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let courseName = req.body.courseName;
 
 
     if (username === null) {

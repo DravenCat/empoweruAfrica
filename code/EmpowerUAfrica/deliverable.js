@@ -193,7 +193,7 @@ router.delete('/deleteDeliverable', async (req, res) => {
 router.post('/createSubmission', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let deliverableId = req.body.deliverableId;
+    const { deliverableId, content } = req.query; 
     
 
     if (username === null) {
@@ -204,7 +204,7 @@ router.post('/createSubmission', async (req, res) => {
         return;
     }
 
-    const course = (await db.searchCourses(null, {has_content: deliverableId}))[0];
+    const course = (await db.searchCourses(username, {has_content: deliverableId}))[0];
     // If such course does not exist, db.searchCourses should return empty Array. 
     if (course === undefined) {
         res.status(404).json({
@@ -212,8 +212,7 @@ router.post('/createSubmission', async (req, res) => {
         });
         return;
     } 
-    const isEnrolled = await db.checkEnrollment(username, course.name);
-    if(!isEnrolled){
+    if(!course.enrolled){
         // The user is not an enrolled in this course. 
         res.status(403).json({
             mesage: 'You are not an enrolled in this course. '
@@ -222,30 +221,39 @@ router.post('/createSubmission', async (req, res) => {
     }
 
     let submissionFile = "None";
+    const timestamp = utils.timestamp(); 
+    const submissionId = utils.URLSafe(utils.hash(username + timestamp.toString())); 
+    let publicPath; 
     if (req.files && Object.keys(req.files).length !== 0) {
         submissionFile = req.files[Object.keys(req.files)[0]]; 
-        let extensionNames = [null, '.pdf', '.txt'];
-        let extension = submissionFile.name.slice(-3) === 'png'? 2: 1;
-        let path = 'client/public/files/users/' + username + extensionNames[extension];
+        let extensionNames = ['.pdf', '.txt'];
+        let extension = submissionFile.name.slice(-3); 
+        if (extensionNames.indexOf(extension) === -1) {
+            res.status(400).json({
+                message: `Only accepted format are ${extensionNames.join(', ')}`
+            }); 
+            return; 
+        }
+        let path = `client/public/learning/${course.name}/${deliverableId}/${submissionId}.${extension}`;
         try {
             await submissionFile.mv(path); 
         }
         catch (err) {
-            console.error(err); 
-            res.status(500).json({
-                message: 'Error when moving the file onto server. '
-            });
-            return; 
+            if (err.code === 'ENOENT') {
+                await fs.mkdir(`client/public/learning/${course.name}/${deliverableId}`);
+                await submissionFile.mv(path); 
+            }
+            else {
+                console.error(err); 
+                res.status(500).json({
+                message: 'Error when moving the file onto server. '});
+                return;
+            }
         }
+        publicPath = `/learning/${course.name}/${deliverableId}/${submissionId}.${extension}`; 
     }
 
-
-    const content  = req.body.content; 
-    const timestamp = utils.timestamp(); 
-    const submissionId = utils.URLSafe(utils.hash(username + timestamp.toString())); 
-
-
-    await db.createSubmission(username, deliverableId, submissionId, content, submissionFile, timestamp); 
+    await db.createSubmission(username, deliverableId, submissionId, content, publicPath, timestamp); 
     res.json({
         message: 'Success'
     });
@@ -455,7 +463,7 @@ router.get('/getSubmission', async (req, res) => {
         return;
     }
 
-    let submissionExist = db.checkSubmissionExist(submissionId);
+    let submissionExist = await db.checkSubmissionExist(submissionId);
     if(!submissionExist){
         res.status(404).json({
             mesage: 'Submission does not exist. '

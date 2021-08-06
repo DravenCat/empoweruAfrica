@@ -3,6 +3,15 @@ import './submitAssignment.css';
 
 
 export default class submitAssignment extends Component{
+    submit = async () => {
+        const content = document.getElementById('submission-content').value; 
+        const formadta = new FormData(); 
+        const mediaFile = document.getElementById('submission-media').files[0]; 
+        if (mediaFile === undefined) {
+            
+        }
+    }
+
     render() {
 
         const courseInfo = {
@@ -23,16 +32,24 @@ export default class submitAssignment extends Component{
 
                     <table className='submit_file'>
                         <colgroup>
-                            <col style={{width: '50%'}}></col>
-                            <col style={{width: '50%'}}></col>
+                            <col style={{width: '30%'}}></col>
+                            <col style={{width: '70%'}}></col>
                         </colgroup>
                         <tbody>
+                            <tr>
+                                <td>
+                                    <h3>Content</h3>
+                                </td>
+                                <td>
+                                    <textarea style={{width:'100%', height:'5em'}} id="submission-content"></textarea>
+                                </td>    
+                            </tr>
                             <tr>
                                 <td>
                                     <h3>Upload file to submit</h3>
                                 </td>
                                 <td>
-                                    <input type="file" id='submit_file'></input>
+                                    <input type="file" id="submission-media"></input>
                                 </td>
                             </tr>
                         </tbody>

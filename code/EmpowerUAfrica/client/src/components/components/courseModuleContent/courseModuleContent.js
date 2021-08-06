@@ -246,6 +246,16 @@ export class Deliverable extends Component {
         }); 
     }
 
+    clickDeliverable = () => {
+        const {view, content: deliverable} = this.props;
+        if (view === "instructor") {
+            window.location.href = `/learning/grade_assignment/${deliverable.id}`; 
+        }
+        else {
+            window.location.href = `/learning/submit_assignment/${deliverable.id}`; 
+        }
+    }
+
     render() {
         const { content: deliverable, view } = this.props; 
         const { edit } = this.state; 
@@ -260,7 +270,7 @@ export class Deliverable extends Component {
             overdue = Math.round(Date.now() / 1000) > deliverable.due && !deliverable.submitted;
         }
         return (
-            <div className="course-module-content">
+            <div className="course-module-content" onClick={this.clickDeliverable}>
                 <h3 className="course-module-content-name">{deliverable.name}
                 {
                         view === 'instructor'? 
