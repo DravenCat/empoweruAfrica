@@ -3,6 +3,8 @@ import Utils from '../../../utils';
 import './gradeAssignment.css';
 import AssignmentSubmission from '../../components/assignmentSubmission/assignmentSubmission';
 
+const getDeliverableURL = "/deliverable/getDeliverable"; 
+const getSubmissionsURL = "/deliverable/getSubmissions"; 
 
 export default class gradeAssignment extends Component{
 
@@ -27,83 +29,59 @@ export default class gradeAssignment extends Component{
         })
     }
 
+
     getDeliverableInfo = async () => {
-        const { id: deliverableId } = this.props.match; 
-        // TODO: ajax
-        // Fake data
-        let deliverable = {
-            name: "Assignment 1",
-            description: "Do this",
-            due: 114600,
-            totalPoints: 20000
+        let res, body; 
+        const { id } = this.props.match.params; 
+        const url = `${getDeliverableURL}?id=${id}`; 
+        try {
+            ({ res, body} = await Utils.ajax(
+                url,
+                {
+                    method: 'GET'
+                }
+            ))
         }
-        
-        return deliverable; 
+        catch (err) {
+            console.error(err); 
+            alert("Internet failure"); 
+            return null; 
+        }
+        if (!res.ok) {
+            console.error(body.message); 
+            alert(body.message); 
+            return null
+        }
+        else {
+            return body; 
+        }
     }
 
     getSubmissions = async () => {
-        // TODO: ajax
-        // Fake data
-        
-        let submissions = {
-            onTime:[
+        let res, body; 
+        const { id } = this.props.match.params; 
+        const url = `${getSubmissionsURL}?id=${id}`; 
+        try {
+            ({ res, body} = await Utils.ajax(
+                url,
                 {
-                    submissionId: 0, 
-                    username: 'user1',
-                    content: 'content 1',
-                    media: '/profilepics/users/comp.png', 
-                    posted: 114510,
-                },
-                {
-                    submissionId: 1, 
-                    username: 'user2',
-                    content: 'content 1',
-                    media: '/profilepics/users/comp.png', 
-                    posted: 114511,
-                    grade: 1919
-                },
-                {
-                    submissionId: 2,
-                    username: 'user2',
-                    content: 'content 2',
-                    media: '/profilepics/users/test.png', 
-                    posted: 114513
-                },
-                {
-                    submissionId: 3, 
-                    username: 'user4',
-                    content: 'content 3',
-                    media: '/profilepics/users/comp.png', 
-                    posted: 114514,
-                    grade: 1919
+                    method: 'GET'
                 }
-            ],
-            late:[
-                {
-                    submissionId: 4, 
-                    username: 'user5',
-                    content: 'content 4',
-                    media: '/profilepics/users/comp.png', 
-                    posted: 1919810
-                },
-                {
-                    submissionId: 5, 
-                    username: 'user6',
-                    content: 'content 5',
-                    media: '/profilepics/users/comp.png', 
-                    posted: 1919811
-                },
-                {
-                    submissionId: 6, 
-                    username: 'user7',
-                    content: 'content 6',
-                    media: '/profilepics/users/comp.png', 
-                    posted: 1919812,
-                    grade: 514
-                }
-            ]
+            ))
         }
-        return submissions; 
+        catch (err) {
+            console.error(err); 
+            alert("Internet failure"); 
+            return null; 
+        }
+        if (!res.ok) {
+            console.error(body.message); 
+            alert(body.message); 
+            return null
+        }
+        else {
+            return body; 
+        }
     }
 
     filterVisibleSubmissions = (submissions, showLate, showOnlyLatest) => {
@@ -150,7 +128,11 @@ export default class gradeAssignment extends Component{
             focusOn: submission,
             hasInput: false
         }); 
-        document.getElementById('grade_score').value = submission.grade || 0;
+        let defaultGrade = submission.grade || -1;
+        if (defaultGrade === -1) {
+            defaultGrade = 0; 
+        }
+        document.getElementById('grade_score').value = defaultGrade;
         document.getElementById('grade_comment').value = submission.comment || "";
     }
     
@@ -197,12 +179,31 @@ export default class gradeAssignment extends Component{
             hasInput: true
         }); 
     }
+    updateSubmission = async (submissionId, grade, comment) => {
+        const submissions = this.state.submissions; 
+        let newSubmissions = JSON.parse(JSON.stringify(submissions)); // Deep copy
+        let targetSubmission = 
+            newSubmissions.late.filter(submission => submission.id === submissionId)[0] ||
+            newSubmissions.onTime.filter(submission => submission.id === submissionId)[0];
+        if (targetSubmission === undefined) {
+            console.error(`No such submission: id= ${submissionId}`);
+        }
+        targetSubmission.grade = grade;
+        targetSubmission.comment = comment; 
+        this.setState(
+            {
+                submissions: newSubmissions,
+                hasInput: false
+            }
+        ); 
+    }
     getControlFunc = () => {
-        const {switchToNext, switchToPrevious, makeChange} = this; 
+        const {switchToNext, switchToPrevious, makeChange, updateSubmission} = this; 
         return {
             switchToNext, 
             switchToPrevious,
-            makeChange
+            makeChange,
+            updateSubmission
         }
     }
 
@@ -217,10 +218,10 @@ export default class gradeAssignment extends Component{
                 if (submission.posted > deliverable.due) {
                     className.push('late'); 
                 }
-                if (submission.grade === undefined || submission.grade === null) {
+                if (submission.grade === undefined || submission.grade === null || submission.grade === -1) {
                     className.push('ungraded'); 
                 }
-                if (focusOn.submissionId === submission.submissionId) {
+                if (focusOn.id === submission.id) {
                     className.push('focused'); 
                 }
                 className = className.join(' '); 
@@ -260,7 +261,7 @@ export default class gradeAssignment extends Component{
             <div className="grade_assignment_page">
                 <div className='grade_assignment_form'>
                     <div className="grad-deliverable-info">
-                        <h1>{deliverable.name}</h1>
+                        <h1>{deliverable.title}</h1>
                         <div className="grade-deliverable-description">
                             <p>{deliverable.description}</p>
                         </div>

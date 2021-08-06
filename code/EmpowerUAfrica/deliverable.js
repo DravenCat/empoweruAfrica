@@ -1,5 +1,5 @@
 const express = require('express'); 
-
+const fs = require('fs').promises; 
 const db = require('./db'); 
 const utils = require('./utils');
 const validation = require('./validation');
@@ -75,6 +75,53 @@ router.put('/createDeliverable', async (req, res) => {
     });
 }); 
 
+/* 
+    Endpoint for when the user wants to create a submission
+    Endpoint for when the user wants to create an deliverable
+    URL parameters:
+        deliverableId: String
+*/
+router.get('/getDeliverable', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+
+    const { id: deliverableId } = req.query;
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(401).json({
+            message: 'Please sign in first. '
+        });
+        return;
+    }
+
+    let course = (await db.searchCourses(username, {has_content: deliverableId}))[0];
+    // If such course does not exist, db.searchCourses should return empty Array. 
+    if (course === undefined) {
+        res.status(404).json({
+            message: 'Course does not exist. '
+        });
+        return;
+    } 
+
+    if(course.enrolled !== true){
+        // The user is not an instructor for this course. 
+        res.status(403).json({
+            message: 'You are not enrolled in this course. '
+        });
+        return;
+    }
+
+    let deliverable = await db.searchDeliverableById(deliverableId);
+
+    if(deliverable === null){
+        res.status(400).json({
+            message: 'Deliverable not found. '
+        });
+        return;
+    }
+
+    res.status(200).json(deliverable);
+}); 
 
 
 /* 
@@ -193,8 +240,8 @@ router.delete('/deleteDeliverable', async (req, res) => {
 router.post('/createSubmission', async (req, res) => {
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    const { deliverableId, content } = req.query; 
-    
+    let { deliverableId, content } = req.query; 
+    content = content || ""; 
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
@@ -220,13 +267,13 @@ router.post('/createSubmission', async (req, res) => {
         return;
     }
 
-    let submissionFile = "None";
+    let submissionFile;
     const timestamp = utils.timestamp(); 
     const submissionId = utils.URLSafe(utils.hash(username + timestamp.toString())); 
-    let publicPath; 
+    let publicPath = ""; 
     if (req.files && Object.keys(req.files).length !== 0) {
         submissionFile = req.files[Object.keys(req.files)[0]]; 
-        let extensionNames = ['.pdf', '.txt'];
+        let extensionNames = ['pdf', 'txt'];
         let extension = submissionFile.name.slice(-3); 
         if (extensionNames.indexOf(extension) === -1) {
             res.status(400).json({
@@ -377,7 +424,7 @@ router.get('/getSubmissions', async (req, res) => {
 
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let deliverableId = req.body.deliverableId;
+    let deliverableId = req.query.id;
 
 
     if (username === null) {
@@ -439,7 +486,7 @@ router.get('/getSubmission', async (req, res) => {
 
     if (username === null) {
         // The user havn't logged in, or the token has expired. 
-        res.status(403).json({
+        res.status(401).json({
             message: 'You have to sign in before making a deliverable. '
         });
         return;
@@ -474,5 +521,36 @@ router.get('/getSubmission', async (req, res) => {
     let submission = await db.searchSubmissionById(submissionId);
     res.status(200).json({submission});
 });
+
+router.get('/allSubmissionsOfDeliverableByUser', async (req, res) => {
+    let token = req.cookies.token; 
+    let username = token === undefined? null: await db.getUsernameByToken(token); 
+    let { deliverableId, targetUsername } = req.query; 
+
+    if (username === null) {
+        // The user havn't logged in, or the token has expired. 
+        res.status(401).json({
+            message: 'You have to sign in before making a deliverable. '
+        });
+        return;
+    }
+
+    const course = (await db.searchCourses(username, {has_content: deliverableId}))[0]; 
+    if (course === undefined) {
+        res.status(404).json({
+            message: 'Deliverable not found. '
+        }); 
+        return; 
+    }
+    const instructor = course.instructor; 
+    if ( (username !== targetUsername || !course.enrolled ) && instructor !== username ) {
+        res.status(403).json({
+            message: 'You have to be the student you are searching for or the course instructor to access this information. '
+        });
+        return; 
+    }
+    const submissions = await db.getAllSubmissionsOfDeliverableByUser(deliverableId, targetUsername); 
+    res.json(submissions); 
+}); 
 
 module.exports = router;

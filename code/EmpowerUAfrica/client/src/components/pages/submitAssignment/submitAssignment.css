@@ -10,13 +10,27 @@
 }
 
 .sumbit_assignment_form {
-    border-radius: 20px;
     margin: 150px auto;
     margin-top: 6.5%;
-    width: 30%;
-    background: -webkit-linear-gradient(135deg, #a6db43 0%,#e2cf21 50%);
+    width: 60%;
+    background: rgba(255, 255, 255, 0.9);
     padding: 50px 100px;
     box-shadow: 1px 1px 5px 2px gray;
+}
+
+.submissions-table {
+    margin-bottom: 1em;
+}
+.submissions-table, .submissions-table td, .submissions-table th {
+    border: 1px solid black; 
+    border-collapse: collapse;
+}
+.submissions-table td, .submissions-table th {
+    padding: 1em .7em;
+}
+
+.sumbit_assignment_form table {
+    width: 100%;
 }
 
 .submit_file {
@@ -34,6 +48,7 @@
 .sumbit_assignment_form button {
     position: relative;
     cursor: pointer;
+    width: 20%;
 }
 
 .sumbit_assignment_btn {
@@ -47,7 +62,7 @@
 
 .sumbit_assignment_form button:hover .sumbit_assignment_btn_mask {
     animation-name: submitAssignment;
-    animation-duration: 1s;
+    animation-duration: 500ms;
 }
 
 .sumbit_assignment_btn_mask {
