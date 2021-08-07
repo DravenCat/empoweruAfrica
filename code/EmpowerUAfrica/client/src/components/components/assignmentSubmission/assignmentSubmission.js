@@ -1,5 +1,8 @@
 import React, { Component } from 'react'; 
+import Utils from '../../../utils';
 import './assignmentSubmission.css';
+
+const sendFeedbackURL = "/deliverable/sendFeedback"; 
 
 /**
  *  @prop {object} submission: holds all the information of the submission. 
@@ -13,9 +16,64 @@ export default class AssignmentSubmission extends Component{
         submission: null
     }
 
-    submit = async() => {
-
+    discard = () => {
+        if (window.confirm('Discard all input? ')) {
+            let defaultGrade = this.props.submission.grade || -1;
+            let defaultComment = this.props.submission.comment || ""; 
+            if (defaultGrade < 0) {
+                defaultGrade = 0; 
+            }
+            document.getElementById('grade_score').value = defaultGrade;
+            document.getElementById('grade_comment').value = defaultComment; 
+        }
     }
+
+    sendFeedback = async () => {
+        let res, body; 
+        const grade = document.getElementById('grade_score').value;
+        const comment = document.getElementById('grade_comment').value; 
+        const id = this.props.submission.id; 
+        const totalPoints = this.props.deliverable.totalPoints; 
+        if (isNaN(parseFloat(grade)) || grade < 0 || grade > totalPoints) {
+            alert(`Grade not in valid range [0, ${totalPoints}]`); 
+            return false; 
+        }
+        try {
+            ({ res, body } = await Utils.ajax(
+                sendFeedbackURL,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        submissionId: id,
+                        grade,
+                        comments: comment 
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            ))
+        }
+        catch (err) {
+            console.error(err);
+            alert("Internet failure"); 
+        }
+        if (!res.ok) {
+            alert(body.message || body); 
+            return false; 
+        }
+        else {
+            this.props.getControlFunc().updateSubmission(id, grade, comment); 
+            return true; 
+        }
+    }
+
+    submitAndSwitchToNext = async () => {
+        if (await this.sendFeedback()) {
+            this.props.getControlFunc().switchToNext(); 
+        }
+    }
+
 
     componentDidMount = () => {
         this.setState({
@@ -30,13 +88,22 @@ export default class AssignmentSubmission extends Component{
 
         return (
             <div className="assignmentSubmission_component">
-                    <iframe id="embedded_file_window" src={submission.media} title="embedded file browser" frameBorder="0"></iframe>
-                    <span></span>
-                <br />
+                {
+                    submission.media !== "" ? 
+                    <>
+                        <iframe id="embedded_file_window" src={submission.media} title="embedded file browser"></iframe>
+                        <span></span>
+                        <br />
+                        
+                        <div className="submission-content-p">
+                            <p>{submission.content}</p>
+                        </div>
+                    </>:
+                    <div className="submission-content-p" style={{height: '67vh'}}>
+                        <p>{submission.content}</p>
+                    </div>
+                }
                 <div>
-                <div className="submission-content-p">
-                    <p>{submission.content}</p>
-                </div>
                 <table className='grade_section'>
                     <colgroup>
                         <col style={{width: '15%'}}></col>
@@ -63,10 +130,10 @@ export default class AssignmentSubmission extends Component{
                             </td>
                             <td className="grading-buttons">
                                 <button onClick={controlFuncs.switchToPrevious}>Previous Submission</button>
-                                <button>Submit Feedback</button>
-                                <button>Submit and Move to Next</button>
+                                <button onClick={this.sendFeedback}>Submit Feedback</button>
+                                <button onClick={this.submitAndSwitchToNext}>Submit and Move to Next</button>
                                 <button onClick={controlFuncs.switchToNext}>Next Submission</button>
-                                <button>Discard Feedback</button>
+                                <button onClick={this.discard}>Discard Feedback</button>
                             </td>
                         </tr>
                     </tbody>

@@ -26,8 +26,8 @@ export default class CreateMaterial extends Component{
     }
     submit = async () => {
         const { id: moduleId } = this.props.module; 
-        const name = document.getElementById(`${moduleId}-new-content-name`).value; 
-        const description = document.getElementById(`${moduleId}-new-content-description`).value; 
+        let name = document.getElementById(`${moduleId}-new-content-name`).value; 
+        let description = document.getElementById(`${moduleId}-new-content-description`).value; 
         const type = document.getElementById(`${moduleId}-new-content-type`).value; 
         let newContent = {
             name,
@@ -67,6 +67,8 @@ export default class CreateMaterial extends Component{
                 newContent.totalPoints = maxPoints; 
                 break; 
             case 'reading':
+                name = encodeURIComponent(name);
+                description = encodeURIComponent(description); 
                 url = `${createReadingURL}?name=${name}&description=${description}&moduleId=${moduleId}`; 
                 const readingFile = document.getElementById(`${moduleId}-new-reading-file`).files[0];
                 console.log(readingFile); 

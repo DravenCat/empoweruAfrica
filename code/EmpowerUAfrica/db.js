@@ -870,8 +870,9 @@ const db = {
     setDeliverableDue: async (id, due) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (a:deliverable {Id: $id}) 
-                     SET a.DueTime = $due`;
-        let params = { id , "due": neo4j.int(due)};
+                     SET a.DueAt = $due`;
+        let params = { id , due};
+
         try {
             await session.run(query, params);
         } catch (err) {
@@ -924,11 +925,11 @@ const db = {
         }else {
             deliverable = {
                 id: result.records[0].get(0).properties.Id,
-                title: result.records[0].get(0).properties.Title,
-                media: result.records[0].get(0).properties.Media,
-                content: result.records[0].get(0).properties.Content,
-                postTime: result.records[0].get(0).properties.Post_time,
-                dueTime: result.records[0].get(0).properties.DueTime
+                title: result.records[0].get(0).properties.Name,
+                description: result.records[0].get(0).properties.Description,
+                posted: result.records[0].get(0).properties.CreatedAt,
+                totalPoints: result.records[0].get(0).properties.TotalPoints,
+                due: result.records[0].get(0).properties.DueAt.low || result.records[0].get(0).properties.DueAt
             }
         }
         session.close();
@@ -997,8 +998,8 @@ const db = {
                      CREATE (u)-[:CREATE_SUBMISSION]->(s:submission 
                             {Id: $submissionId, Content: $content, Media: $media, Posted_time: $posted, Grade: -1}) 
                      CREATE (s)-[:SUBMIT_TO]->(a)`;
-        let params = {"username": username, "deliverableId": deliverableId, "submissionId": submissionId, "content": content, 
-                      "media": media, "posted": neo4j.int(posted_timestamp)};
+        let params = { username, deliverableId, submissionId, content, 
+                      media, "posted": neo4j.int(posted_timestamp)};
         try {
             await session.run(query, params);
         } catch (err) {
@@ -1048,6 +1049,7 @@ const db = {
                 return null;
             }else {
                 submission = {
+                    id: result.records[0].get(0).properties.Id,
                     username: result.records[0].get(1),
                     content: result.records[0].get(0).properties.Content,
                     media: result.records[0].get(0).properties.Media,
@@ -2151,6 +2153,36 @@ const db = {
             submissionSet.push(await db.searchSubmissionById(idSet[i]));
         }
         return submissionSet;
+    },
+    getAllSubmissionsOfDeliverableByUser: async (deliverableId, username) => {
+        let session = Neo4jDriver.wrappedSession(); 
+        const query = `
+        MATCH (:user {UserName: $username})-[:CREATE_SUBMISSION]->(s:submission)-[:SUBMIT_TO]->(:deliverable {Id: $deliverableId})
+        RETURN s
+        `
+        const params = { deliverableId, username };
+        let result; 
+        let submissions = []; 
+        try {
+            result = await session.run(query, params); 
+            for (const record of result.records) {
+                const s = record.get('s').properties; 
+                const submission = {
+                    id: s.Id,
+                    content: s.Content,
+                    media: s.Media,
+                    posted: s.Posted_time.low || s.Post_time, 
+                    comment: s.Comment || "",
+                    grade: s.Grade.low || s.Grade
+                }
+                submissions.push(submission)
+            }
+        }
+        catch (err) {
+            console.error(err); 
+            return []; 
+        }
+        return submissions; 
     }
 
 }; 

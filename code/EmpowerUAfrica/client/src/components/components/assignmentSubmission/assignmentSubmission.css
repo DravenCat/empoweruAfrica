@@ -6,6 +6,10 @@
 #embedded_file_window {
     width: 100%;
     height: 60vh;
+    border: 1px solid gray; 
+}
+.submission-content-p {
+    overflow-y: scroll;
 }
 
 .grade_section {

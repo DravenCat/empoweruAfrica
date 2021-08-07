@@ -16,7 +16,6 @@ router.get('/getImportantDates', async (req, res) => {
 
     let token = req.cookies.token; 
     let username = token === undefined? null: await db.getUsernameByToken(token); 
-    let courseName = req.body.courseName;
 
 
     if (username === null) {
@@ -31,10 +30,14 @@ router.get('/getImportantDates', async (req, res) => {
     let dates = {dates: []};
 
     for (let i = 0; i < deliverables.length; i++) {
-        dates["dates"].push(deliverables[i].due /1000);
+        const event = {
+            title: deliverables[i].title,
+            dateTimestamp: deliverables[i].due.low || deliverables[i].due
+        }
+        dates.dates.push(event); 
     }
 
-    res.status(200).json({dates});
+    res.status(200).json(dates);
 });
 
 module.exports = router;
