@@ -43,7 +43,7 @@ const Utils = {
         let min = d.getMinutes();
 
         month = month < 10? `0${month}`: month; 
-        date = date < 10? `$0{date}`: date; 
+        date = date < 10? `0${date}`: date; 
         hour = hour < 10? `0${hour}`: hour; 
         min = min < 10? `0${min}`: min; 
         return `${year}-${month}-${date}T${hour}:${min}`; 

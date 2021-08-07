@@ -247,6 +247,9 @@ export class Deliverable extends Component {
     }
 
     clickDeliverable = () => {
+        if (this.state.edit === true) {
+            return; 
+        }
         const {view, content: deliverable} = this.props;
         if (view === "instructor") {
             window.location.href = `/learning/grade_assignment/${deliverable.id}`; 
@@ -292,7 +295,7 @@ export class Deliverable extends Component {
                 {
 
                     overdue === true? 
-                    <span className="overdue">Due {dueTimeString}</span>:
+                    <span className="overdue">{dueTimeString}</span>:
                     <span>{dueTimeString}</span>
                 }
                 {

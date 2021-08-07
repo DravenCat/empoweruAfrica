@@ -89,19 +89,6 @@ export default class header extends Component {
                     {/* Website navbar icon links */}
                     <div className="navbar-icons">
 
-                        {/* Website navbar notification link*/}
-                        <div className="navbar-notification">
-                            <a id="navbar-notification" href="/notifications">
-                                <img src={bell} alt="bell" height='30px' width='30px'/>
-                            </a>
-                        </div>
-
-                        {/* Website navbar chat link*/}
-                        <div className="navbar-chat">
-                            <a id = "navbar-chat" href="/chat">
-                                <img src={chat} alt="chat" height='30px' width='30px'/>
-                            </a>
-                        </div>
 
                         {/* Website navbar account link*/}
                         <div className="navbar-profile">
