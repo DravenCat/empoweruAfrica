@@ -5,4 +5,5 @@
 .calendar_body {
    width: 90%;
    margin: 0 auto;
+   transform: scale(0.99);
 }

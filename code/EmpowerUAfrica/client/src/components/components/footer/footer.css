@@ -6,6 +6,8 @@ Footer for webiste.
     display: grid;
     grid-template-columns: 30% 30%;
     justify-content: space-between;
+    padding: 1vh 1vw;
+    align-items: center;
 }
 
 .footer-area1 > div{
@@ -18,12 +20,12 @@ Footer brand.
 */
 
 .footer-brand {
-    font-size: 40px;
+    font-size: 2.5rem;
 }
 
 
 #footer-home {
-    color: white;
+    color: #f7f7f7;
     text-decoration: none;
 }
 
@@ -31,18 +33,18 @@ Footer brand.
 Information about the website.
 */
 .footer-info {
-    font-size: 20px;
-    margin-top: 15px;
+    font-size: 1.5rem;
 }
 
 /*
 Github link to our project.
 */
 #footer-github {
-    background-color: black;
-    color: white;
+    background-color: #292b2c;
+    color: #f7f7f7;
     text-decoration: none;
     padding: 5px 10px;
+    border-radius: 10px;
 }
 
 #footer-github:hover {
@@ -55,15 +57,9 @@ Github link to our project.
 Description about our team.
 */
 .team-description {
-    background-color: black;
-    color: white;
+    background-color: #292b2c;
+    color: #f7f7f7;
     text-align: center;
-    height: 50px;
-    position: relative;
-    top: -18px;
-}
-
-.team {
-    position: relative;
-    top: 10px;
+    height: 4vh;
+    line-height: 4vh;
 }

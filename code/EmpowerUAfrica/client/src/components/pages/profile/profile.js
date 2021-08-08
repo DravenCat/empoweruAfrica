@@ -413,7 +413,7 @@ export default class profile extends Component {
               {
                 this.state.edit === true? 
                 <>
-                  <button className="grid2-btn" onClick={this.updateProfileData}>Confirm</button>
+                  <button className="grid2-btn-edit" onClick={this.updateProfileData}>Confirm</button>
                   <button className="grid2-btn" id="discard-btn" onClick={this.discardChanges}>Discard</button>
                 </>: 
                 localStorage.getItem('username') === this.state.username?

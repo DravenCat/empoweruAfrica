@@ -47,21 +47,24 @@ export default class startToLearn extends Component{
         return (
             <div className="start_to_learn">
                 
-                <div>
-                    <h2>
-                        All Courses
-                    </h2>
-                    <a href='/learning/my_courses'>
-                        See my courses
-                    </a>
+                <div className="start_to_learn_courses">
+                    <h1>
+                        Course Marketplace
+                    </h1>
 
-                    {
-                        isAdmin? 
-                        <a href='/learning/create_course' style={{marginLeft: '2em'}}>
-                            Create Course
-                        </a>:
-                        <></>
-                    }
+                    <div className="start_to_learn_courses_btn">
+                        <a href='/learning/my_courses'>
+                            See my courses
+                        </a>
+
+                        {
+                            isAdmin? 
+                            <a href='/learning/create_course' style={{marginLeft: '2em'}}>
+                                Create Course
+                            </a>:
+                            <></>
+                        }
+                    </div>
                     
                 </div>
 

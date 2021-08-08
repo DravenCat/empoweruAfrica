@@ -25,40 +25,42 @@
 }
 
 .signin-left-title {
-    font-family: 'Trebuchet MS', sans-serif;
-    font-size: 50px;
-    font-weight: 700;
+    font-family: serif;
+    font-size: 3rem;
+    font-weight: bolder;
+    margin-top: 3vh;
 }
 
 .signin-left-text {
-    font-family: 'Trebuchet MS', sans-serif;
+    font-family: sans-serif;
     font-size: 17px;
     padding-left: 20px;
     padding-right: 20px;
 }
 
 .signin-left-text2 {
-    font-family: 'Trebuchet MS', sans-serif;
+    font-family: sans-serif;
     font-size: 17px;
     padding-left: 20px;
     padding-right: 20px;
-    margin-top: 200px;
+    margin-top: 35vh;
 }
 
 #direct-signup {
-    font-family: 'Trebuchet MS', sans-serif;
+    display: inline-block;
+    font-family: sans-serif;
     padding: 8px 12px;
-    background-color: yellowgreen;
+    background-color: rgb(233, 214, 40);
     color: black;
     border-radius: 20px;
     border: none;
     box-shadow: 0 1px 3px black;
     text-decoration: none;
+    margin-top: 2vh;
 }
 
 #direct-signup:hover {
-    background-color: rgb(48, 48, 48);
-    color: rgb(196, 196, 196);
+    background-color: rgb(212, 194, 28);
 }
 
 /* signin page title */
@@ -69,16 +71,16 @@
 
 /* signin page form field */
 .signin-form-field {
-    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-family: sans-serif;
     font-size: 20px;
     margin-top: 80px;
 }
 
 #signin-username-input, #signin-password-input {
-    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-family: sans-serif;
     font-size: 20px;
-    padding: 3px 0;
-    border-radius: 15px;
+    padding: 3px 2px;
+    border-radius: 10px;
     box-shadow: 0 1px 3px black;
     outline: none;
 }
@@ -86,7 +88,7 @@
 /* signin page signin button */
 #signin-button {
     font-family: Georgia, 'Times New Roman', Times, serif;
-    background-color: yellowgreen;
+    background-color: rgb(233, 214, 40);
     color: black;
     padding: 10px 15px;
     font-size: 20px;
@@ -94,9 +96,9 @@
     margin-top: 60px;
     border: none;
     box-shadow: 0 1px 3px black;
+    cursor: pointer;
 }
 
 #signin-button:hover {
-    background-color: black; 
-    color: white;
+    background-color: rgb(212, 194, 28); 
 }

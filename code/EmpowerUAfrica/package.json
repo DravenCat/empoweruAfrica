@@ -23,6 +23,7 @@
     "mysql2": "^2.2.5",
     "neo4j-driver": "^4.3.1",
     "react-bootstrap": "^1.6.1",
+    "react-bootstrap-dropdown-menu": "^1.1.23",
     "react-router": "^5.2.0"
   },
   "devDependencies": {

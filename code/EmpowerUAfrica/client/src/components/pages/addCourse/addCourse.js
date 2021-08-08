@@ -215,7 +215,7 @@ export default class addCourse extends Component{
                     </h1><br />
                     <span className="warningMsg">{this.state.error}</span>
                     <div>
-                        <h2>Name</h2>
+                        <h2 className='add_course_subheader'>Name</h2>
                         {
                             mode === 'create'? 
                             <input type='text' id="new-course-name"></input>:
@@ -228,7 +228,7 @@ export default class addCourse extends Component{
                     </div>
                     <hr />
                     <div>
-                        <h2>Instructor</h2>
+                        <h2 className='add_course_subheader'>Instructor</h2>
                         <input 
                         type='text' 
                         id="new-course-instructor"
@@ -237,7 +237,7 @@ export default class addCourse extends Component{
                     </div>
                     <hr />
                     <div>
-                        <h2>Description</h2>
+                        <h2 className='add_course_subheader'>Description</h2>
                         <textarea 
                         id="new-course-description"
                         defaultValue={mode === 'create'? '': courseAbstract.description}>

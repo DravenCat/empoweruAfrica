@@ -3,21 +3,25 @@ body of make post page
 */
 .makePost {
     margin-top: 70px;
-    min-height: 600px;
+    min-height: 90vh;
     display: grid;
     grid-template-columns: 20% 60% 20%;
     background-image: url('../../../resource/icons/background_image.png');
     background-size: cover;
+    border-top: 1px solid transparent;
 }
 /*
 the textarea of title and content
 */
 .makePost_center {
+    margin-top: 3vh;
+    border-radius: 10px;
     background-color: rgba(223, 223, 223, 0.9);
+    padding: 3vh 5vw;
 }
 
 .makePost_title, .makePost_content {
-    margin: 25px 30px;
+    margin-bottom: 5vh;
 }
 .makePost_content textarea {
     min-height: 200px;
@@ -25,6 +29,9 @@ the textarea of title and content
     border-radius: 10px;
     box-shadow: 0 0 3px gray;
     font-size: 17px;
+    resize: none;
+    outline: none;
+    padding: 1vh 2vw;
 }
 
 .makePost_title textarea {
@@ -33,13 +40,16 @@ the textarea of title and content
     border-radius: 10px;
     box-shadow: 0 0 3px gray;
     font-size: 25px;
+    resize: none;
+    outline: none;
+    padding: 1vh 2vw;
 }
 
 /*
 create post button
 */
 #createPost {
-    background-color: yellowgreen;
+    background-color: rgb(233, 214, 40);
     padding: 8px 10px;
     border-radius: 10px;
     box-shadow: 0 0 3px black;
@@ -47,10 +57,10 @@ create post button
     cursor: pointer;
     text-decoration: none;
     color: black;
-    margin: 25px 30px;
+    margin: 0 auto;
+    width: 8vw;
 }
 
 #createPost:hover {
-    background-color: black;
-    color: white;
+    background-color: rgb(212, 194, 28);
 }

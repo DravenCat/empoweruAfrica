@@ -54,12 +54,12 @@ export default class MyCourses extends Component{
         return (
             <div className="myCourse">
                 
-                <div>
-                    <h2>
+                <div className="myCourse_courses">
+                    <h1>
                         My Courses
-                    </h2>
+                    </h1>
                     <a href='/start_to_learn'>
-                        See all courses
+                        View Course Marketplace
                     </a>
                 </div>
                 

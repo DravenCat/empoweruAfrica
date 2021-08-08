@@ -2,95 +2,76 @@
 Navigation bar body 
 */
 .navbar {
-    font-family: serif, Georgia, 'Times New Roman', Times;
-    background-color: white;
-    width: 100%;
-    min-height: 70px;
     position: fixed;
-    top: -1px;
-    z-index:10; 
+    top: 0;
+    width: 100vw;
+    font-family: serif;
+    background-color: #292b2c;
+    padding: 1.5vh 2vw;
 }
 
 .navbar-grid {
     display: grid;
-    grid-template-columns: 20% 30% 20%;
-    justify-content: space-between;
+    grid-template-columns: 20% auto 10% 1%;
+    grid-column-gap: 6vw;
     align-items: center;
 }
-
-.navbar-brand {
-    margin-top: 20px;
-}
-
 
 .navbar-grid .navbar-links{
     display: grid;
     grid-template-columns: repeat(4, auto);
-    justify-content: space-between;
-    margin-top: 20px;
-    align-items: center;
-    text-align: center;
+    justify-content: space-around;
 }
 
 .navbar-grid .navbar-icons{
     display: grid;
-    grid-template-columns: repeat(4, auto);
-    justify-content: space-between;
-    margin-top: 20px;
+    grid-template-columns: repeat(2, auto);
+    justify-content: space-around;
     align-items: center;
-    text-align: center;
 }
 
 /* 
 Navigation bar brand 
 */
 .navbar-brand {
-    font-family: Impact, fantasy;
-    font-size: 30px;
+    font-family: serif;
+    font-size: 2rem;
     font-style: italic;
+    font-weight: bolder;
 }
 
 #home {
     text-decoration: none;
-    color: rgb(50, 50, 50);
+    color: #f7f7f7;
 }
 
 /* 
 Navigation bar links 
 */
 .navbar-community, .navbar-assignment, .navbar-learn, .navbar-calendar {
-    font-family: Gill Sans, sans-serif;
-    font-size: 16px;
+    font-family: serif;
+    font-size: 1.2rem;
     font-weight: bold;
 }
 
 #community, #assignment, #learn, #calendar {
     text-decoration: none;
-    color: rgb(100, 100, 100);
+    color: #f7f7f7;
 }
 
 #community:hover, #assignment:hover, #learn:hover, #calendar:hover {
-    color: black;
-    border-bottom: 2px solid black;
+    color: #d0cfca;
+    border-bottom: 2px solid #d0cfca;
 }
 
 /* 
 Navigation bar icons 
 */
-#navbar-notification, #navbar-chat, #navbar-profile {
-    opacity: 0.7;
+#navbar_account_png{
+    width: 2rem;
 }
 
-#navbar-notification {
-    position: relative;
-}
-
-#navbar-chat {
-    position: relative;
-}
-  
 #navbar-notification:hover, #navbar-chat:hover, #navbar-profile:hover {
-    opacity: 1;
     color: black;
 }
 
@@ -106,22 +87,23 @@ Navigation bar profile dropdown
     box-shadow: 0px 0px 3px black;
     display: none;
     position: absolute;
-    right: -60px;
-    background-color: #f1f1f1;
-    min-width: 150px;
+    transform: translate(-40%);
+    background-color: #f7f7f7;
+    min-width: 9vw;
     z-index: 1;
     font-size: 13px;
+    text-align: center;
 }
   
 .profile-dropdown-content > a, .profile-dropdown-content > button{
-    font-family: 'Times New Roman', Times, serif;
-    font-size:medium;
-
-    color: black;
-    padding: 12px 16px;
+    font-family: serif;
+    font-size: 1rem;
+    color: #292b2c;
+    padding: 1vh 1vw;
     text-decoration: none;
     display: block;
     border: none;
+    text-decoration: none;
 }
 
 .profile-dropdown-content > button {
@@ -131,7 +113,6 @@ Navigation bar profile dropdown
   
 .profile-dropdown-content > a:hover, .profile-dropdown-content > button:hover{
     background-color: #ddd;
-    text-decoration: none;
 }
   
 .profile-dropdown:hover .profile-dropdown-content {
@@ -142,17 +123,25 @@ Navigation bar profile dropdown
 Navigation bar greeting 
 */
 #greeting-signin {
+    display: inline-block;
+    padding: 0.8vh 0.8vw;
     text-decoration: none;
-    color: black;
+    color: #292b2c;
     background-color: rgb(233, 214, 40);
-    padding: 7px 17px;
     border-radius: 10px;
-    margin-right: 60px;
 }
 
 #greeting-signin:hover {
-    color: white;
-    background-color: black;
+    background-color:rgb(212, 194, 28);
+}
+
+#greeting-done-signin {
+    display: inline-block;
+    padding: 0.8vh 0.8vw;
+    border-radius: 10px;
+    background-color: rgb(233, 214, 40);
+    color: #292b2c;
+    text-align: center;
 }
 
 @media screen and (max-width: 600px) {

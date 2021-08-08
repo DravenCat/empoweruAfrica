@@ -9,6 +9,10 @@
     margin-top: 0;
 }
 
+.add_course button {
+    padding: 0.8vh 0.8vw !important;
+}
+
 .add_course_form {
     border-radius: 20px;
     margin: 150px auto;
@@ -44,7 +48,7 @@
 }
 
 .add_course textarea:focus {
-    box-shadow: 0 0 8px 1px black;
+    box-shadow: 0 0 2px 0.5px black;
 }
 
 
@@ -97,6 +101,10 @@
     border-radius: 8px;
     width: 100%;
     height: 100%;
+}
+
+.add_course_subheader {
+    margin-top: 2vh;
 }
 
 @keyframes addCourse {

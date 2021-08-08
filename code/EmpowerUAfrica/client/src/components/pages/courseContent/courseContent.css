@@ -1,5 +1,5 @@
 .courseModule {
-    margin-top: 150px;
+    margin-top: 70px;
     background: url('../../../resource/images/blackBoard.jpg');
     background-position: top center;
     background-size: cover;
@@ -57,10 +57,10 @@
 
 .course_content_header {
     border: 1px solid black;
-    width: 70%;
+    width: 63%;
     margin: 50px auto;
     padding: 10px 20px;
-    background: -webkit-linear-gradient(135deg, #a6db43 0%,#d8c627 50%);
+    background: #eee;
     border-radius: 10px;
 }
 

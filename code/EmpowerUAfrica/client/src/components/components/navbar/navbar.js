@@ -1,8 +1,7 @@
 import React, { Component } from 'react'; 
 import './navbar.css'
-import chat from '../../../resource/icons/chat.png'
-import bell from '../../../resource/icons/bell.png'
-import profile from '../../../resource/icons/profile.png'
+import navbar_account from '../../../resource/icons/navbar_account.png'
+
 
 const getUsersAbstractURL = '/profile/getUsersAbstract'; 
 
@@ -39,8 +38,8 @@ export default class header extends Component {
     render() {
         let username = localStorage.getItem('username');
         let greeting = localStorage.getItem('signedIn') === 'true' ? 
-            <div id="greeting-signin"><div>Welcome</div><div>{username}</div></div>: 
-            <div><a href="/signin" id="greeting-signin">Sign in</a></div>; 
+            <div id="greeting-done-signin"><div>Welcome</div><div>{username}</div></div>: 
+            <a href="/signin" id="greeting-signin">Sign in</a>; 
 
         return(
             <div className="navbar">
@@ -94,7 +93,7 @@ export default class header extends Component {
                         <div className="navbar-profile">
                             <div id ="navbar-profile">
                                 <div className="profile-dropdown">
-                                    <img src={profile} alt="profile" height='30px' width='30px'/>
+                                    <img src={navbar_account} alt="profile" id='navbar_account_png'/>
                                     <div className="profile-dropdown-content">
 
                                         {/* Website navbar profile link*/}
@@ -115,6 +114,10 @@ export default class header extends Component {
                         <div id="greeting">
                             {greeting}
                         </div>
+
+                    </div>
+
+                    <div>
 
                     </div>
 

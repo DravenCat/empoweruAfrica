@@ -20,6 +20,7 @@
 
 .make-comment-box .submit-btn {
     background-color: var(--btn-confirm-color);
+    padding: 0.3vw 0.3vw;
 }
 .make-comment-box .submit-btn:hover {
     background-color: var(--btn-confirm-hover-color);
@@ -27,6 +28,7 @@
 
 .make-comment-box .discard-btn {
     background-color: var(--btn-cancel-color);
+    padding: 0.3vw 0.3vw;
 }
 .make-comment-box .discard-btn:hover {
     background-color: var(--btn-cancel-hover-color);

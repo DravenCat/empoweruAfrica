@@ -18,22 +18,24 @@
     clear: both;
 }
 
-.start_to_learn>div:nth-child(1)>h2{
-    display: inline-block;
-    margin-top: 30px;
-    margin-left: 40px;
-    margin-right: 40px;
-    padding: 8px 12px;
+.start_to_learn_courses {
+    background-color: #eee;
+    width: 75vw;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 30% 40%;
+    justify-content: space-between;
+    padding: 1vh 3vw;
     border-radius: 10px;
-    color: black;
-    background: -webkit-linear-gradient(135deg, #a6db43 0%,#d8c627 50%);
 }
+
+
 
 .start_to_learn>div:nth-child(1) a{
     text-decoration: none;
     display: inline-block;
     color: black;
-    background: yellowgreen;
+    background: rgb(233, 214, 40);
     padding: 5px 10px;
     border-radius: 10px;
     border: 2px solid #eee;
@@ -42,6 +44,11 @@
 }
 
 .start_to_learn>div:nth-child(1) a:hover{
-    background: black;
-    color: white;
+    background: rgb(212, 194, 28);
+}
+
+.course_enrol {
+    width: 80vw;
+    margin: 0 auto;
+    margin-top: 5vh;
 }

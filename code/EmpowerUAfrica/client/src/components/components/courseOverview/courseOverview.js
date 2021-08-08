@@ -125,7 +125,9 @@ export default class courseOverview extends Component{
                     } 
                 </div>
                 <p>Instructor: {course.instructor || '(No instructor)'}</p>
-                <p>{course.description || '(No description)'}</p>
+                <div id='course_overview_des'>
+                    {course.description || '(No description)'}
+                </div>
                 {/* <span className='mask'></span> */}
                 {/* This mask is covering the buttons.  */}
             </div>

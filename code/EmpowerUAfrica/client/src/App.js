@@ -35,7 +35,6 @@ export default function App() {
   return (
     <Router>
       <Header />
-      <Navbar />
       <Switch>
 
         {/* Routing to the home page */}
@@ -117,6 +116,7 @@ export default function App() {
         </Route>
         
       </Switch>
+      <Navbar />
       <Footer />
     </Router>
     

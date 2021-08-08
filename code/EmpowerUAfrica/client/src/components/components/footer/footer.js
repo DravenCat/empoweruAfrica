@@ -26,10 +26,8 @@ const Footer = (props) => {
             </div>
 
             <div className="team-description">
-                <p className="team">
-                    {/* footer text */}
-                    Team UOFT KINGS, CSCC01 project
-                </p>
+                {/* footer text */}
+                Team UOFT KINGS, CSCC01 project
             </div>
 
         </div>
