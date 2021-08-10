@@ -178,15 +178,21 @@ router.post('/updateProfilePic', async (req, res) => {
     let newImg = req.files[Object.keys(req.files)[0]]; 
     let extensionNames = [null, '.jpg', '.png'];
     let extension = newImg.name.slice(-3) === 'png'? 2: 1;
+    let profilePicPath = 'client/public/profilepics/users/' + username + extensionNames[extension]; 
     try {
-        await newImg.mv('client/public/profilepics/users/' + username + extensionNames[extension]); 
+        await newImg.mv(profilePicPath); 
     }
     catch (err) {
-        console.error(err); 
-        res.status(500).json({
-            message: 'Error when moving the file onto servser. '
-        });
-        return; 
+        if (err.code === 'ENOENT') {
+            await fs.mkdir(`client/public/profilepics/users`);
+            await newReading.mv(profilePicPath); 
+        }
+        else {
+            console.error(err); 
+            res.status(500).json({
+            message: 'Error when moving the file onto server. '});
+            return;
+        }
     }
     await db.updateProfile(username, {pfp_type: extension}); 
     res.json({
