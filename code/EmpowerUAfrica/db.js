@@ -870,7 +870,7 @@ const db = {
     setDeliverableDue: async (id, due) => {
         let session = Neo4jDriver.wrappedSession();
         let query = `MATCH (a:deliverable {Id: $id}) 
-                     SET a.DueAt = $due`;
+                     SET a.DueTime = $due`;
         let params = { id , due};
 
         try {
@@ -929,7 +929,7 @@ const db = {
                 description: result.records[0].get(0).properties.Description,
                 posted: result.records[0].get(0).properties.CreatedAt,
                 totalPoints: result.records[0].get(0).properties.TotalPoints,
-                due: result.records[0].get(0).properties.DueAt.low || result.records[0].get(0).properties.DueAt
+                due: result.records[0].get(0).properties.DueTime.low || result.records[0].get(0).properties.DueTime
             }
         }
         session.close();
