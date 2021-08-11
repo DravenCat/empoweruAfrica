@@ -37,11 +37,17 @@
 .myCourse_courses {
     background-color: #eee;
     width: 75vw;
+    min-height: 8vh;
     margin: 3vh auto;
+    margin-top: 6vh;
     display: grid;
     grid-template-columns: 30% 40%;
     justify-content: space-between;
-    padding: 1vh 3vw;
+    padding: 0.5vh 3vw;
     border-radius: 10px;
     align-items: center;
+}
+
+.myCourse_courses_btn {
+    text-align: center;
 }

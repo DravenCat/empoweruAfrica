@@ -10,6 +10,8 @@
 }
 .submission-content-p {
     overflow-y: scroll;
+    background-color: white;
+    margin-bottom: 3vh;
 }
 
 .grade_section {
@@ -20,9 +22,16 @@
 }
 
 .grading-buttons button {
-    width: 100%;
+    padding: 0.8vh 0.8vw;
+    width: 80%;
     margin: .3em;
     padding: .2em 0;
+    background-color: rgb(233, 214, 40);
+    cursor: pointer;
+}
+
+.grading-buttons button:hover {
+    background-color: rgb(212, 194, 28);
 }
 
 #grade_score {

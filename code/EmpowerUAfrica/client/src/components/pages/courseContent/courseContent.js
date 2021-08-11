@@ -199,7 +199,7 @@ export default class courseModule extends Component{
                                 </table>  
                             </div>:
                             <div className='new-module-btn' onClick={this.expandCreateModulePanel}>
-                                <h4> + New Module</h4>
+                                <p> + New Module</p>
                             </div>
                         }
                         

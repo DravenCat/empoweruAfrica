@@ -34,18 +34,19 @@
 .courseModule_create_module > .new-module-btn{
     background-color: #d8c627;
     border-radius: 10px;
-    border: 0; 
-    padding: .2em 1em;
     display: inline-block;
     cursor: pointer;
+    height: 4vh;
+    line-height: 0.8vh;
+    padding: 0 1vw;
 }
 
-.courseModule_create_module > .new-module-btn > h2 {
-    margin: .25em .3em;
+.courseModule_create_module > .new-module-btn > p {
+    font-size: 1rem;
 }
 
 .courseModule_create_module .new-module-btn:hover{
-    background-color: var(--btn-confirm-hover-color);
+    background-color: #bbad30;
 }
 
 .courseModule_create_module input{

@@ -58,9 +58,11 @@ export default class MyCourses extends Component{
                     <h1>
                         My Courses
                     </h1>
-                    <a href='/start_to_learn'>
-                        View Course Marketplace
-                    </a>
+                    <div className='myCourse_courses_btn'>
+                        <a href='/start_to_learn'>
+                            View Course Marketplace
+                        </a>
+                    </div> 
                 </div>
                 
 

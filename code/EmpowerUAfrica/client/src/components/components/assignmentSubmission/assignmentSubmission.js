@@ -99,16 +99,16 @@ export default class AssignmentSubmission extends Component{
                             <p>{submission.content}</p>
                         </div>
                     </>:
-                    <div className="submission-content-p" style={{height: '67vh'}}>
+                    <div className="submission-content-p" style={{height: '60vh'}}>
                         <p>{submission.content}</p>
                     </div>
                 }
                 <div>
                 <table className='grade_section'>
                     <colgroup>
-                        <col style={{width: '15%'}}></col>
+                        <col style={{width: '10%'}}></col>
                         <col style={{width: '60%'}}></col>
-                        <col style={{width: '25%'}}></col>
+                        <col style={{width: '30%'}}></col>
                     </colgroup>
                     <tbody>
                         <tr>

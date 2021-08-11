@@ -53,11 +53,17 @@
 
 .sumbit_assignment_btn {
     border-radius: 5px;
+    width: 5vw !important;
     float: right;
 }
 
 .discard_assignment_btn {
+    width: 5vw !important;
     border-radius: 5px;
+}
+
+.discard_assignment_btn:hover {
+    color: black !important;
 }
 
 .sumbit_assignment_form button:hover .sumbit_assignment_btn_mask {

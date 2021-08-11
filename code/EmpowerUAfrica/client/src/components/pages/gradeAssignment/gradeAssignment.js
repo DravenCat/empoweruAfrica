@@ -265,7 +265,7 @@ export default class gradeAssignment extends Component{
                         <div className="grade-deliverable-description">
                             <p>{deliverable.description}</p>
                         </div>
-                        <h3>Due: {Utils.timeStampToTime(deliverable.due)}</h3>
+                        <p>Due: {Utils.timeStampToTime(deliverable.due)}</p>
                         <hr />
                     </div>
                     <div>
