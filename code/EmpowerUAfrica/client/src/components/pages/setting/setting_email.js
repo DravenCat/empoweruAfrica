@@ -92,17 +92,11 @@ export default class setting_email extends Component {
             <h2 className="ce-form-field-title">Change Email</h2>
             <div className="ce-form-field">
                 {/* new email input */}
-                <div>
-                  New Email
-                </div>
-                <input type="text" id="change-email-input"/>
+                <input type="text" id="change-email-input" placeholder='New Email'/>
                 <br></br><br></br><br></br>
 
                 {/* confirm new email */}
-                <div>
-                  Confrim Email
-                </div>
-                <input type="text" id="cchange-email-input"/>
+                <input type="text" id="cchange-email-input" placeholder='Confirm Email'/>
                   
                 <p className="errorMsg">{errorMsg}</p>
 

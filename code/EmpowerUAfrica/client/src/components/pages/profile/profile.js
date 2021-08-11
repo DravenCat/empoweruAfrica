@@ -476,7 +476,7 @@ export default class profile extends Component {
           </div>
 
           <div className="grid4-tag">
-            <h1 className="grid4-tag-header">Tags</h1>
+            <h1 className="grid4-tag-header">Posts</h1>
             <div className="grid4-tag-text">
               {/* profile tag section */}
               {tags}

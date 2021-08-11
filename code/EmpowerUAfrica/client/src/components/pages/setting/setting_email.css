@@ -1,11 +1,14 @@
 /* setting cp page body */
 .setting-ce {
     display: grid;
-    grid-template-columns: 20% 5% 70% 5%;
+    grid-template-columns: 20% 25% 30% 25%;
     justify-content: space-between;
     text-align: center;
-    background-image: url('../../../resource/icons/yellow_background.jpg');
+    background-image: url('../../../resource/images/setting.png');
+    background-position: top center;
+    background-size: cover;
     font-family: Georgia, 'Times New Roman', Times, serif;
+    min-height: 90vh;
 }
 
 /* setting cp page left */
@@ -43,39 +46,46 @@
 /* setting cp page midright */
 .setting-ce-midright {
     background-color: white;
-    max-height: 600px;
+    height: 45vh;
     overflow: auto;
-    margin-top: 100px;
-    border-radius: 15px;
     box-shadow: 0 0 3px gray;
+    margin-top: 15vh;
+    margin-bottom: 10vh;
+    padding: 2vh 2vw;
 }
 
 .ce-form-field-title {
-    margin-top: 80px;
-    margin-bottom: 80px;
+    margin-top: 6vh;
+    margin-bottom: 6vh;
 }
 
 #change-email-input, #cchange-email-input {
-    font-family: Georgia, 'Times New Roman', Times, serif;
-    font-size: 20px;
+    font-family: serif;
+    font-size: 1rem;
+    font-style: italic;
     padding: 3px 0;
-    border-radius: 15px;
+    border-radius: 5px;
     box-shadow: 0 1px 3px black;
     outline: none;
+    width: 12vw;
+    height: 3vh;
 }
 
 #ce-button {
+    font-size: 1rem;
+    font-weight: bold;
     margin-top: 90px;
-    padding: 5px 20px;
+    width: 12vw;
+    padding: 0.5vh 0;
     border-radius: 5px;
-    background-color: yellowgreen;
+    background-color: rgb(233, 214, 40);
     color: black;
     box-shadow: 0 0 3px gray;
     transition: 0.3s;
+    cursor: pointer;
 }
 
 #ce-button:hover {
-    background-color: black;
-    color: white;
+    background-color: rgb(212, 194, 28);
     box-shadow: 0 0 3px gray;
 }

@@ -4,22 +4,18 @@ body of profile page
 .profile {
     margin-top: 80px;
     display: grid;
-    grid-template-columns: 7% 23% 3% 55% 12%;
+    grid-template-columns: 3% 25% 1% 50% 12%;
     justify-content: space-between;
     text-align: center;
-    background-image: url('../../../resource/icons/background-image.png');
+    background-image: url('../../../resource/images/profileBg.png');
     background-size: cover;
     min-height: 900px;
     padding-bottom: 10vh;
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.grid1 {
-    
-}
-
 .grid2 {
-    margin-top: 60px;
+    margin-top: 7vh;
     background-color: transparent;
 }
 /*
@@ -32,10 +28,9 @@ user's photo
     position: sticky;
     top: 100px;
     z-index: 1;
-    height: 200px;
-    width: 200px;
+    height: 250px;
+    width: 250px;
     margin: 0 auto;
-    border-radius: 20px;
     border: 2px solid black;
 }
 #profile-pic {
@@ -75,10 +70,10 @@ repositive
     background-color: white;
     color: black;
     min-height: 150px;
-    max-width: 90%;
+    width: 250px;
     margin: 0 auto;
+    margin-top: 3vh;
     z-index: 2;
-    border-radius: 10px;
     box-shadow: 0 0 3px gray;
 }
 
@@ -88,18 +83,22 @@ repositive
 
 .grid2-title {
     background-color: rgb(236, 236, 236);
-    margin: 40px 80px;
+    margin: 0 auto;
+    margin-top: 3vh;
+    width: 70%;
     padding: 5px 5px;
     border-radius: 10px;
+    font-size: 1rem;
     box-shadow: 0 0 3px gray;
 }
 
 .grid2-infoarea2 {
     position: -webkit-sticky;
     position: sticky;
+    width: 250px;
+    margin: 0 auto;
     top: 400px;
     background-color: rgb(236, 236, 236);
-    border-radius: 10px;
     box-shadow: 0 0 3px gray;
     z-index: 1;
     padding: 2vh 0;
@@ -156,24 +155,23 @@ repositive
 
 .grid4 {
     background-color: white;
-    margin-top: 120px;
-    border-radius: 10px;
+    margin-top: 7vh;
     box-shadow: 0 0 3px gray;
     min-height: 700px;
 }
 
 .grid4-aboutme {
-    min-height: 8em;
+    min-height: 10vh;
 }
 
 .grid4-aboutme-header {
+    margin-top: 3vh;
     text-align: left;
     margin-left: 20px;
 }
 
 .grid4-aboutme-text {
     text-align: left;
-    display:inline;
     margin: 20px 40px;
 }
 /*
@@ -184,12 +182,16 @@ edit textbox
     min-height: 200px;
     border-radius: 10px;
     box-shadow: 0 0 3px gray;
+    outline: none;
+    padding: 1vh 1vw;
+    resize: none;
 }
 /*
 industry 
 */
 .grid4-industry {
     background-color: rgb(236, 236, 236);
+    min-height: 10vh;
     margin-top: 50px;
     padding: 20px 0;
 }
@@ -207,7 +209,7 @@ industry
 tags
 */
 .grid4-tag {
-    margin-top: 50px;
+    margin-top: 3vh;
 }
 
 .grid4-tag-header {

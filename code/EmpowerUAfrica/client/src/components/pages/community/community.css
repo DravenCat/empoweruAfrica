@@ -4,7 +4,7 @@
     min-height: 100vh;
     display: grid;
     grid-template-columns: 20% 60% 10%;
-    background-image: url('../../../resource/icons/background_image.png');
+    background-image: url('../../../resource/images/profileBg.png');
     background-attachment: fixed;
     background-position: top center;
     background-repeat: no-repeat;
