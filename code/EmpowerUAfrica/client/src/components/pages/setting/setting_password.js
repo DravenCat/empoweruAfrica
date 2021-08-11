@@ -96,18 +96,12 @@ export default class setting_password extends Component {
           <div className="cp-form-field">
             <div>
               {/* new password input */}
-              <div>
-                New Password
-              </div>
-                <input type="password" id="change-password-input"/>
+                <input type="password" id="change-password-input" placeholder='New Password'/>
               </div>
               <br></br><br></br>
               {/* confirm new password */}
               <div>
-                <div>
-                  Confrim Password
-                </div>
-                  <input type="password" id="cchange-password-input"/>
+                  <input type="password" id="cchange-password-input" placeholder='Confirm Password'/>
                 </div>
               </div>
 

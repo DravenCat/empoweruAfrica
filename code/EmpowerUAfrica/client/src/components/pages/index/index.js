@@ -15,7 +15,11 @@ export default class index extends Component {
       <div className="title-image">
           <div className="wallup-text">
             {/* index page title */}
-            Welcome to EmpowerU Africa
+            EmpowerU Africa
+          </div>
+          <div className="wallup-text2">
+            {/* index page title */}
+            The platform that teaches entrepreneurship
           </div>
       </div>
 

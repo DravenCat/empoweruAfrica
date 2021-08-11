@@ -73,8 +73,10 @@ export default class community extends Component{
                         <h2>Content</h2>
                         <textarea id="makePost_content"></textarea>
                     </div>
+                    <div className="makePost_content_btn">
+                        <button id="createPost" onClick={this.createPost}>Create Post</button>
+                    </div>
                     {/* submit the post */}
-                    <button id="createPost" onClick={this.createPost}>Create Post</button>
 
                 </div>
 

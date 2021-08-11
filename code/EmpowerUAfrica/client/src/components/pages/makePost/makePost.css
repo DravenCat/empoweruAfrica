@@ -3,10 +3,10 @@ body of make post page
 */
 .makePost {
     margin-top: 70px;
-    min-height: 90vh;
+    min-height: 100vh;
     display: grid;
     grid-template-columns: 20% 60% 20%;
-    background-image: url('../../../resource/icons/background_image.png');
+    background-image: url('../../../resource/images/profileBg.png');
     background-size: cover;
     border-top: 1px solid transparent;
 }
@@ -59,6 +59,11 @@ create post button
     color: black;
     margin: 0 auto;
     width: 8vw;
+}
+
+.makePost_content_btn {
+    margin: 0 auto;
+    text-align: center;
 }
 
 #createPost:hover {
