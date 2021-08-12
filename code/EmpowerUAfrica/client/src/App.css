@@ -6,7 +6,10 @@
   height: 40vmin;
   pointer-events: none;
 }
-
+body {
+  margin-left: 0;
+  margin-right: 0;
+}
 textarea {
   font-family: sans-serif;
 }

@@ -204,7 +204,7 @@ export default class submitAssignment extends Component{
                         </tbody>
                     </table>
                     
-                    <button className="discard_assignment_btn cancel-btn" onClick={this.discard}>
+                    <button className="discard_assignment_btn" onClick={this.discard}>
                         <h3>Back</h3>
                         <span className='sumbit_assignment_btn_mask'></span>
                     </button>

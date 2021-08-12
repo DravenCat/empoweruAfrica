@@ -71,13 +71,15 @@ export default class post extends Component{
         let post = this.props.post;
         let author = this.props.post.authorAbstract;  
         let in_post = this.props.in_post; 
+        let postLink = window.location.href.split('/').slice(0, 3).join('/') + '/community/post/' + post.id;
+        let isAdmin = Utils.isAdmin(); 
         console.log(post); 
         if (post === undefined) {
             return (<h2>Error: No Post Data</h2>); 
         }
         let canDelete = (
             localStorage.getItem('username') === post.author
-        ) || (localStorage.getItem('isAdmin') === 'true');
+        ) || (isAdmin);
         let makeComment = <></>;
         if (this.state.commentInput) {
             makeComment = <MakeComment reply_to={post.id} discard={this.hideCommentInput}/>
@@ -87,7 +89,11 @@ export default class post extends Component{
         return (
             <div className="post">
                 <div className="post-user-abstract">
-                    <UserAbstract user={author}></UserAbstract>
+                    {
+                        this.props.hideAuthor === undefined? 
+                        <UserAbstract user={author}></UserAbstract>:
+                        null
+                    }
                 </div>
                 
                 <div className="post-abstract">
@@ -98,7 +104,7 @@ export default class post extends Component{
                         <p>{post.abbriv || post.content}</p>
                     </>:
                     <>
-                        <a className="link-to-post" href={`community/post/${post.id}`}>
+                        <a className="link-to-post" href={`${postLink}`}>
                         <h2>{post.title}</h2>
                         <p>{post.abbriv || post.content}</p>
                         </a>
@@ -121,6 +127,7 @@ export default class post extends Component{
                             alt="reply" 
                             className="comment-footer-icon"
                             onClick={this.showCommentInput}></img>
+                            <span>{post.comment_count}</span>
                         </td>
                         <td>
                             <img 

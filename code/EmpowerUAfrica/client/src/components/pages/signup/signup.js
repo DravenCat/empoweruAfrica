@@ -142,7 +142,7 @@ export default class signin extends Component {
                                 Account type
                             </div>
                             <select id="account-type">
-                                <option value="0">entrepreneur</option>
+                                <option value="0">Entrepreneur</option>
                                 <option value="1">Company</option>
                                 <option value="2">Investor</option>
                             </select>

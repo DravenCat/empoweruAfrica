@@ -2,7 +2,9 @@
 body of profile page
 */
 .profile {
-    margin-top: 80px;
+    margin: 0;
+    width: 100%;
+    margin-top: 70px;
     display: grid;
     grid-template-columns: 3% 25% 1% 50% 12%;
     justify-content: space-between;
@@ -115,8 +117,8 @@ repositive
     text-decoration: none;
     color: black;
     background-color:rgb(233, 214, 40);
-    padding: 8px 40px;
-    border-radius: 20px;
+    padding: 8px 30px;
+    border-radius: 3px;
     box-shadow: 0 0 3px gray;
     transition: 0.5s;
     cursor: pointer;
@@ -131,7 +133,7 @@ repositive
     color: black;
     background-color:#5cb85c;
     padding: 8px 40px;
-    border-radius: 20px;
+    border-radius: 3px;
     box-shadow: 0 0 3px gray;
     transition: 0.5s;
     cursor: pointer;
@@ -222,7 +224,7 @@ tags
     margin: 20px 40px;
 }
 
-.grid4-tag-text p{
+/* .grid4-tag-text p{
     background-color: yellowgreen;
     text-align: left;
     padding: 5px 10px;
@@ -232,7 +234,7 @@ tags
     overflow: auto;
     border-radius: 10px;
     box-shadow: 0 0 3px gray;
-}
+} */
 
 .grid5 {
     

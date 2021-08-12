@@ -76,7 +76,7 @@ export default class CommentFooter extends Component {
         const reply = this.props.reply; 
         let canDelete = (
             localStorage.getItem('username') === reply.author
-        ) || (localStorage.getItem('isAdmin') === 'true');
+        ) || (Utils.isAdmin());
         return (
         <div>
             <table className="comment-footer-table">

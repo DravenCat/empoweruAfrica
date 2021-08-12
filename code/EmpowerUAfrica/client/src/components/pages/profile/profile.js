@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import Loading from '../../components/loading/loading'; 
 import Tag from '../../components/tag/tag';
 import Utils from '../../../utils';
+import Post from '../../components/post/post'; 
 import "./profile.css"
 
+const getPostsURL = "/community/getPosts"; 
 
 export default class profile extends Component {
 
@@ -26,7 +28,8 @@ export default class profile extends Component {
     updatedProfile: {}, 
     error: null,
     edit: false,
-    img: null
+    img: null,
+    posts: null
   }
   getProfileData = async (username) => {
     // ajax
@@ -81,11 +84,6 @@ export default class profile extends Component {
         error: `${res.status}: ${body.message}`
       }); 
     }
-  }
-
-  componentDidMount() {
-    let { username } = this.props.match.params; 
-    this.getProfileData(username);
   }
 
   enterEditMode = () => {
@@ -267,6 +265,49 @@ export default class profile extends Component {
     this.setState({img: imgInput.files[0]});
   }
 
+  getAllMyPosts = async () => {
+    const { username } = this.props.match.params; 
+    const url = `${getPostsURL}?author=${username}`;
+    let res, body; 
+    try {
+      ({ res, body } = await Utils.ajax(
+        url,
+        {
+          method: 'GET'
+        }
+      ))
+    }
+    catch (err) {
+      console.error(err); 
+      alert('Internet failure'); 
+      return; 
+    }
+
+    if (!res.ok) {
+      console.error(body.message); 
+      alert(body.message); 
+      return; 
+    }
+
+    let { posts } = body; 
+    
+    if (posts.length !== 0) {
+      let myAbstract = (await Utils.getUsersAbstract([username]))[username];
+      for (const post of posts) {
+        post.authorAbstract = myAbstract; 
+      }
+    } 
+
+    this.setState({
+      posts
+    }); 
+  }
+
+  componentDidMount = async () => {
+    let { username } = this.props.match.params; 
+    await Promise.all([this.getProfileData(username), this.getAllMyPosts()]); 
+  }
+
   render() {
 
     if (this.state.error !== null && this.state.profile===null) {
@@ -282,8 +323,17 @@ export default class profile extends Component {
     let profile = this.state.profile;
     let updatedProfile = this.state.updatedProfile;
     console.log(profile);
-    let tags = profile.tags.map((tag)=>{return <Tag tag={tag} key={tag}/>}); 
+    // let tags = profile.tags.map((tag)=>{return <Tag tag={tag} key={tag}/>}); 
     let type = this.state.type;
+
+    let posts = []; 
+    if (this.state.posts !== null) {
+      posts = this.state.posts.map(
+        (postObj) => {
+          return <Post post={postObj} key={postObj.post_id} hideAuthor/>
+        }
+      )
+    }
 
     return(
       <div className="profile">
@@ -476,10 +526,10 @@ export default class profile extends Component {
           </div>
 
           <div className="grid4-tag">
-            <h1 className="grid4-tag-header">Posts</h1>
+            <h1 className="grid4-tag-header">Community Posts</h1>
             <div className="grid4-tag-text">
-              {/* profile tag section */}
-              {tags}
+              {/* my posts */}
+              {posts}
             </div>
           </div>
 

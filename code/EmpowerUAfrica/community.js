@@ -190,8 +190,15 @@ router.get('/getPosts', async (req, res) => {
     let results;
     let pageNum = parseInt( req.query.page_number );
     let postsPerPage = parseInt( req.query.post_per_page ); 
-    if(!isNaN(pageNum) && !isNaN(postsPerPage)){
-        results = await db.getPosts(parseInt(pageNum), parseInt(postsPerPage));
+    let author = req.query.author; 
+    if(author !== undefined || (!isNaN(pageNum) && !isNaN(postsPerPage))){
+        if (author !== undefined) {
+            results =  { posts: await db.searchPostByUser(author)}; 
+        }
+        else {
+            // results = await db.getPosts(parseInt(pageNum), parseInt(postsPerPage));
+            results = await db.getPosts(0, 1024);
+        }
     }else{
         res.status(400).json({
             message: 'Inputs are not valid'

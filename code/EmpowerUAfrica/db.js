@@ -387,9 +387,11 @@ const db = {
      */
     searchPostByUser: async (username) => {
         let session = Neo4jDriver.wrappedSession();
-        let query = `MATCH (u:user {UserName: $username})  
-                           (u)-[:CREATE_POST]->(p:post)  
-                     RETURN p`;
+        let query = `MATCH 
+                        (u:user {UserName: $username}),
+                        (u)-[:CREATE_POST]->(p:post)  
+                    OPTIONAL MATCH (r:reply)-[:REPLY_TO*1..]->(p)
+                     RETURN p, count(r) AS comment_count`;
         let params = {"username": username};
         let result;
         let postSet = [];
@@ -397,12 +399,15 @@ const db = {
             result = await session.run(query, params);
             let records = result.records;
             for (let i = 0; i < records.length; i++) {
-                let post = records[i].get(0);
+                let post = records[i].get('p');
+                let comment_count = records[i].get('comment_count').low
+                let content = post.properties.Content; 
                 postSet.push({
+                    comment_count,
                     id: post.properties.id,
                     title: post.properties.Title,
-                    time: post.properties.Time,
-                    content: post.properties.Content
+                    post_time: post.properties.Time,
+                    abbriv: content.length > 100? content.slice(100) + '...': content
                 })
             }
         } catch (err) {
@@ -2129,7 +2134,11 @@ const db = {
         }
         let records = result.records
         for (let i = 0; i < records.length; i++) {
-            let deliverable = records[i].get(0) != null ? records[i].get(0) : records[i].get(1);
+            let record = records[i]; 
+            let deliverable = record.get('d0') || record.get('d1');
+            if (deliverable === null) {
+                continue; 
+            }
             deliverableSet.push({
                 type: "Deliverable",
                 title: deliverable.properties.Title,

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'; 
+import Utils from '../../../utils';
 import './navbar.css'
-import navbar_account from '../../../resource/icons/navbar_account.png'
 
 
 const getUsersAbstractURL = '/profile/getUsersAbstract'; 
@@ -40,6 +40,17 @@ export default class header extends Component {
         let greeting = localStorage.getItem('signedIn') === 'true' ? 
             <div id="greeting-done-signin"><div>Welcome</div><div>{username}</div></div>: 
             <a href="/signin" id="greeting-signin">Sign in</a>; 
+        let abstract = JSON.parse(localStorage.getItem('abstract')); 
+        let pfpPath;
+        if (abstract === null || undefined) {
+            pfpPath = "/profilepics/default/default_profile_pic.jpg"; 
+        }
+        else {
+            let pfpType = parseInt(abstract.pfp_type); 
+            pfpPath = Utils.getProfilePictureURL(username, pfpType); 
+        }
+       
+        
 
         return(
             <div className="navbar">
@@ -64,8 +75,8 @@ export default class header extends Component {
 
                         {/* Website navbar assignment link*/}
                         <div className="navbar-assignment">
-                            <a id="assignment" href="/assignment">
-                                Assignment
+                            <a id="assignment" href="/learning/my_courses">
+                                My Courses
                             </a>
                         </div>
 
@@ -93,7 +104,7 @@ export default class header extends Component {
                         <div className="navbar-profile">
                             <div id ="navbar-profile">
                                 <div className="profile-dropdown">
-                                    <img src={navbar_account} alt="profile" id='navbar_account_png'/>
+                                    <img src={pfpPath} alt="profile" id='navbar_account_png'/>
                                     <div className="profile-dropdown-content">
 
                                         {/* Website navbar profile link*/}
