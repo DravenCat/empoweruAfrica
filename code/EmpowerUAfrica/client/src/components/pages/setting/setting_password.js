@@ -9,27 +9,12 @@ export default class setting_password extends Component {
     error: null
   }
 
-  passwordMinLen = 6; 
-  passwordMaxLen = 255;
-
-  validatePassword = (password, cpassword) => {
-    // Two passwords do not match.
-    if (password !== cpassword) {
-        this.setState({error: 'Two password entries does not match.'});
-        return false; 
-    }
-    // Password too long or too short. 
-    if (password.length > this.passwordMaxLen || password.length < this.passwordMinLen) {
-        this.setState({error: `Passwords should be between ${this.passwordMinLen} and ${this.passwordMaxLen} characters.`})
-        return false; 
-    }
-
-    return true; 
-  }
   sendUpdateRequest = async () => {
     let password = document.getElementById('change-password-input').value; 
     let cpassword = document.getElementById('cchange-password-input').value; 
-    if (!this.validatePassword(password, cpassword)) {
+
+    if (password !== cpassword) {
+      this.setState({error: "Two password entries does not match"});
       return;
     }
 
@@ -90,38 +75,58 @@ export default class setting_password extends Component {
     
     return(
       <div className="setting-cp">
-        <h2 className="cp-sidenav-title">Account Setting</h2>
-        <div className="cp-sidenav">
-            <a id="changepassword" href="/setting_password">Change Password</a>
-            <a id="changeemail" href="/setting_email">Change Email</a>
+
+        <div className="setting-cp-left">
+          {/* setting page title */}
+          <h2 className="cp-sidenav-title">Account Setting</h2>
+          <div className="cp-sidenav">
+              {/* side navbar */}
+              <a id="changepassword" href="/setting_password">Change Password</a>
+              <a id="changeemail" href="/setting_email">Change Email</a>
+          </div>
         </div>
-        <div className="change-passowrd-section">
-          <h2>Change Password</h2><br/>
+
+        <div className="setting-cp-midleft">
+
+        </div>
+
+        <div className="setting-cp-midright">
+          {/* change password title */}
+          <h2 className="cp-form-field-title">Change Password</h2>
           <div className="cp-form-field">
             <div>
+              {/* new password input */}
               <div>
                 New Password
               </div>
-                <input type="text" id="change-password-input"/><br/><br/>
+                <input type="password" id="change-password-input"/>
               </div>
+              <br></br><br></br>
+              {/* confirm new password */}
               <div>
                 <div>
                   Confrim Password
                 </div>
-                  <input type="text" id="cchange-password-input"/>
+                  <input type="password" id="cchange-password-input"/>
                 </div>
               </div>
 
-              <p className="warningMsg">{errorMsg}</p>
+              {/* error message */}
+              <p className="errorMsg">{errorMsg}</p>
 
+              {/* submit button */}
               <div className="cp-button">
-                <br/>
                 <button id="cp-button" onClick={this.sendUpdateRequest}>
                   Confirm
                 </button>
               </div>
-            </div>
-        </div>
+          </div>
+
+          <div className="setting-cp-right">
+            
+          </div>
+
+      </div>
     )
   }
 }

@@ -1,20 +1,10 @@
 import React, { Component } from 'react'; 
-import { Redirect } from 'react-router-dom';
 import './signup.css';
+import Utils from '../../../utils';
 
 
 
 export default class signin extends Component {
-
-    // Consts
-    emailMinLen = 0; // But it has to pass the RE validation
-    emailMaxLen = 255; 
-    passwordMinLen = 6; 
-    passwordMaxLen = 255;
-    userNameMinLen = 3; 
-    userNameMaxLen = 31;
-    userNameValidChars = ['-', '_'];
-    emailValidationRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     signupURL = '/account/signup';
 
     // State
@@ -53,111 +43,23 @@ export default class signin extends Component {
       }
     
 
-    entrepreneurClick = ()=> {
-        // document.getElementById("entrepreneur").style.background="rgb(34, 100, 243)";
-        // document.getElementById("entrepreneur").style.color="white";
-        // document.getElementById("company").style.background="white";
-        // document.getElementById("company").style.color="black";
-        // document.getElementById("investor").style.background="white";
-        // document.getElementById("investor").style.color="black";
-
-        this.setState({accountType: 0}); 
-    }
-
-    companyClick = ()=> {
-        // document.getElementById("company").style.background="rgb(34, 100, 243)";
-        // document.getElementById("company").style.color="white";
-        // document.getElementById("entrepreneur").style.background="white";
-        // document.getElementById("entrepreneur").style.color="black";
-        // document.getElementById("investor").style.background="white";
-        // document.getElementById("investor").style.color="black";
-
-        this.setState({accountType: 1}); 
-    }
-
-    investorClick = ()=> {
-        // document.getElementById("investor").style.background="rgb(34, 100, 243)";
-        // document.getElementById("investor").style.color="white";
-        // document.getElementById("company").style.background="white";
-        // document.getElementById("company").style.color="black";
-        // document.getElementById("entrepreneur").style.background="white";
-        // document.getElementById("entrepreneur").style.color="black";
-
-        this.setState({accountType: 2});
-    }
-
-    /*
-        params: 
-            - email: String, the email to be validated
-            - cemail: String, the email user inputted in the 
-            'confirm email' input. 
-        returns:
-            - true, if email is a valid email address and cemail === email
-            - false, o\w
-    */
-    validateEmail = (email, cemail) => {
-        // Two emails do not match
-        if (email !== cemail) {
-            this.setState({error: 'Two email entries does not match.'});
-            return false; 
-        }
-        // Email too long or too short
-        if (email.length > this.emailMaxLen || email.length < this.emailMinLen) {
-            this.setState({error: `Emails should be between ${this.emailMinLen} and ${this.emailMaxLen} characters.`});
-            return false; 
-        }
-        // Email not in correct form
-        if (!(this.emailValidationRegex.test(email))) {
-            this.setState({error: 'Email not in correct format. An \'@\' is expected. '})
-            return false; 
-        }
-
-        return true; 
-    }
-
-    // Similiar to validateEmail, but with password. 
-    validatePassword = (password, cpassword) => {
-        // Two passwords do not match.
-        if (password !== cpassword) {
-            this.setState({error: 'Two password entries does not match.'});
-            return false; 
-        }
-        // Password too long or too short. 
-        if (password.length > this.passwordMaxLen || password.length < this.passwordMinLen) {
-            this.setState({error: `Passwords should be between ${this.passwordMinLen} and ${this.passwordMaxLen} characters.`})
-            return false; 
-        }
-
-        return true; 
-    }
-
-    validateUsername = (username) => {
-        if (username.length > this.userNameMaxLen || username.length < this.userNameMinLen) {
-            this.setState({error: `Username should be between ${this.userNameMinLen} and ${this.userNameMaxLen} characters.`}); 
-            return false; 
-        }
-        for (let char of username) {
-            if ( !(char >= 'a' && char <= 'z') && !(char >= 'A' && char <= 'Z') && !(char >= '0' && char <= '9') && !(char in this.userNameValidChars)) {
-                this.setState({'error': `Username can only contain upper and lower case letters, digits and special symbols ${this.userNameValidChars.join(', ')}`});
-                return false;
-            }
-        }
-        this.setState({error: null});
-        return true;
-    }
-
     sendSignupRequest = async () => {
-        let type = this.state.accountType;
+        let type = parseInt(document.getElementById('account-type').value);
         let username = document.getElementById('signup-username-input').value;
         let email = document.getElementById('signup-email-input').value;
         let cemail = document.getElementById('signup-cemail-input').value;
         let password = document.getElementById('signup-password-input').value;
         let cpassword = document.getElementById('signup-cpassword-input').value;
 
-        // If any of the user entry is invalid. 
-        if (!this.validateUsername(username)|| !this.validateEmail(email, cemail) || !this.validatePassword(password, cpassword)) {
-            return;
+        if (password !== cpassword) {
+            this.setState({error: 'Two password entries does not match'});
+            return; 
         }
+        if (email !== cemail) {
+            this.setState({error: 'Two email entries does not match'});
+            return; 
+        }
+
         let res; 
         // ajax
         try{
@@ -191,7 +93,10 @@ export default class signin extends Component {
         if (res.ok) {
             localStorage.setItem('signedIn', true);
             localStorage.setItem('username', username); 
+
+            await Utils.updateSelfAbstract(); 
             window.location.replace('/');
+
             return; 
         }
         this.setState({error: body.message});
@@ -202,126 +107,126 @@ export default class signin extends Component {
             "":
             this.state.error; 
         if (this.state.redirect !== undefined) {
-            
-            // return (
-            //     // <Redirect to={this.state.redirect}/>
-            // )
 
         }
         return(
             <div className="signup-page">
-
+                &nbsp;
                 <div className="signup-field">
-                    <h2 className="signup-title">
-                        Sign up as
-                    </h2> 
-                    {/* <button id="entrepreneur" onClick={this.entrepreneurClick}>Entrepreneur</button>
-                    <button id="company" onClick={this.companyClick}>Company</button>
-                    <button id="investor" onClick={this.investorClick}>Investor</button> */}
-                    <div>
-                        <button onClick={this.showMenu}>
-                        Show menu
-                        </button>
+
+                    <div className="signup-left">
+                        {/* welcome message */}
+                        <p className="signup-left-title">Welcome to Our Community</p>
+                        <p className="signup-left-text">To keep connected with us please sign up with 
+                            your personal information by email and password
+                        </p>
+                        {/* link to signin page */}
+                        <p className="signup-left-text2">Or log into an account if you have one
+                        </p>
+                        <a id="direct-signin" href="/signin">Log into your account</a>
+                    </div>
+
+                    <div className="signup-midleft">
+
+                    </div>
+
+                    {/* signup page title */}
+                    <div className="signup-midright">
+                        <h2 className="signup-title">
+                            Sign up 
+                        </h2>   
+
+                        {/* account type selection */}
+                        <div class="account-type">
+                            <div>
+                                Account type
+                            </div>
+                            <select id="account-type">
+                                <option value="0">entrepreneur</option>
+                                <option value="1">Company</option>
+                                <option value="2">Investor</option>
+                            </select>
+                        </div>
+
+                        {/* user name input */}
+                        <div className="signup-form-field">
+                            <div>
+                                <div>
+                                    Username
+                                </div>
+                                    <input 
+                                    type="text" 
+                                    id="signup-username-input" 
+                                    maxLength={this.userNameMaxLen}
+                                    />
+                            </div>
+                            <br/>
+                            {/* email input */}
+                            <div>
+                                <div>
+                                    Email
+                                </div>
+                                    <input 
+                                    type="email" 
+                                    id="signup-email-input" 
+                                    maxLength={this.emailMaxLen}
+                                    pattern={this.emailValidationRegex}
+                                    />
+                            </div>
+                            <br/>
+                            {/* confirm email */}
+                            <div>
+                                <div>
+                                    Confirm Email
+                                </div>
+                                    <input 
+                                    type="email" 
+                                    id="signup-cemail-input" 
+                                    maxLength={this.emailMaxLen}
+                                    pattern={this.emailValidationRegex}
+                                    />
+                            </div>
+                            <br/>
+                            {/* password input */}
+                            <div>
+                                <div>
+                                    Password
+                                </div>
+                                    <input 
+                                    type="password" 
+                                    id="signup-password-input" 
+                                    maxLength={this.passwordMaxLen}
+                                    />
+                            </div>
+                            <br/>
+                            {/* confirm password */}
+                            <div>
+                                <div>
+                                    Confirm password
+                                </div>
+                                    <input 
+                                    type="password" 
+                                    id="signup-cpassword-input" 
+                                    maxLength={this.passwordMaxLen}
+                                    />
+                            </div>
+                        </div>
+
+                        {/* error message */}
+                        <p className="errorMsg">{errMsg}</p>
                         
-                        {
-                        this.state.showMenu
-                            ? (
-                            <div
-                                className="menu"
-                                ref={(element) => {
-                                this.dropdownMenu = element;
-                                }}
-                            >
-                                <button onClick={this.entrepreneurClick}>Entrepreneur</button>
-                                <button onClick={this.companyClick}>Company</button>
-                                <button onClick={this.investorClick}>Investor</button>
-                            </div>
-                            )
-                            : (
-                            null
-                            )
-                        }
+                        {/* create account button */}
+                        <div className="signup-button">
+                            <button id="signup-button" onClick={this.sendSignupRequest}>
+                                Create Account
+                            </button>
+                        </div>
                     </div>
 
+                    <div className="signup-right">
+
+                    </div>
                     
-
-
-                    <span>Account<br/><br/></span>
-                    <div className="direct-signin">
-                        <span>
-                            Have an acount?
-                        </span>
-                        <a id="signin" href="signin">
-                            &nbsp;Sign in
-                        </a>
-                    </div>
-                    <div className="signup-form-field">
-                        <div>
-                            <div>
-                                Username
-                            </div>
-                                <input 
-                                type="text" 
-                                id="signup-username-input" 
-                                maxLength={this.userNameMaxLen}
-                                />
-                        </div>
-                        <br/>
-                        <div>
-                            <div>
-                                Email
-                            </div>
-                                <input 
-                                type="email" 
-                                id="signup-email-input" 
-                                maxLength={this.emailMaxLen}
-                                pattern={this.emailValidationRegex}
-                                />
-                        </div>
-                        <br/>
-                        <div>
-                            <div>
-                                Confirm Email
-                            </div>
-                                <input 
-                                type="email" 
-                                id="signup-cemail-input" 
-                                maxLength={this.emailMaxLen}
-                                pattern={this.emailValidationRegex}
-                                />
-                        </div>
-                        <br/>
-                        <div>
-                            <div>
-                                Password
-                            </div>
-                                <input 
-                                type="password" 
-                                id="signup-password-input" 
-                                maxLength={this.passwordMaxLen}
-                                />
-                        </div>
-                        <br/>
-                        <div>
-                            <div>
-                                Confirm password
-                            </div>
-                                <input 
-                                type="password" 
-                                id="signup-cpassword-input" 
-                                maxLength={this.passwordMaxLen}
-                                />
-                        </div>
-                    </div>
-
-
-                    <p className="warningMsg">{errMsg}</p>
-
-                    <div className="signup-button">
-                        <button id="signup-button" onClick={this.sendSignupRequest}>
-                            Create Account
-                        </button>
-                    </div>
                 </div>
             </div>
         )

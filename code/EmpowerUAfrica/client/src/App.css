@@ -7,6 +7,19 @@
   pointer-events: none;
 }
 
+textarea {
+  font-family: sans-serif;
+}
+
+:root {
+  --link-hover-color: rgb(0, 143, 141);
+  --btn-confirm-color: yellowgreen; 
+  --btn-cancel-color: rgb(252, 57, 45); 
+  --btn-confirm-hover-color: rgb(102, 145, 16);
+  --btn-cancel-hover-color: darkred; 
+  font-family: sans-serif;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -35,4 +48,42 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.warningMsg {
+  color: red; 
+  font-weight: bold;
+  margin: 0; 
+}
+
+.triangle-down {
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 12px solid cadetblue;
+}
+.triangle-left {
+  width: 0;
+  height: 0;
+  border-top: 7px solid transparent;
+  border-right: 12px solid cadetblue;
+  border-bottom: 7px solid transparent;
+}
+.confirm-btn {
+  background-color: var(--btn-confirm-color);
+}
+.confirm-btn:hover {
+  background-color: var(--btn-confirm-hover-color);
+}
+.cancel-btn {
+  background-color: var(--btn-cancel-color);
+}
+.cancel-btn:hover {
+  background-color: var(--btn-cancel-hover-color);
+  color: white;
+}
+
+.page {
+  min-height: 100%;
 }
